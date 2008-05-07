@@ -34,7 +34,6 @@ with Csets;
 with Confgpr;   use Confgpr;
 with Debug;     use Debug;
 with Errout;    use Errout;
-with Err_Vars;
 
 with GNAT.Directory_Operations; use GNAT.Directory_Operations;
 with GNAT.Dynamic_Tables;
@@ -207,10 +206,11 @@ package body Buildgpr is
    --  building jobs.
 
    type Process_Data is record
-      Pid           : Process_Id      := Invalid_Pid;
-      Source        : Source_Id       := No_Source;
-      Mapping_File  : Path_Name_Type  := No_Path;
-      Purpose       : Process_Purpose := Compilation;
+      Pid           : Process_Id         := Invalid_Pid;
+      Source        : Source_Id          := No_Source;
+      Mapping_File  : Path_Name_Type     := No_Path;
+      Purpose       : Process_Purpose    := Compilation;
+      Options       : String_List_Access := null;
    end record;
    --  Data recorded for each spawned jobs, compilation of dependency file
    --  building.
@@ -219,7 +219,8 @@ package body Buildgpr is
                            (Pid          => Invalid_Pid,
                             Source       => No_Source,
                             Mapping_File => No_Path,
-                            Purpose      => Compilation);
+                            Purpose      => Compilation,
+                            Options      => null);
 
    type Header_Num is range 0 .. 2047;
 
@@ -717,7 +718,8 @@ package body Buildgpr is
      (Pid          : Process_Id;
       Source       : Source_Id;
       Mapping_File : Path_Name_Type;
-      Purpose      : Process_Purpose);
+      Purpose      : Process_Purpose;
+      Options      : String_List_Access);
    --  Record a compiling process
 
    procedure Add_Rpath (Path : String);
@@ -1322,10 +1324,12 @@ package body Buildgpr is
      (Pid          : Process_Id;
       Source       : Source_Id;
       Mapping_File : Path_Name_Type;
-      Purpose      : Process_Purpose)
+      Purpose      : Process_Purpose;
+      Options      : String_List_Access)
    is
    begin
-      Compilation_Htable.Set (Pid, (Pid, Source, Mapping_File, Purpose));
+      Compilation_Htable.Set
+        (Pid, (Pid, Source, Mapping_File, Purpose, Options));
       Outstanding_Compiles := Outstanding_Compiles + 1;
    end Add_Process;
 
@@ -1437,6 +1441,34 @@ package body Buildgpr is
                   Project_Tree.Sources.Table (Source).Dep_TS :=
                     File_Stamp
                       (Project_Tree.Sources.Table (Source).Dep_Path);
+
+                  if Comp_Data.Options /= null then
+                     --  Write the switches file, now that we have the updated
+                     --  time stamp for the object file.
+
+                     declare
+                        File : Ada.Text_IO.File_Type;
+
+                     begin
+                        Create
+                          (File,
+                           Out_File,
+                           Get_Name_String
+                             (Project_Tree.Sources.Table
+                                (Source).Switches_Path));
+
+                        Put_Line
+                          (File,
+                           String
+                             (Project_Tree.Sources.Table (Source).Object_TS));
+
+                        for J in Comp_Data.Options'Range loop
+                           Put_Line (File, Comp_Data.Options (J).all);
+                        end loop;
+
+                        Close (File);
+                     end;
+                  end if;
                end if;
 
                Language := Project_Tree.Sources.Table (Source).Language;
@@ -3817,6 +3849,13 @@ package body Buildgpr is
             end if;
 
          else
+            if Data.Config.Shared_Lib_Driver /= No_File then
+               Put_Line (Exchange_File, Library_Label (Driver_Name));
+               Put_Line
+                 (Exchange_File,
+                  Get_Name_String (Data.Config.Shared_Lib_Driver));
+            end if;
+
             if Data.Config.Shared_Lib_Prefix /= No_File then
                Put_Line (Exchange_File, Library_Label (Shared_Lib_Prefix));
                Put_Line
@@ -4061,7 +4100,9 @@ package body Buildgpr is
                while Source /= No_Source loop
                   Src_Data := Project_Tree.Sources.Table (Source);
 
-                  if not Src_Data.Locally_Removed then
+                  if not Src_Data.Locally_Removed
+                    and then Src_Data.Dep_Name /= No_File
+                  then
                      if Src_Data.Kind = Spec then
                         if Src_Data.Other_Part = No_Source then
                            Put_Line
@@ -4682,6 +4723,8 @@ package body Buildgpr is
       Finish           : Natural;
       Last_Obj         : Natural;
 
+      Last_Recorded_Option : Integer;
+
       package Good_ALI is new Table.Table
         (Table_Component_Type => ALI.ALI_Id,
          Table_Index_Type     => Natural,
@@ -5007,7 +5050,7 @@ package body Buildgpr is
                   end;
                end if;
 
-               if not Compilation_Needed then
+               if Check_Switches and then not Compilation_Needed then
                   --  Check switches
 
                   declare
@@ -5022,31 +5065,63 @@ package body Buildgpr is
                           (Project_Tree.Sources.Table (Source_Identity).
                                                          Switches_Path));
 
-                     for Index in 1 .. Compilation_Options.Last loop
-                        if End_Of_File (File) then
-                           if Verbose_Mode then
-                              Write_Line
-                                ("    -> more switches");
-                           end if;
-
-                           Compilation_Needed := True;
-                           exit;
+                     if End_Of_File (File) then
+                        if Verbose_Mode then
+                           Write_Line
+                             ("    -> switches file is empty");
                         end if;
 
+                        Compilation_Needed := True;
+
+                     else
                         Get_Line (File, Line, Last);
 
                         if Line (1 .. Last) /=
-                             Compilation_Options.Options (Index).all
+                          String (Project_Tree.Sources.Table
+                                  (Source_Identity).Object_TS)
                         then
                            if Verbose_Mode then
                               Write_Line
-                                ("    -> different switches");
+                                ("    -> different object file timestamp");
+                              Write_Line
+                                ("       " & Line (1 .. Last));
+                              Write_Line
+                                ("       " &
+                                 String (Project_Tree.Sources.Table
+                                   (Source_Identity).Object_TS));
                            end if;
 
                            Compilation_Needed := True;
-                           exit;
                         end if;
-                     end loop;
+                     end if;
+
+                     if not Compilation_Needed then
+                        for Index in 1 .. Compilation_Options.Last loop
+                           if End_Of_File (File) then
+                              if Verbose_Mode then
+                                 Write_Line
+                                   ("    -> more switches");
+                              end if;
+
+                              Compilation_Needed := True;
+                              exit;
+                           end if;
+
+                           Get_Line (File, Line, Last);
+
+                           if Line (1 .. Last) /=
+                             Compilation_Options.Options (Index).all
+                           then
+                              if Verbose_Mode then
+                                 Write_Line
+                                   ("    -> different switches");
+                              end if;
+
+                              Compilation_Needed := True;
+                              exit;
+                           end if;
+                        end loop;
+                     end if;
 
                      if not Compilation_Needed then
                         if End_Of_File (File) then
@@ -5124,26 +5199,14 @@ package body Buildgpr is
                     Name_Find;
                end if;
 
-               --  Write the switches file
+               --  Record the last recorded option index, to be able to write
+               --  the switches file later.
 
                if Config.Object_Generated then
-                  declare
-                     File : Ada.Text_IO.File_Type;
+                  Last_Recorded_Option := Compilation_Options.Last;
 
-                  begin
-                     Create
-                       (File,
-                        Out_File,
-                        Get_Name_String
-                          (Project_Tree.Sources.Table (Source_Identity).
-                             Switches_Path));
-
-                     for J in 1 .. Compilation_Options.Last loop
-                        Put_Line (File, Compilation_Options.Options (J).all);
-                     end loop;
-
-                     Close (File);
-                  end;
+               else
+                  Last_Recorded_Option := -1;
                end if;
 
                --  Add dependency option, if there is one
@@ -5569,8 +5632,23 @@ package body Buildgpr is
                   Compilation_Options.Options
                     (1 .. Compilation_Options.Last));
 
-               Add_Process
-                 (Pid, Source_Identity, Mapping_File_Path, Compilation);
+               declare
+                  Options : String_List_Access := null;
+               begin
+                  if Last_Recorded_Option >= 0 then
+                     Options :=
+                       new String_List'
+                         (Compilation_Options.Options
+                              (1 .. Last_Recorded_Option));
+                  end if;
+
+                  Add_Process
+                    (Pid,
+                     Source_Identity,
+                     Mapping_File_Path,
+                     Compilation,
+                     Options);
+               end;
 
                Need_To_Rebuild_Global_Archives := True;
 
@@ -7048,91 +7126,18 @@ package body Buildgpr is
 
    procedure Get_Mains is
    begin
-      --  If no mains are specified on the command line, check attribute
-      --  Main in the main project.
+      Gpr_Util.Get_Mains;
 
       if Mains.Number_Of_Mains = 0 then
-         declare
-            Data    : constant Project_Data :=
-                        Project_Tree.Projects.Table (Main_Project);
-            List    : String_List_Id := Data.Mains;
-            Element : String_Element;
+         --  Do not link, as there is no main.
 
-            Source  : Source_Id;
+         if All_Phases then
+            All_Phases   := False;
+            Compile_Only := True;
+            Bind_Only    := True;
+         end if;
 
-         begin
-            --  The attribute Main is an empty list, so compile all the
-            --  sources of the main project.
-
-            if List = Prj.Nil_String then
-
-               --  Do not link, as there is no main.
-
-               if All_Phases then
-                  All_Phases   := False;
-                  Compile_Only := True;
-                  Bind_Only    := True;
-               end if;
-
-               Link_Only := False;
-
-            else
-               --  The attribute Main is not an empty list.
-               --  Get the mains in the list
-
-               while List /= Prj.Nil_String loop
-                  Element := Project_Tree.String_Elements.Table (List);
-
-                  declare
-                     Display_Main : constant String :=
-                                      Get_Name_String (Element.Value);
-                     Main         : String := Display_Main;
-                     Main_Id      : File_Name_Type;
-                     Project      : Project_Id := Main_Project;
-                  begin
-                     Canonical_Case_File_Name (Main);
-                     Main_Id := Create_Name (Main);
-
-                     loop
-                        Source :=
-                          Project_Tree.Projects.Table (Project).First_Source;
-
-                        while Source /= No_Source and then
-                        Project_Tree.Sources.Table (Source).File /= Main_Id
-                        loop
-                           Source :=
-                             Project_Tree.Sources.Table
-                               (Source).Next_In_Project;
-                        end loop;
-
-                        exit when Source /= No_Source;
-
-                        Project :=
-                          Project_Tree.Projects.Table (Project).Extends;
-
-                        exit when Project = No_Project;
-                     end loop;
-
-                     if Source = No_Source then
-                        Error_Msg_File_1 := Main_Id;
-                        Error_Msg_Name_1 :=
-                          Project_Tree.Projects.Table (Main_Project).Name;
-                        Error_Msg ("{ is not a source of project %%",
-                                   Element.Location);
-
-                     else
-                        Mains.Add_Main (Main);
-                     end if;
-                  end;
-
-                  List := Element.Next;
-               end loop;
-            end if;
-         end;
-      end if;
-
-      if Err_Vars.Total_Errors_Detected > 0 then
-         Fail_Program ("problems with main sources");
+         Link_Only := False;
       end if;
    end Get_Mains;
 
@@ -7324,7 +7329,7 @@ package body Buildgpr is
 
       Get_Configuration (Packages_To_Check);
 
-      if Err_Vars.Total_Errors_Detected > 0 then
+      if Total_Errors_Detected > 0 then
          Prj.Err.Finalize;
          Fail_Program
            ("problems while getting the configuration",
@@ -7509,22 +7514,40 @@ package body Buildgpr is
             end loop;
 
             if Name /= No_Name and then Builder_Package /= No_Package then
+               --  Get the switches for the single main or the language of the
+               --  mains.
+
                Switches := Value_Of
                  (Name                    => Name,
                   Attribute_Or_Array_Name => Name_Switches,
                   In_Package              => Builder_Package,
                   In_Tree                 => Project_Tree);
 
-               if (Switches = Nil_Variable_Value or else Switches.Default)
-                 and then Name /= Lang
-               then
-                  Switches := Value_Of
-                    (Name                    => Lang,
-                     Attribute_Or_Array_Name => Name_Switches,
-                     In_Package              => Builder_Package,
-                     In_Tree                 => Project_Tree,
-                     Force_Lower_Case_Index  => True);
+               if Name /= Lang then
+                  --  If specific switches for the main have been found,
+                  --  the switches that are not recognized by gprbuild will be
+                  --  global switches for the language of the main.
+
+                  if Switches /= Nil_Variable_Value and then
+                    not Switches.Default
+                  then
+                     Builder_Switches_Lang := Lang;
+
+                  else
+                     --  If no specific switches for the main are declared,
+                     --  check for Switches (<language>).
+
+                     Switches := Value_Of
+                       (Name                    => Lang,
+                        Attribute_Or_Array_Name => Name_Switches,
+                        In_Package              => Builder_Package,
+                        In_Tree                 => Project_Tree,
+                        Force_Lower_Case_Index  => True);
+                  end if;
                end if;
+
+               --  For backward compatibility with gnatmake, if no Switches
+               --  are declared, check for Default_Switches (<language>).
 
                if Switches = Nil_Variable_Value or else Switches.Default then
                   Switches := Value_Of
@@ -7543,6 +7566,8 @@ package body Buildgpr is
                      Builder_Switches_Lang := Lang;
                   end if;
                end if;
+
+               --  If switches have been found, scan them
 
                if Switches /= Nil_Variable_Value and then
                  (not Switches.Default)
@@ -7580,7 +7605,7 @@ package body Buildgpr is
       if All_Phases or Compile_Only then
          Compilation_Phase;
 
-         if Err_Vars.Total_Errors_Detected > 0
+         if Total_Errors_Detected > 0
            or else Bad_Compilations.Last > 0
          then
             --  If switch -k is used, output a summary of the sources that
@@ -7619,7 +7644,7 @@ package body Buildgpr is
       if All_Phases or Bind_Only then
          Binding_Phase;
 
-         if Err_Vars.Total_Errors_Detected > 0 then
+         if Total_Errors_Detected > 0 then
             Fail_Program ("*** bind failed");
          end if;
       end if;
@@ -7627,7 +7652,7 @@ package body Buildgpr is
       if All_Phases or Link_Only then
          Linking_Phase;
 
-         if Err_Vars.Total_Errors_Detected > 0 then
+         if Total_Errors_Detected > 0 then
             Fail_Program ("*** link failed");
          end if;
       end if;
@@ -8829,30 +8854,33 @@ package body Buildgpr is
          end if;
       end if;
 
-      --  If there is no switches file, then the source needs to be
-      --  recompiled and the switches file need to be created.
+      --  If we are checking the switches and there is no switches file, then
+      --  the source needs to be recompiled and the switches file need to be
+      --  created.
 
-      if Src_Data.Switches_TS = Empty_Time_Stamp then
-         if Verbose_Mode then
-            Write_Str  ("      -> switches file ");
-            Write_Str  (Switches_Name);
-            Write_Line (" does not exist");
+      if Check_Switches then
+         if Src_Data.Switches_TS = Empty_Time_Stamp then
+            if Verbose_Mode then
+               Write_Str  ("      -> switches file ");
+               Write_Str  (Switches_Name);
+               Write_Line (" does not exist");
+            end if;
+
+            return True;
          end if;
 
-         return True;
-      end if;
+         --  The source needs to be recompiled if the source has been modified
+         --  after the switches file has been created.
 
-      --  The source needs to be recompiled if the source has been modified
-      --  after the switches file has been created.
+         if  Src_Data.Switches_TS < Src_Data.Source_TS then
+            if Verbose_Mode then
+               Write_Str  ("      -> switches file ");
+               Write_Str  (Switches_Name);
+               Write_Line (" has time stamp earlier than source");
+            end if;
 
-      if  Src_Data.Switches_TS < Src_Data.Source_TS then
-         if Verbose_Mode then
-            Write_Str  ("      -> switches file ");
-            Write_Str  (Switches_Name);
-            Write_Line (" has time stamp earlier than source");
+            return True;
          end if;
-
-         return True;
       end if;
 
       case Src_Data.Dependency is
