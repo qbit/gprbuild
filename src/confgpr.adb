@@ -107,10 +107,6 @@ package body Confgpr is
 
          if not Conf_Attr.Value.Default then
             if User_Attr.Value.Default then
-
-               --  No attribute declared in user project file: just copy the
-               --  value of the configuration attribute.
-
                User_Attr.Value := Conf_Attr.Value;
                Project_Tree.Variable_Elements.Table (User_Attr_Id) :=
                  User_Attr;
@@ -118,11 +114,6 @@ package body Confgpr is
             elsif User_Attr.Value.Kind = List and then
             Conf_Attr.Value.Values /= Nil_String
             then
-
-               --  List attribute declared in both the user project and the
-               --  configuration project: prepend the user list with the
-               --  configuration list.
-
                declare
                   Conf_List : String_List_Id :=
                     Conf_Attr.Value.Values;
@@ -133,44 +124,25 @@ package body Confgpr is
                   New_Elem : String_Element;
 
                begin
-
-                  --  Create new list
-
                   String_Element_Table.Increment_Last
                     (Project_Tree.String_Elements);
                   New_List := String_Element_Table.Last
                     (Project_Tree.String_Elements);
-
-                  --  Value of attribute is new list
-
                   User_Attr.Value.Values := New_List;
-                  Project_Tree.Variable_Elements.Table (User_Attr_Id) :=
-                    User_Attr;
 
                   loop
-
-                     --  Get each element of configuration list
-
                      Conf_Elem :=
                        Project_Tree.String_Elements.Table (Conf_List);
                      New_Elem := Conf_Elem;
                      Conf_List := Conf_Elem.Next;
 
                      if Conf_List = Nil_String then
-
-                        --  If it is the last element in the list, connect to
-                        --  first element of user list, and we are done.
-
                         New_Elem.Next := User_List;
                         Project_Tree.String_Elements.Table
                           (New_List) := New_Elem;
                         exit;
 
                      else
-
-                        --  If it is not the last element in the list, add to
-                        --  new list.
-
                         String_Element_Table.Increment_Last
                           (Project_Tree.String_Elements);
                         New_Elem.Next :=
@@ -436,7 +408,7 @@ package body Confgpr is
          begin
             if Obj_Dir = Nil_Variable_Value or else Obj_Dir.Default then
                Get_Name_String
-                 (Project_Tree.Projects.Table (Main_Project).Directory.Name);
+                 (Project_Tree.Projects.Table (Main_Project).Directory);
 
             else
                if Is_Absolute_Path (Get_Name_String (Obj_Dir.Value)) then
@@ -446,8 +418,7 @@ package body Confgpr is
                   Name_Len := 0;
                   Add_Str_To_Name_Buffer
                     (Get_Name_String
-                       (Project_Tree.Projects.Table
-                          (Main_Project).Directory.Name));
+                       (Project_Tree.Projects.Table (Main_Project).Directory));
                   Add_Char_To_Name_Buffer (Directory_Separator);
                   Add_Str_To_Name_Buffer (Get_Name_String (Obj_Dir.Value));
                end if;

@@ -323,11 +323,11 @@ procedure Gprlib is
 
    Driver_Name : Name_Id := No_Name;
 
-   Gnatbind_Name : String_Access := Osint.Program_Name ("gnatbind", "gprlib");
+   Gnatbind_Name : String_Access := Osint.Program_Name ("gnatbind");
 
    Gnatbind_Path : String_Access;
 
-   Compiler_Name : String_Access := Osint.Program_Name ("gcc", "gprlib");
+   Compiler_Name : String_Access := Osint.Program_Name ("gcc");
 
    Compiler_Path : String_Access;
 
@@ -482,31 +482,12 @@ procedure Gprlib is
                Put_Line (" to library dependency directory");
             end if;
 
-            Success := False;
-
-            --  Look in the object directories for the ALI files, starting
-            --  with the object directory of the projects, then those of the
-            --  projects it extends, if any.
-
-            for J in 1 .. Object_Directories.Last loop
-               declare
-                  ALI_File : constant String :=
-                    Object_Directories.Table (J).all &
-                    Directory_Separator &
-                   ALIs.Table (Index).all;
-               begin
-                  if Is_Regular_File (ALI_File) then
-                     Copy_File
-                       (ALI_File,
-                        Library_Dependency_Directory.all,
-                        Success,
-                        Mode     => Overwrite,
-                        Preserve => Preserve);
-                     exit;
-                  end if;
-               end;
-            end loop;
-
+            Copy_File
+              (ALIs.Table (Index).all,
+               Library_Dependency_Directory.all,
+               Success,
+               Mode => Overwrite,
+               Preserve => Preserve);
             exit when not Success;
          end loop;
 
