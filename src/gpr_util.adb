@@ -446,30 +446,24 @@ package body Gpr_Util is
                     Directory     => Obj_Dir);
             begin
                Source.Dep_Path := Create_Name (Dep_Path);
+               Source.Dep_TS   := Osint.Unknown_Attributes;
+            end;
+         end if;
 
-               --  If we don't know the timestamp of the .o file, we do not
-               --  need that of the ALI file either, so don't waste time
+         if Opt.Check_Switches then
+            declare
+               Switches_Path : constant String :=
+                 Normalize_Pathname
+                   (Name          => Get_Name_String (Source.Switches),
+                    Resolve_Links => Opt.Follow_Links_For_Files,
+                    Directory     => Obj_Dir);
+            begin
+               Source.Switches_Path := Create_Name (Switches_Path);
 
                if Stamp /= Empty_Time_Stamp then
-                  Source.Dep_TS   := File_Stamp (Source.Dep_Path);
+                  Source.Switches_TS := File_Stamp (Source.Switches_Path);
                end if;
             end;
-
-            if Source.Language.Config.Dependency_Kind = Makefile then
-               declare
-                  Switches_Path : constant String :=
-                    Normalize_Pathname
-                      (Name          => Get_Name_String (Source.Switches),
-                       Resolve_Links => Opt.Follow_Links_For_Files,
-                       Directory     => Obj_Dir);
-               begin
-                  Source.Switches_Path := Create_Name (Switches_Path);
-
-                  if Stamp /= Empty_Time_Stamp then
-                     Source.Switches_TS := File_Stamp (Source.Switches_Path);
-                  end if;
-               end;
-            end if;
          end if;
       end Set_Object_Project;
 
@@ -563,7 +557,7 @@ package body Gpr_Util is
                               Directory     => Object_Dir);
          begin
             Source.Dep_Path := Create_Name (Dep_Path);
-            Source.Dep_TS   := File_Stamp (Source.Dep_Path);
+            Source.Dep_TS   := Osint.Unknown_Attributes;
          end;
       end if;
    end Initialize_Source_Record;
