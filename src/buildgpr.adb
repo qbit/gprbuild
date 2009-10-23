@@ -1194,6 +1194,12 @@ package body Buildgpr is
       Option : String_Access := new String'(Arg);
 
    begin
+      --  Do not consider empty options
+
+      if Arg'Length = 0 then
+         return;
+      end if;
+
       case Current_Processor is
          when None =>
             null;
@@ -1284,6 +1290,12 @@ package body Buildgpr is
       Simple_Name : Boolean := False)
    is
    begin
+      --  Do not consider empty options
+
+      if Value'Length = 0 then
+         return;
+      end if;
+
       To.Last := To.Last + 1;
 
       if To.Last > To.Options'Last then
