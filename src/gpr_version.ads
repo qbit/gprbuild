@@ -36,7 +36,7 @@
 
 package GPR_Version is
 
-   Gpr_Version : constant String := "1.4.0";
+   Gpr_Version : constant String := "1.4.1";
    --  Static string identifying this version
 
    function Gpr_Version_String return String;
