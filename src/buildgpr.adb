@@ -4031,6 +4031,7 @@ package body Buildgpr is
                     Text,
                     Ignore_ED     => False,
                     Err           => True,
+                    Ignore_Errors => True,
                     Read_Lines    => "W");
                Free (Text);
             end if;
@@ -4399,6 +4400,7 @@ package body Buildgpr is
                  Text,
                  Ignore_ED     => False,
                  Err           => True,
+                 Ignore_Errors => True,
                  Read_Lines    => "DW");
 
             if The_ALI /= ALI.No_ALI_Id then
@@ -8637,6 +8639,7 @@ package body Buildgpr is
               Text,
               Ignore_ED     => False,
               Err           => True,
+              Ignore_Errors => True,
               Read_Lines    => "PDW");
          Free (Text);
 
@@ -9802,6 +9805,7 @@ package body Buildgpr is
                                          Text,
                                          Ignore_ED     => False,
                                          Err           => True,
+                                         Ignore_Errors => True,
                                          Read_Lines    => "W");
                                     Free (Text);
 
