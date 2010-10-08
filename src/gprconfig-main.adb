@@ -139,7 +139,6 @@ procedure GprConfig.Main is
       From_Extra_Dir : Boolean;
       Continue       : out Boolean)
    is
-      pragma Unreferenced (Base);
       New_Comp : Compiler := Comp;
       C        : Compiler_Lists.Cursor;
       Index    : Count_Type := 1;
@@ -150,7 +149,8 @@ procedure GprConfig.Main is
          C := First (Iterator.Filters);
          while Has_Element (C) loop
             if not Iterator.Filter_Matched (Index)
-              and then Filter_Match (Comp => Comp, Filter => Element (C).all)
+              and then Filter_Match
+                         (Base, Comp => Comp, Filter => Element (C).all)
             then
                Set_Selection (New_Comp, True);
                Iterator.Filter_Matched (Index) := True;
@@ -170,7 +170,7 @@ procedure GprConfig.Main is
       then
          Put_Verbose
            ("Adding compiler to interactive menu "
-            & To_String (Comp, True)
+            & To_String (Base, Comp, True)
             & " selected=" & Is_Selected (New_Comp)'Img);
          Append (Iterator.Compilers, new Compiler'(New_Comp));
       end if;
@@ -213,7 +213,8 @@ procedure GprConfig.Main is
 
       Put
         (To_String
-           (Compilers,
+           (Base,
+            Compilers,
             Selected_Only   => False,
             Show_Target     => True,
             Parser_Friendly => True));
@@ -252,7 +253,7 @@ procedure GprConfig.Main is
             & " are displayed.");
 
          Put (To_String
-              (Compilers, Selected_Only => False,
+              (Base, Compilers, Selected_Only => False,
                Show_Target => Selected_Targets_Set = All_Target_Sets));
 
          Put
@@ -312,7 +313,8 @@ procedure GprConfig.Main is
          while Has_Element (C) loop
             if Is_Selected (Element (C).all) then
                Put (" --config="
-                    & To_String (Element (C).all, As_Config_Arg => True));
+                    & To_String
+                      (Base, Element (C).all, As_Config_Arg => True));
             end if;
             Next (C);
          end loop;
@@ -331,6 +333,8 @@ procedure GprConfig.Main is
       Put_Line
         ("            Select specified target or ""all"" for any target.");
       Put_Line (" --show-targets : List all compiler targets available.");
+      Put_Line (" --mi-show-compilers : List all compilers available in a " &
+                "parser-friendly way.");
       Put_Line (" --batch  : batch mode, no interactive compiler selection.");
       Put_Line (" -v       : verbose mode.");
       Put_Line (" -q       : quiet output.");
