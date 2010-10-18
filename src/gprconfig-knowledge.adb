@@ -252,7 +252,9 @@ package body GprConfig.Knowledge is
    function Substitute_Variables_In_Compiler_Description
      (Str : String; Comp : Compiler) return String;
    function Substitute_Variables_In_Configuration
-     (Str : String; Comps : Compiler_Lists.List) return String;
+     (Base  : Knowledge_Base;
+      Str   : String;
+      Comps : Compiler_Lists.List) return String;
    --  Substitute the special "$..." names.
    --  Depending on the XML nodes we are in (specified by the context) the list
    --  of variables might be different.
@@ -283,7 +285,8 @@ package body GprConfig.Knowledge is
    --  Return True if Filter matches the list of selected configurations
 
    procedure Merge_Config
-     (Packages  : in out String_Maps.Map;
+     (Base      : Knowledge_Base;
+      Packages  : in out String_Maps.Map;
       Compilers : Compiler_Lists.List;
       Config    : String);
    --  Merge the contents of Config into Packages, so that each attributes ends
@@ -1204,7 +1207,8 @@ package body GprConfig.Knowledge is
    -------------------------------------------
 
    function Substitute_Variables_In_Configuration
-     (Str   : String;
+     (Base  : Knowledge_Base;
+      Str   : String;
       Comps : Compiler_Lists.List) return String
    is
       function Callback (Var_Name, Index : String) return String;
@@ -1217,11 +1221,25 @@ package body GprConfig.Knowledge is
             return Executable_Prefix_Path;
 
          elsif Index = "" then
-            Put_Line
-              (Standard_Error,
-               "Ambiguous variable substitution, need to specify the"
-               & " language (in " & Var_Name & ")");
-            raise Invalid_Knowledge_Base;
+
+            if Var_Name = "TARGET"
+              and then not Is_Empty (Comps)
+            then
+               --  Can have an optional language index.
+               --  If there is no index, all compilers share the same target,
+               --  so just take that of the first compiler in the list
+
+               return Normalized_Target
+                 (Base,
+                  Compiler_Lists.Element (First (Comps)).Targets_Set);
+
+            else
+               Put_Line
+                 (Standard_Error,
+                  "Ambiguous variable substitution, need to specify the"
+                  & " language (in " & Var_Name & ")");
+               raise Invalid_Knowledge_Base;
+            end if;
 
          else
             C := First (Comps);
@@ -2663,7 +2681,8 @@ package body GprConfig.Knowledge is
    ------------------
 
    procedure Merge_Config
-     (Packages  : in out String_Maps.Map;
+     (Base      : Knowledge_Base;
+      Packages  : in out String_Maps.Map;
       Compilers : Compiler_Lists.List;
       Config    : String)
    is
@@ -2676,7 +2695,7 @@ package body GprConfig.Knowledge is
       is
          C : constant String_Maps.Cursor := Find (Packages, Name);
          Replaced : constant String := Substitute_Variables_In_Configuration
-           (Chunk, Compilers);
+           (Base, Chunk, Compilers);
       begin
          if Replaced /= "" then
             if Has_Element (C) then
@@ -2898,23 +2917,10 @@ package body GprConfig.Knowledge is
             end if;
 
             Merge_Config
-              (Packages,
+              (Base,
+               Packages,
                Compilers,
                Get_Name_String (Configuration_Lists.Element (Config).Config));
-
---              if Selected_Compiler /= null then
---                 Merge_Config
---                   (Packages,
---                    Selected_Compiler.all,
---                    Get_Name_String
---                      (Configuration_Lists.Element (Config).Config));
---              else
---                 Merge_Config
---                   (Packages,
---                    No_Compiler,
---                    Get_Name_String
---                      (Configuration_Lists.Element (Config).Config));
---              end if;
          end if;
 
          Next (Config);
