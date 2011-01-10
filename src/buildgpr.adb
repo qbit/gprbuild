@@ -6,7 +6,7 @@
 --                                                                          --
 --                                 B o d y                                  --
 --                                                                          --
---          Copyright (C) 2004-2010, Free Software Foundation, Inc.         --
+--          Copyright (C) 2004-2011, Free Software Foundation, Inc.         --
 --                                                                          --
 -- GNAT is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -7409,9 +7409,15 @@ package body Buildgpr is
                   then
                      case Src_Id.Kind is
                         when Spec =>
-                           if Other_Part (Src_Id) /= No_Source then
-                              Src_Id := Other_Part (Src_Id);
-                           end if;
+                           declare
+                              Bdy : constant Source_Id := Other_Part (Src_Id);
+                           begin
+                              if Bdy /= No_Source and then not
+                                Bdy.Locally_Removed
+                              then
+                                 Src_Id := Other_Part (Src_Id);
+                              end if;
+                           end;
 
                         when Impl =>
                            if Is_Subunit (Src_Id) then
