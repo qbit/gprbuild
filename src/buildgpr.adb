@@ -7916,8 +7916,13 @@ package body Buildgpr is
                                       (Line (1 .. Last), Verbose_Mode);
 
                                  when Bound_Object_Files =>
-                                    if Line (1 .. Last) /=
-                                      Get_Name_String (Main_Source.Object_Path)
+                                    if Normalize_Pathname
+                                      (Line (1 .. Last),
+                                       Case_Sensitive => True) /=
+                                      Normalize_Pathname
+                                        (Get_Name_String
+                                             (Main_Source.Object_Path),
+                                         Case_Sensitive => True)
                                       and then
                                         not Is_In_Library_Project
                                           (Line (1 .. Last))
