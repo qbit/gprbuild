@@ -6,7 +6,7 @@
 --                                                                          --
 --                                 B o d y                                  --
 --                                                                          --
---                   Copyright (C) 2006-2010, AdaCore                       --
+--                   Copyright (C) 2006-2011, AdaCore                       --
 --                                                                          --
 -- GNAT is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -646,8 +646,23 @@ package body GprConfig.Knowledge is
                      Compiler.Executable_Re := new Pattern_Matcher'
                        (Compile ("^" & Val & Exec_Suffix.all & "$"));
                   else
-                     Compiler.Executable_Re := new Pattern_Matcher'
-                       (Compile ("^" & Val & "$"));
+                     Compiler.Executable := Get_String (Val);
+
+                     begin
+                        Compiler.Prefix_Index := Integer'Value (Prefix);
+                     exception
+                        when Constraint_Error =>
+                           Compiler.Prefix_Index := -1;
+                     end;
+
+                     if not Ends_With (Val, Exec_Suffix.all) then
+                        Compiler.Executable_Re := new Pattern_Matcher'
+                          (Compile ("^" & Val & Exec_Suffix.all & "$"));
+                     else
+                        Compiler.Executable_Re := new Pattern_Matcher'
+                          (Compile ("^" & Val & "$"));
+                     end if;
+                     Base.Check_Executable_Regexp := True;
                   end if;
                   Base.Check_Executable_Regexp := True;
                end if;
