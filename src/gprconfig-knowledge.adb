@@ -226,6 +226,7 @@ package body GprConfig.Knowledge is
       Group           : Integer;
       Group_Match     : String := "";
       Group_Count     : Natural := 0;
+      Contents        : Pattern_Matcher_Access := null;
       Merge_Same_Dirs : Boolean);
    --  Parse all subdirectories of Current_Dir for those that match
    --  Path_To_Check (see description of <directory>). When a match is found,
@@ -243,6 +244,11 @@ package body GprConfig.Knowledge is
    --  <directory> node will be merged (the last one is kept, other removed) if
    --  they point to the same physical directory (after normalizing names). In
    --  this case, Visited contains the list of normalized directory names.
+   --
+   --  Contents, if specified, is a regular expression. It indicates that any
+   --  file matching the pattern should be parsed, and the first line matching
+   --  that regexp should be used as the name of the file instead. This is a
+   --  way to simulate symbolic links on platforms that do not use them.
 
    generic
       with function Callback (Var_Name, Index : String) return String;
@@ -550,6 +556,7 @@ package body GprConfig.Knowledge is
             Is_Done       : Boolean := True;
             Static_Value  : constant String := Node_Value_As_String (External);
             Has_Static    : Boolean := False;
+
          begin
             for S in Static_Value'Range loop
                if Static_Value (S) /= ' '
@@ -585,12 +592,24 @@ package body GprConfig.Knowledge is
                   Is_Done := False;
 
                elsif Node_Name (Tmp) = "directory" then
-                  External_Node :=
-                    (Typ             => Value_Directory,
-                     Directory       => Get_String
-                       (Node_Value_As_String (Tmp)),
-                     Dir_If_Match    => No_Name,
-                     Directory_Group => 0);
+                  declare
+                     C : constant String :=
+                       Get_Attribute (Tmp, "contents", "");
+                     Contents : Pattern_Matcher_Access;
+                  begin
+                     if C /= "" then
+                        Contents := new Pattern_Matcher'(Compile (C));
+                     end if;
+
+                     External_Node :=
+                       (Typ             => Value_Directory,
+                        Directory       => Get_String
+                          (Node_Value_As_String (Tmp)),
+                        Contents        => Contents,
+                        Dir_If_Match    => No_Name,
+                        Directory_Group => 0);
+                  end;
+
                   begin
                      External_Node.Directory_Group := Integer'Value
                        (Get_Attribute (Tmp, "group", "0"));
@@ -600,6 +619,7 @@ package body GprConfig.Knowledge is
                         External_Node.Dir_If_Match :=
                           Get_String (Get_Attribute (Tmp, "group", "0"));
                   end;
+
                   Append (Value, External_Node);
                   Is_Done := True;
 
@@ -1332,8 +1352,63 @@ package body GprConfig.Knowledge is
       Group           : Integer;
       Group_Match     : String := "";
       Group_Count     : Natural := 0;
+      Contents        : Pattern_Matcher_Access := null;
       Merge_Same_Dirs : Boolean)
    is
+      procedure Save_File (Current_Dir : String; Val : Name_Id);
+      --  Mark the given directory as valid for the <directory> configuration.
+      --  This takes care of removing duplicates if needed.
+
+      ---------------
+      -- Save_File --
+      ---------------
+
+      procedure Save_File (Current_Dir : String; Val : Name_Id) is
+      begin
+         if not Merge_Same_Dirs then
+            Put_Verbose ("<dir>: SAVE " & Current_Dir);
+            Append
+              (Processed_Value,
+               (Value          => Val,
+                Extracted_From => Get_String (Current_Dir)));
+
+         else
+            declare
+               use String_To_External_Value;
+               Normalized : constant String := Normalize_Pathname
+                 (Name           => Current_Dir,
+                  Directory      => "",
+                  Resolve_Links  => True,
+                  Case_Sensitive => True);
+               Prev  : External_Value_Lists.Cursor;
+            begin
+               if Visited.Contains (Normalized) then
+                  Put_Verbose ("<dir>: OVERRIDE ("
+                               & Get_Name_String (Val) & ") "
+                               & Current_Dir);
+
+                  Prev := Visited.Element (Normalized);
+                  External_Value_Lists.Replace_Element
+                    (Container => Processed_Value,
+                     Position  => Prev,
+                     New_Item  =>
+                       (Value          => Val,
+                        Extracted_From => Get_String (Current_Dir)));
+
+               else
+                  Put_Verbose ("<dir>: SAVE (" & Get_Name_String (Val)
+                               & ") " & Current_Dir);
+                  Append
+                    (Processed_Value,
+                     (Value          => Val,
+                      Extracted_From => Get_String (Current_Dir)));
+                  Visited.Include
+                    (Normalized, External_Value_Lists.Last (Processed_Value));
+               end if;
+            end;
+         end if;
+      end Save_File;
+
       First : constant Integer := Path_To_Check'First;
       Last  : Integer;
       Val   : Name_Id;
@@ -1348,46 +1423,40 @@ package body GprConfig.Knowledge is
             Val := Get_String (Group_Match);
          end if;
 
-         if not Merge_Same_Dirs then
-            Put_Verbose ("<dir>: SAVE " & Current_Dir);
-            Append
-              (Processed_Value,
-               (Value          => Val,
-                Extracted_From => Get_String (Current_Dir)));
+         if Contents /= null
+           and then Is_Regular_File (Current_Dir)
+         then
+            Put_Verbose ("<dir>: Checking inside file " & Current_Dir);
+
+            declare
+               F : File_Type;
+            begin
+               Open (F, In_File, Current_Dir);
+
+               while not End_Of_File (F) loop
+                  declare
+                     Line : constant String := Get_Line (F);
+                  begin
+                     Put_Verbose ("<dir>: read line " & Line);
+                     if Match (Contents.all, Line) then
+                        Save_File
+                          (Normalize_Pathname
+                             (Name => Line,
+                              Directory => Dir_Name (Current_Dir),
+                              Resolve_Links => True),
+                           Val);
+                        exit;
+                     end if;
+                  end;
+               end loop;
+
+               Close (F);
+            end;
 
          else
-            declare
-               use String_To_External_Value;
-
-               Normalized : constant String := Normalize_Pathname
-                 (Name           => Current_Dir,
-                  Directory      => "",
-                  Resolve_Links  => True,
-                  Case_Sensitive => True);
-               Prev  : External_Value_Lists.Cursor;
-            begin
-               if Visited.Contains (Normalized) then
-                  Put_Verbose ("<dir>: Override " & Current_Dir);
-
-                  Prev := Visited.Element (Normalized);
-                  External_Value_Lists.Replace_Element
-                    (Container => Processed_Value,
-                     Position  => Prev,
-                     New_Item  =>
-                       (Value          => Val,
-                        Extracted_From => Get_String (Current_Dir)));
-
-               else
-                  Put_Verbose ("<dir>: SAVE " & Current_Dir);
-                  Append
-                    (Processed_Value,
-                     (Value          => Val,
-                      Extracted_From => Get_String (Current_Dir)));
-                  Visited.Include
-                    (Normalized, External_Value_Lists.Last (Processed_Value));
-               end if;
-            end;
+            Save_File (Current_Dir, Val);
          end if;
+
       else
          --  Do not split on '\', since we document we only accept UNIX paths
          --  anyway. This leaves \ for regexp quotes
@@ -1399,11 +1468,7 @@ package body GprConfig.Knowledge is
          end loop;
 
          --  If we do not have a regexp.
-         --  ??? Should we ignore symbolic links (see commented code below),
-         --  since for instance for the GNAT runtime we could have an
-         --  "adainclude" link pointing to "rts-native/adainclude", and
-         --  therefore the runtime appears twice. Since it appears with
-         --  different names ("default" and "native"), we currently leave both
+
          if not Is_Regexp (Path_To_Check (First .. Last - 1)) then
             declare
                Dir     : constant String :=
@@ -1414,7 +1479,28 @@ package body GprConfig.Knowledge is
                Remains : constant String :=
                            Path_To_Check (Last + 1 .. Path_To_Check'Last);
             begin
-               if Ada.Directories.Exists (Dir) then
+               if (Remains'Length = 0
+                   or else Remains = "/"
+                   or else Remains = "" & Directory_Separator)
+                 and then Is_Regular_File (Dir)
+               then
+                  Put_Verbose ("<dir>: Found file " & Dir);
+                  --  If there is such a subdir, keep checking
+                  Parse_All_Dirs
+                    (Processed_Value => Processed_Value,
+                     Visited         => Visited,
+                     Current_Dir     => Dir,
+                     Path_To_Check   => Remains,
+                     Regexp          => Regexp,
+                     Regexp_Str      => Regexp_Str,
+                     Value_If_Match  => Value_If_Match,
+                     Group           => Group,
+                     Group_Match     => Group_Match,
+                     Group_Count     => Group_Count,
+                     Contents        => Contents,
+                     Merge_Same_Dirs => Merge_Same_Dirs);
+
+               elsif Is_Directory (Dir) then
                   Put_Verbose ("<dir>: Recurse into " & Dir);
                   --  If there is such a subdir, keep checking
                   Parse_All_Dirs
@@ -1428,6 +1514,7 @@ package body GprConfig.Knowledge is
                      Group           => Group,
                      Group_Match     => Group_Match,
                      Group_Count     => Group_Count,
+                     Contents        => Contents,
                      Merge_Same_Dirs => Merge_Same_Dirs);
                else
                   Put_Verbose ("<dir>: No such directory: " & Dir);
@@ -1506,6 +1593,7 @@ package body GprConfig.Knowledge is
                                    Simple (Matched (Group - Group_Count).First
                                        .. Matched (Group - Group_Count).Last),
                                  Group_Count     => Group_Count + Count,
+                                 Contents        => Contents,
                                  Merge_Same_Dirs => Merge_Same_Dirs);
 
                            else
@@ -1522,6 +1610,7 @@ package body GprConfig.Knowledge is
                                  Group           => Group,
                                  Group_Match     => Group_Match,
                                  Group_Count     => Group_Count + Count,
+                                 Contents        => Contents,
                                  Merge_Same_Dirs => Merge_Same_Dirs);
                            end if;
                         end if;
@@ -1634,6 +1723,7 @@ package body GprConfig.Knowledge is
                            Visited         => Visited,
                            Current_Dir     => "",
                            Path_To_Check   => Search,
+                           Contents        => Node.Contents,
                            Regexp          =>
                              Compile (Search (Search'First + 1
                                               .. Search'Last)),
@@ -1653,6 +1743,7 @@ package body GprConfig.Knowledge is
                            Visited         => Visited,
                            Current_Dir     => Get_Name_String (Comp.Path),
                            Path_To_Check   => Search,
+                           Contents        => Node.Contents,
                            Regexp          => Compile (Search),
                            Regexp_Str      => Search,
                            Value_If_Match  => Node.Dir_If_Match,
