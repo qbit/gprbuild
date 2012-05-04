@@ -1,57 +1,235 @@
 SHELL=/bin/sh
 INSTALL=@INSTALL@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
-PREFIX=@PREFIX@
-HOST=@HOST@
+INSTALL_DATA=@INSTALL_DATA@
+host=@host@
+target=@target@
+build=@build@
+IS_WINDOWS=@is_windows@
+
+# Relative to the gnat/ subdirectory (or absolute path)
+GNAT_SOURCE_DIR=../gnat_src
+
+ifeq ($(IS_WINDOWS),true)
+LN=cp -p
+EXEXT=.exe
+else
+LN=ln -s -f
+EXEXT=
+endif
 CP=cp -p
 MKDIR=mkdir -p
+BUILD=debug
 
-GNATMAKE=gnatmake
-ifeq ($(strip $(filter-out %vms%,$(HOST))),)
+prefix=@prefix@
+srcdir=@srcdir@
+root_objdir=@objdir@
+exec_prefix=@exec_prefix@
+datarootdir=@datarootdir@
+datadir=@datadir@
+bindir=@bindir@
+libdir=@libdir@
+libexecdir=@libexecdir@
+docdir=${datadir}/doc/@PACKAGE_TARNAME@
+
+# Are xmlada sources in our source tree
+xmlada_build_target=@xmlada_build_target@
+xmlada_prj_flags=@xmlada_prj_flags@
+
+# How do we want to use XML/Ada ?
+LIBRARY_TYPE=static
+export LIBRARY_TYPE
+
+# What is the default debug mode ?
+DEBUG_MODE=debug
+
+objdir=obj
+ifeq ($(BUILD), debug)
+objdir=obj-debug
+endif
+ifeq ($(BUILD), coverage)
+objdir=obj-cov
+endif
+ifeq ($(BUILD), profiling)
+objdir=obj-prof
+endif
+
+dummy:=$(shell $(MKDIR) $(objdir))
+
+PROCESSORS ?= 1
+
+GNATMAKE=gnatmake -p -m -j${PROCESSORS}
+ifeq ($(strip $(filter-out %vms%,$(host))),)
 GNATMAKE=${GNATMAKE} -XOS=vms
 endif
 
-all: obj/gprmake_dummies.o force
-	${GNATMAKE} -Pgprconfig
-	${GNATMAKE} -Pgprconfig gprmake gprbind gprlib gprclean
+ADA_GEN_SUBDIR=gnat
 
-install: all
-	${MKDIR} ${PREFIX}/bin
-	${MKDIR} ${PREFIX}/libexec/gprmake
-	${MKDIR} ${PREFIX}/share/gpr
-	${MKDIR} ${PREFIX}/share/gprconfig
-	${INSTALL_PROGRAM} gprconfig ${PREFIX}/bin
-	${INSTALL_PROGRAM} gprmake ${PREFIX}/bin
-	${INSTALL_PROGRAM} gprclean ${PREFIX}/bin
-	${INSTALL_PROGRAM} gprbind ${PREFIX}/libexec/gprmake/
-	${INSTALL_PROGRAM} gprlib ${PREFIX}/libexec/gprmake/
-	${INSTALL_PROGRAM} create_ada_runtime_project ${PREFIX}/libexec/gprmake/
-	${CP} share/gprconfig/*.xml ${PREFIX}/share/gprconfig
-	${CP} share/gprconfig/gnat_runtime.mapping ${PREFIX}/share/gprconfig
+.PHONY: all distall gprbuild gprconfig gprclean copy_gnat_src complete bootstrap
+all: $(xmlada_build_target) $(ADA_GEN_SUBDIR)/stamp-snames
+	${GNATMAKE} $(xmlada_prj_flags) -Pgprbuild -XBUILD=${BUILD}
 
-obj/gprmake_dummies.o: src/gprmake_dummies.c
+distall:
+	make GNATMAKE="$(GNATMAKE)" BUILD="$(DEBUG_MODE)"
+	make BUILD="$(DEBUG_MODE)" install
+	mv $(prefix)/bin/gprconfig$(EXEXT) $(prefix)/bin/gprconfig_debug$(EXEXT)
+	mv $(prefix)/bin/gprclean$(EXEXT) $(prefix)/bin/gprclean_debug$(EXEXT)
+	mv $(prefix)/bin/gprbuild$(EXEXT) $(prefix)/bin/gprbuild_debug$(EXEXT)
+	make GNATMAKE="$(GNATMAKE)" BUILD=production
+	make BUILD=production install
+	if [ "$(IS_WINDOWS)" = "false" ]; then \
+	  $(CP) $(srcdir)/doinstall $(prefix) && \
+	  chmod a+x $(prefix)/doinstall; \
+	fi
+	strip $(prefix)/bin/gprbuild$(EXEXT)
+	strip $(prefix)/bin/gprclean$(EXEXT)
+	strip $(prefix)/bin/gprconfig$(EXEXT)
+	strip $(prefix)/libexec/gprbuild/gprbind$(EXEXT)
+	strip $(prefix)/libexec/gprbuild/gprlib$(EXEXT)
+
+all gprconfig gprbuild gprclean: $(objdir)/gprbuild_dummies.o $(objdir)/link.o force
+
+MOVE_IF_CHANGE=mv -f
+-include $(srcdir)/gnat/Make-generated.in
+
+copy_gnat_src: force
+	-cd $(ADA_GEN_SUBDIR); \
+	$(foreach f,$(shell cat $(ADA_GEN_SUBDIR)/MANIFEST.GPRBUILD), \
+	    $(LN) $(GNAT_SOURCE_DIR)/$(f) . ;\
+           )
+
+complete: copy_gnat_src all install
+
+gprbuild:
+	${GNATMAKE} -Pgprbuild -XBUILD=${BUILD} gprbuild-main.adb
+
+gprclean:
+	${GNATMAKE} -Pgprbuild -XBUILD=${BUILD} gprclean-main.adb
+
+gprconfig:
+	${GNATMAKE} -Pgprbuild -XBUILD=${BUILD} gprconfig-main
+
+bootstrap: gprconfig gprbuild
+	echo
+	echo "=== Bootstraping grpbuild"
+	make install prefix=bootstrap/install
+	-${MKDIR} bootstrap/${objdir}
+	bootstrap/install/bin/gprbuild -Pgprbuild -XBUILD=${BUILD} \
+	  -XBUILD_TOOL=gprbuild
+
+.PHONY: install clean distclean bootstrap-clean
+
+bootstrap-clean:
+	bootstrap/install/bin/gprclean -Pgprbuild -XBUILD=${BUILD} \
+	  -XBUILD_TOOL=gprbuild
+
+install: install.data install.bin
+	-${MKDIR} ${datadir}/gpr
+	$(RM) -r ${datadir}/examples/gprbuild
+	-${MKDIR} ${datadir}/examples/gprbuild
+	${CP} -r examples/* ${datadir}/examples/gprbuild
+	${RM} -r ${datadir}/doc/gprbuild
+	-${MKDIR} ${datadir}/doc/gprbuild
+	for format in html txt pdf info; do \
+	  if [ -d doc/$$format ] ; then \
+	     ${MKDIR} ${datadir}/doc/gprbuild/$$format; \
+	     ${CP} doc/$$format/* ${datadir}/doc/gprbuild/$$format; \
+	     if [ $$format = html ] ; then \
+	        ${CP} doc/*.png ${datadir}/doc/gprbuild/html; \
+	        sed -e "s/<doc_path>.*//" doc/gprbuild_gps.xml \
+	           > ${datadir}/doc/gprbuild/html/gps_index.xml; \
+	     fi; \
+	  fi; \
+	done
+
+install.data: force
+	-${MKDIR} ${datadir}/gprconfig
+	${CP} share/gprconfig/*.xml ${datadir}/gprconfig
+	${CP} share/gprconfig/gprconfig.xsd ${datadir}/gprconfig
+
+install.bin: force
+	-${MKDIR} ${bindir}
+	${INSTALL_PROGRAM} gprconfig${EXEXT} ${bindir}
+	${INSTALL_PROGRAM} gprbuild${EXEXT} ${bindir}
+	${INSTALL_PROGRAM} gprclean${EXEXT} ${bindir}
+	-${MKDIR} ${libexecdir}/gprbuild
+	${INSTALL_PROGRAM} gprbind${EXEXT} ${libexecdir}/gprbuild/
+	${INSTALL_PROGRAM} gprlib${EXEXT} ${libexecdir}/gprbuild/
+
+$(objdir)/gprbuild_dummies.o: src/gprbuild_dummies.c
 	gcc -c -o $@ $<
 
-clean_doc:
-	@cd doc; ${RM} gprconfig.cp gprconfig.log gprconfig.ky gprconfig.toc
-	@cd doc; ${RM} gprconfig.aux gprconfig.fn gprconfig.pg
-	@cd doc; ${RM} gprconfig.tp gprconfig.cps gprconfig.vr
+$(objdir)/link.o: gnat/link.c
+	gcc -c -o $@ $<
 
-clean: clean_doc
-	gnat clean -q -r -Pgprconfig
-	@${RM} standard_foo.gpr doc/gprconfig.pdf
+.PHONY: build_xmlada
+build_xmlada:
+	cd $(srcdir)/xmlada && ./configure --build=$(build) \
+	  --prefix=$(root_objdir)/xmlada/install 
+	cd $(srcdir)/xmlada && make LIBRARY_TYPE=static static install_static
 
-distclean: clean
-	@${RM} config.log config.status src/gprconfig-sdefault.ads gnat.gpr
+clean:
+	gnat clean -q -r -Pgprbuild
+
+distclean:
+	gnat clean -q -r -Pgprbuild
+	@${RM} config.log config.status src/gprconfig-sdefault.ads
 	@${RM} Makefile
+	@${RM} $(objdir)/*
+	@${RM} -r bootstrap
+	make -C doc clean
+	make -C examples clean
 
-doc: doc/gprconfig.pdf
-doc/gprconfig.pdf: doc/gprconfig.texi
-	cd doc; echo x | texi2dvi -p gprconfig.texi
-	${MAKE} clean_doc
+.PHONY: doc install-doc tests examples force
+doc:
+	make -C doc
 
-tests: all force
-	cd tests; ./test.cmd
+install-doc:
+	-$(MKDIR) ${docdir}/html
+	${CP} doc/*.html ${docdir}/html
 
+tests: force
+	cd internal/gprtests_python; python ./run-gprconfig-test.py
+	cd internal/gprtests_python; python ./run-gprbuild-test.py
+
+######################
+# Running tests locally
+# Run tests with the locally compiled gprbuild (no "make install" necessary)
+# You can set test_names and test_config from the command line to restrict
+# the tests that are run. When running all the tests, only show the failing
+# tests to make them more obvious. But when running a specific set of tests,
+# display all results.
+# Adds "~/.local/bin" to the PATH, in case gnatpython was installed with --user.
+# Adds "." to the PATH, since some of the tests expect it.
+######################
+
+test_names=
+test_config=
+
+ifneq (${test_config},)
+test_config_switch:=--config=${test_config}
+else
+test_config_switch=
+endif
+
+LOCAL_SETUP = cd internal/gprtests_python; PATH=${HOME}/.local/bin:${shell pwd}/install/bin:${PATH}:.
+
+LOCAL_GPRCONFIG_TEST=${LOCAL_SETUP}; python ./run-gprconfig-test.py --diffs --enable-color -j${PROCESSORS} ${test_config_switch}
+
+LOCAL_GPRBUILD_TEST=${LOCAL_SETUP}; python ./run-gprbuild-test.py --diffs --enable-color -j${PROCESSORS} ${test_config_switch}
+
+install_local: force
+	@make prefix=${shell pwd}/install install
+
+tests_local: install_local
+ifeq (${test_names},)
+	@${LOCAL_GPRCONFIG_TEST} --loglevel=ERROR
+	@${LOCAL_GPRBUILD_TEST} --loglevel=ERROR
+else
+	@${LOCAL_GPRCONFIG_TEST} --loglevel=INFO ${test_names}
+	@${LOCAL_GPRBUILD_TEST} --loglevel=INFO ${test_names}
+endif
+
+examples: force
+	make -C examples
 force:
-

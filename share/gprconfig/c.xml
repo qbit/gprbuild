@@ -5,22 +5,160 @@
 
    <configuration>
      <compilers>
-       <compiler name="GCC" language="C" />
+       <compiler language="C" />
      </compilers>
      <config>
    package Naming is
       for Spec_Suffix ("C") use ".h";
       for Body_Suffix ("C") use ".c";
    end Naming;
+     </config>
+   </configuration>
 
-   package Language_Processing is
-      for Language_Kind            ("C") use "file_based";
-      for Compiler_Driver          ("C") use "gcc";
-      for Compiler_Minimum_Options ("C") use ("-c", "-x", "c");
-      for Dependency_File_Kind     ("C") use "Makefile";
-      for Dependency_Option        ("C") use ("-Wp,-MD,");
-      for Include_Path             ("C") use "CPATH";
-   end Language_Processing;
+   <configuration>
+     <compilers>
+       <compiler name="GCC" language="C" />
+       <compiler name="GCC-28" language="C" />
+       <compiler name="GCC-CYGMING" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Driver              ("C") use "${PATH(c)}${PREFIX(c)}gcc";
+   end Compiler;
+
+   package Clean is
+      for Source_Artifact_Extensions ("C")   use (".gli");
+      for Object_Artifact_Extensions ("C")   use (".s", "ci", ".gcno");
+   end Clean;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+        <compiler name="GCC-MINGW32" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Driver              ("C") use "${PATH(c)}gcc${PREFIX(c)}";
+   end Compiler;
+
+   package Clean is
+      for Source_Artifact_Extensions ("C")   use (".gli");
+      for Object_Artifact_Extensions ("C")   use (".s", "ci", ".gcno");
+   end Clean;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+       <compiler name="GCC-WRS5" language="C" />
+       <compiler name="GCC-WRS6" language="C" />
+       <compiler name="GCC-WRS6CERT" language="C" />
+       <compiler name="GCC-WRS6CERTE500V2" language="C" />
+       <compiler name="GCC-WRS6E500V2" language="C" />
+       <compiler name="GCC-WRS653" language="C" />
+       <compiler name="GCC-WRS653-E500V2" language="C" />
+       <compiler name="GCC-WRSMILS" language="C" />
+       <compiler name="GCC-WRSMILSHAE" language="C" />
+       <compiler name="GCC-WRSMILS-E500V2" language="C" />
+       <compiler name="GCC-WRSMILSHAE-E500V2" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Driver              ("C") use "${PATH(c)}cc${PREFIX(c)}";
+   end Compiler;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+       <compiler name="DIABC-PPC" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Driver              ("C") use "${PATH(c)}dcc";
+   end Compiler;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+       <compiler name="GCC" language="C" />
+       <compiler name="GCC-28" language="C" />
+       <compiler name="GCC-CYGMING" language="C" />
+       <compiler name="GCC-MINGW32" language="C" />
+       <compiler name="GCC-WRS5" language="C" />
+       <compiler name="GCC-WRS6" language="C" />
+       <compiler name="GCC-WRS6E500V2" language="C" />
+       <compiler name="GCC-WRS6CERT" language="C" />
+       <compiler name="GCC-WRS6CERTE500V2" language="C" />
+       <compiler name="GCC-WRS653" language="C" />
+       <compiler name="GCC-WRS653-E500V2" language="C" />
+       <compiler name="GCC-WRSMILS" language="C" />
+       <compiler name="GCC-WRSMILSHAE" language="C" />
+       <compiler name="GCC-WRSMILS-E500V2" language="C" />
+       <compiler name="GCC-WRSMILSHAE-E500V2" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Leading_Required_Switches   ("C") use
+         Compiler'Leading_Required_Switches ("C") &amp; ("-c", "-x", "c");
+      for Include_Path        ("C") use "CPATH";
+   end Compiler;
+     </config>
+   </configuration>
+
+  <!--     GCC 2.8.1 & VxWorks 5
+   Switch -MMD is not supported on GCC 2.8.1. So, we use an undocumented
+   switch. -MF is not supported by the VxWorks 5 gcc
+   -->
+   <configuration>
+     <compilers>
+       <compiler name="GCC-28" language="C" />
+       <compiler name="GCC-WRS5" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Dependency_Switches ("C") use ("-Wp,-MMD,");
+   end Compiler;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+       <compiler name="GCC" language="C" />
+       <compiler name="GCC-CYGMING" language="C" />
+       <compiler name="GCC-MINGW32" language="C" />
+       <compiler name="GCC-WRS6" language="C" />
+       <compiler name="GCC-WRS6E500V2" language="C" />
+       <compiler name="GCC-WRS6CERT" language="C" />
+       <compiler name="GCC-WRS6CERTE500V2" language="C" />
+       <compiler name="GCC-WRS653" language="C" />
+       <compiler name="GCC-WRS653-E500V2" language="C" />
+       <compiler name="GCC-WRSMILS" language="C" />
+       <compiler name="GCC-WRSMILSHAE" language="C" />
+       <compiler name="GCC-WRSMILS-E500V2" language="C" />
+       <compiler name="GCC-WRSMILSHAE-E500V2" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Dependency_Switches ("C") use ("-MMD", "-MF", "");
+   end Compiler;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+       <compiler name="DIABC-PPC" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Leading_Required_Switches   ("C") use
+         Compiler'Leading_Required_Switches ("C") &amp; ("-tPPC750EH:cross", "-c");
+      for Dependency_Switches ("C") use
+         ("-Xmake-dependency=6", "-Xmake-dependency-savefile=");
+      for Include_Path        ("C") use "CPATH";
+   end Compiler;
      </config>
    </configuration>
 
@@ -28,17 +166,33 @@
 
    <configuration>
      <compilers>
-       <compiler name="GCC" language="C" /> 
+       <compiler name="GCC" language="C" />
+       <compiler name="GCC-28" language="C" />
      </compilers>
      <targets negate="true">
-       <target name=".*LynxOS.*" />
-       <target name=".*pentium-mingw.*" />
-       <target name=".*dec-osf.*" />
+       <target name="^.*LynxOS.*$" />
+       <target name="^.*mingw.*$" />
+       <target name="^.*cygwin.*$" />
+       <target name="^.*dec-osf.*$" />
+       <target name="^.*wrs-vxworks.*$" />
      </targets>
      <config>
-   package Language_Processing is
-      for Compiler_PIC_Option      ("C") use ("-fPIC");
-   end Language_Processing;
+   package Compiler is
+      for PIC_Option ("C") use ("-fPIC");
+   end Compiler;
+     </config>
+   </configuration>
+
+   <!-- for cygming we make sure that the option -mno-cygwin is used -->
+   <configuration>
+     <compilers>
+       <compiler name="GCC-CYGMING" language="C" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Leading_Required_Switches ("C") use
+        Compiler'Leading_Required_Switches ("C") &amp; ("-mno-cygwin");
+   end Compiler;
      </config>
    </configuration>
 

@@ -1,32 +1,94 @@
+Preliminary note for Windows users
+==================================
+
+The build instructions for gprbuild may have a slight UNIX flavor but they
+can be used on Windows platforms with a full CYGWIN installation. The latter
+makes it simpler to build gprbuild but is not required to use it.
+
+Using alternate GNAT Sources
+============================
+
+Gprbuild uses some sources of the GNAT package. They are expected by default
+to be located in the gnat/ subdirectory of Gprbuild. Only some of the GNAT 
+sources are required, but note that having all of the GNAT sources present 
+in the gnat/ subdirectory will result in build failure.
+
+In order to use GNAT sources from another location, create a link named 
+gnat_src and call the Makefile target copy_gnat_src:
+
+   ln -s <path_to_gnat_sources> gnat_src
+   make copy_gnat_src -f Makefile.in
+   
+That will place links into the gnat/ subdirectory for each of the required 
+GNAT source files.
+   
+On Windows with Cygwin, the files must be copied because symbolic 
+links do not work.  You can modify the definition of GNAT_SOURCE_DIR in the 
+makefile so that it specifies the path to the GNAT sources you intend to
+use, and then call the Makefile target copy_gnat_src:
+
+   make copy_gnat_src -f Makefile.in
+   
+The makefile will recognize the use of Windows and will therefore place a 
+copy of the required files into the gnat/ subdirectory.  
+
+Alternatively you can specify GNAT_SOURCE_DIR on the command line when invoking
+the makefile target:
+
+   make copy_gnat_src -f Makefile.in GNAT_SOURCE_DIR=<path/to/gnat/sources>
+
+Finally, another alternative would be to check out the GNAT sources into a dedicated
+copy for the sake of building Gprbuild. To do so, create a directory named gnat_src/
+under the Gprbuild root directory and check out the GNAT sources into that directory.
+Then invoke the Makefile target as before:
+
+   make copy_gnat_src -f Makefile.in
+
+Note that copy_gnat_src can be invoked automatically by other targets.
+
+Configuring
+===========
+
+You must install XML/Ada before compiling gprconfig.
+
+Configuring is usually done simply as:
+  ./configure
+
+Two parameters may be worth specifying: --prefix for specifying the
+installation root and --build for specifying the build host. In particular,
+on Windows, when using cygwin to build, it is necessary to configure with
+--build=pentium-mingw32msv if one wants to use mingw based compilers
+such as GNAT Pro or GNAT GPL. Here is an example of such a command:
+  ./configure --build=pentium-mingw32msv --prefix=$HOME/local
 
 Building and Installing
 =======================
 
-Requirements:
-   - You need access to part of part of the GNAT sources.
-     These sources are either packaged directly with the source package
-     for gprconfig and gprmake (in a subdirectory called gnat/), or you
-     access them by some other means (direct access to the repository,
-     download of the GNAT source package,...)
-     In the last two cases, you can either create a local link called
-     "gnat" that points to the directory containing src/prj.ads, or
-     use the --with-gnat-source-dir=<dir> switch
+Building the main executables is done simply with
+   make all
 
-     One convenient way is to run the following script in the directory
-     that contains this README:
-         if [ -d gnat ]; then
-            (cd gnat; cvs -d nile:/nile.c/cvs/Dev update -r gprmake-2006)
-         else
-             cvs -d nile:/nile.c/cvs/Dev co -r gprmake-2006 gnat/
-         fi
-         (cd gnat;
-             cvs update -A MANIFEST.GPRMAKE
-             cvs update -f `cat MANIFEST.GPRMAKE`)
-         svn update
+When compiling, you can choose whether you want to link statically with
+XML/Ada (the default), or dynamically. To compile dynamically, you should
+run
+   make LIBRARY_TYPE=relocatable all
+instead of the above.
 
-Compiling:
-   - Execute the usual commands:
-       ./configure
-       or  ./configure --with-gnat-source-dir=<dir>
+Installation is done with
+  make install
 
-       make
+You can bootstrap grpbuild (compile it with itself) with the following command:
+   make bootstrap
+
+Doc & Examples
+==============
+
+The documention is provided in various formats in the doc subdirectory.
+It refers to concrete examples that are to be found in the
+examples subdirectory. Each example can be built easily using the
+simple attached Makefile:
+   make all    # build the example
+   make run    # run the executable(s)
+   make clean  # cleanup
+
+All the examples can be built/run/cleaned using the same targets and
+the toplevel examples Makefile.

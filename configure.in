@@ -1,13 +1,13 @@
-AC_INIT(src/gprconfig.ads)
+AC_INIT(gprbuild,1.6,report@adacore.com,gprbuild)
 AC_CANONICAL_SYSTEM
-AC_PREFIX_DEFAULT(/usr/local)
 AC_PREFIX_PROGRAM(gnatmake)
 AC_PROG_INSTALL
-HOST=$host
-PREFIX=$prefix
-AM_GNAT_SOURCES
-
-AC_SUBST(HOST)
-AC_SUBST(PREFIX)
-AC_SUBST(GNAT_SOURCE_DIR)
-AC_OUTPUT(src/gprconfig-sdefault.ads gnat.gpr Makefile)
+objdir=`pwd`
+AC_SUBST(objdir)
+case $host in
+   *mingw*|*cygwin*) is_windows="true";;
+                  *) is_windows="false";;
+esac
+AC_SUBST(is_windows)
+AM_CHECK_XMLADA
+AC_OUTPUT(src/gprconfig-sdefault.ads Makefile)

@@ -1,27 +1,22 @@
 ------------------------------------------------------------------------------
---                                                                          --
 --                          GNAT SYSTEM UTILITIES                           --
 --                                                                          --
 --           C R E A T E _ A D A _ R U N T I M E _ P R O J E C T            --
 --                                                                          --
 --                                 B o d y                                  --
 --                                                                          --
---            Copyright (C) 2006, Free Software Foundation, Inc.            --
+--         Copyright (C) 2006-2012, Free Software Foundation, Inc.          --
 --                                                                          --
--- GNAT is free software;  you can  redistribute it  and/or modify it under --
+-- This is free software;  you can redistribute it  and/or modify it  under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
--- ware  Foundation;  either version 2,  or (at your option) any later ver- --
--- sion.  GNAT is distributed in the hope that it will be useful, but WITH- --
--- OUT ANY WARRANTY;  without even the  implied warranty of MERCHANTABILITY --
--- or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License --
--- for  more details.  You should have  received  a copy of the GNU General --
--- Public License  distributed with GNAT;  see file COPYING.  If not, write --
--- to  the  Free Software Foundation,  51  Franklin  Street,  Fifth  Floor, --
--- Boston, MA 02110-1301, USA.                                              --
---                                                                          --
--- GNAT was originally developed  by the GNAT team at  New York University. --
--- Extensive contributions were provided by Ada Core Technologies Inc.      --
---                                                                          --
+-- ware  Foundation;  either version 3,  or (at your option) any later ver- --
+-- sion.  This software is distributed in the hope  that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public --
+-- License for  more details.  You should have  received  a copy of the GNU --
+-- General  Public  License  distributed  with  this  software;   see  file --
+-- COPYING3.  If not, go to http://www.gnu.org/licenses for a complete copy --
+-- of the license.                                                          --
 ------------------------------------------------------------------------------
 
 --  This utility creates the Ada runtime project file ada_runtime.gpr
@@ -85,6 +80,9 @@ procedure Create_Ada_Runtime_Project is
    Line      : String (1 .. 1_000);
    Line_Last : Natural;
    Spec      : Boolean;
+
+   Verbose_Mode : Boolean := False;
+   --  True if switch -v is used
 
    subtype Header_Num is Natural range 0 .. 4095;
    function Hash (Key : String_Access) return Header_Num;
@@ -163,13 +161,18 @@ procedure Create_Ada_Runtime_Project is
 
       while not End_Of_File (File) loop
          Get_Line (File, Line, Last);
-         Key := new String'(Line (1 .. Last));
-         Get_Line (File, Line, Last);
-         Elem.Spec := Line (1 .. Last) = "spec";
-         Get_Line (File, Line, Last);
-         Elem.Unit := new String'(Line (1 .. Last));
 
-         Mapping.Set (Key, Elem);
+         --  Skip the line if it is a comment line
+
+         if Last > 2 and then Line (1 .. 2) /= "--" then
+            Key := new String'(Line (1 .. Last));
+            Get_Line (File, Line, Last);
+            Elem.Spec := Line (1 .. Last) = "spec";
+            Get_Line (File, Line, Last);
+            Elem.Unit := new String'(Line (1 .. Last));
+
+            Mapping.Set (Key, Elem);
+         end if;
       end loop;
 
       Close (File);
@@ -178,6 +181,10 @@ procedure Create_Ada_Runtime_Project is
       when others =>
          if Is_Open (File) then
             Close (File);
+         end if;
+
+         if Verbose_Mode then
+            Put_Line (Standard_Error, "Could not read " & Mapping_File);
          end if;
    end Get_Mapping;
 
@@ -204,6 +211,7 @@ procedure Create_Ada_Runtime_Project is
       Put_Line (" -adainclude <dir>: Location of the adainclude directory");
       Put_Line (" -mapping <file>  : Location of the pre-built mapping file");
       Put_Line (" -o <file>        : Output file name");
+      Put_Line (" -v               : Verbose mode");
       Put_Line ("                    Default is " & Output_File.all);
    end Help;
 
@@ -214,7 +222,7 @@ begin
    --  of the adainclude directory.
 
    loop
-      case Getopt ("adainclude: o: mapping: h") is
+      case Getopt ("adainclude: o: mapping: h v") is
          when 'a' =>
             Free (Adainclude);
             Adainclude := new String'(Parameter);
@@ -227,6 +235,8 @@ begin
          when 'h' =>
             Help;
             return;
+         when 'v' =>
+            Verbose_Mode := True;
          when others =>
             exit;
       end case;
@@ -304,6 +314,17 @@ begin
 
          else
             Args (Args'Last) := new String'(Str (1 .. Last));
+
+            if Verbose_Mode then
+               Put (Gcc_Path.all);
+
+               for J in Args'Range loop
+                  Put (' ' & Args (J).all);
+               end loop;
+
+               New_Line;
+            end if;
+
             Spawn (Gcc_Path.all, Args, Output_File_Name, Success, Return_Code);
 
             if Success then

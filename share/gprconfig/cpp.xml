@@ -5,22 +5,97 @@
 
    <configuration>
      <compilers>
-       <compiler name="G++" language="C\+\+" />
+        <compiler language="C++" />
      </compilers>
      <config>
    package Naming is
       for Spec_Suffix ("C++") use ".hh";
       for Body_Suffix ("C++") use ".cpp";
    end Naming;
+   for Inherit_Source_Path ("C++") use ("C");
+     </config>
+   </configuration>
 
-   package Language_Processing is
-      for Language_Kind            ("C++") use "file_based";
-      for Compiler_Driver          ("C++") use "g++";
-      for Compiler_Minimum_Options ("C++") use ("-c", "-x", "c++");
-      for Dependency_File_Kind     ("C++") use "Makefile";
-      for Dependency_Option        ("C++") use ("-Wp,-MD,");
-      for Include_Path             ("C++") use "CPATH";
-   end Language_Processing;
+   <configuration>
+     <compilers>
+        <compiler name="G++" language="C++" />
+        <compiler name="GCC-CYGMING" language="C++" />
+       <compiler name="GCC-MINGW32" language="C++" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Driver              ("C++") use "${PATH(c++)}g++${PREFIX(c++)}";
+   end Compiler;
+
+   package Clean is
+      for Source_Artifact_Extensions ("C++") use (".gli");
+      for Object_Artifact_Extensions ("C++") use (".s", "ci", ".gcno");
+   end Clean;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+        <compiler name="G++-WRS653" language="C++" />
+        <compiler name="G++-WRS653-E500V2" language="C++" />
+        <compiler name="G++-WRS5" language="C++" />
+        <compiler name="G++-WRS6" language="C++" />
+        <compiler name="G++-WRS6E500V2" language="C++" />
+        <compiler name="G++-WRS6CERT" language="C++" />
+        <compiler name="G++-WRS6CERTE500V2" language="C++" />
+        <compiler name="G++-WRSMILS" language="C++" />
+        <compiler name="G++-WRSMILSHAE" language="C++" />
+        <compiler name="G++-WRSMILS-E500V2" language="C++" />
+        <compiler name="G++-WRSMILSHAE-E500V2" language="C++" />
+    </compilers>
+     <config>
+   package Compiler is
+      for Driver              ("C++") use "${PATH(c++)}c++${PREFIX(c++)}";
+   end Compiler;
+     </config>
+   </configuration>
+
+   <configuration>
+     <compilers>
+        <compiler name="G++" language="C++" />
+        <compiler name="G++-WRS653" language="C++" />
+        <compiler name="G++-WRS653-E500V2" language="C++" />
+        <compiler name="G++-WRSMILS" language="C++" />
+        <compiler name="G++-WRSMILSHAE" language="C++" />
+        <compiler name="G++-WRSMILS-E500V2" language="C++" />
+        <compiler name="G++-WRSMILSHAE-E500V2" language="C++" />
+        <compiler name="G++-WRS6" language="C++" />
+        <compiler name="G++-WRS6E500V2" language="C++" />
+        <compiler name="G++-WRS6CERT" language="C++" />
+        <compiler name="G++-WRS6CERTE500V2" language="C++" />
+        <compiler name="GCC-CYGMING" language="C++" />
+       <compiler name="GCC-MINGW32" language="C++" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Leading_Required_Switches   ("C++") use
+        Compiler'Leading_Required_Switches ("C++") &amp;
+        ("-c", "-x", "c++");
+      for Dependency_Switches ("C++") use ("-MMD", "-MF", "");
+      for Include_Path        ("C++") use "CPATH";
+   end Compiler;
+     </config>
+   </configuration>
+
+
+   <!-- G++-WRS5 does not support -MF switch -->
+   <configuration>
+     <compilers>
+        <compiler name="G++-WRS5" language="C++" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Leading_Required_Switches   ("C++") use
+        Compiler'Leading_Required_Switches ("C++") &amp;
+        ("-c", "-x", "c++");
+      for Dependency_Switches ("C++") use ("-Wp,-MMD,");
+      for Include_Path        ("C++") use "CPATH";
+   end Compiler;
      </config>
    </configuration>
 
@@ -28,18 +103,44 @@
 
    <configuration>
      <compilers>
-       <compiler name="G++" language="C\+\+" /> 
+       <compiler name="G++" language="C++" />
      </compilers>
      <targets negate="true">
-       <target name=".*LynxOS.*" />
-       <target name=".*pentium-mingw.*" />
-       <target name=".*tru64.*" />
+       <target name="^.*LynxOS.*$" />
+       <target name="^.*mingw.*$" />
+       <target name="^.*cygwin.*$" />
+       <target name="^.*tru64.*$" />
      </targets>
      <config>
-   package Language_Processing is
-      for Compiler_PIC_Option      ("C++") use ("-fPIC");
-   end Language_Processing;
+   package Compiler is
+      for PIC_Option      ("C++") use ("-fPIC");
+   end Compiler;
      </config>
    </configuration>
 
+   <!-- in cygminw mode, make sure that the option -mno-cygwin is used -->
+
+   <configuration>
+     <compilers>
+       <compiler name="GCC-CYGMING" language="C++" />
+     </compilers>
+     <config>
+   package Compiler is
+      for Leading_Required_Switches ("C++") use
+         Compiler'Leading_Required_Switches ("C++") &amp; ("-mno-cygwin");
+   end Compiler;
+     </config>
+   </configuration>
+
+   <!-- this compiler is not compatible with GNAT's default zcx runtime -->
+   <configuration>
+     <compilers><compiler name="GNAT" runtime="default" /></compilers>
+     <compilers>
+       <compiler name="GCC-CYGMING" language="C++" />
+       <compiler name="GCC-CYGMING" language="Fortran" />
+       <compiler name="GCC-MINGW32" language="C++" />
+       <compiler name="GCC-MINGW32" language="Fortran" />
+     </compilers>
+     <config></config>
+   </configuration>
 </gprconfig>
