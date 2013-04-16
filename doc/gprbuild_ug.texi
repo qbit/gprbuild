@@ -3236,6 +3236,8 @@ appended to the prefix above.
 project installation directory if an absolute path. Otherwise it is
 appended to the prefix above.
 
+@item @option{--target=targetname} : Specify a target for cross platforms.
+
 @item @option{--no-lib-link} : Disable copy of shared libraries into
 the executable directory on Windows or creation of symlink in the lib
 directory on UNIX. This is done by default to place the shared
@@ -3432,8 +3434,8 @@ The default for N is the number of cores.
 
 @item @option{-p, --port=N} : Set the port the slave will listen to
 
-The default value is 8484. The same port must be specified in the
-Build_Slaves attribute.
+The default value is 8484. The same port must be specified for the
+build slaves on @code{GPRbuild} command line.
 
 @end itemize
 
