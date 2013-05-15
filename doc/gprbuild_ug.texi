@@ -3076,9 +3076,6 @@ The switches for GPRclean are:
 
 @itemize @bullet
 
-@item @option{--distributed} : Also clean-up the sources on build slaves,
-@pxref{Distributed compilation}.
-
 @item @option{--config=<config project file name>} : Specify the
   configuration project file name.
 
