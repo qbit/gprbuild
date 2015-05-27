@@ -5,7 +5,7 @@
 --                                                                          --
 --                                 B o d y                                  --
 --                                                                          --
---         Copyright (C) 2006-2014, Free Software Foundation, Inc.          --
+--         Copyright (C) 2006-2015, Free Software Foundation, Inc.          --
 --                                                                          --
 -- This is free software;  you can redistribute it  and/or modify it  under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -2211,6 +2211,30 @@ begin
             end if;
 
             Library_Options_Table.Append (Libgnat);
+
+            --  ?? The proper implementation for the following code is to
+            --  add only the libraries that libgnat is using. This information
+            --  is not readily available but we should be able to compute
+            --  this from the ALI files.
+
+            declare
+               I : constant Natural := Object_Files.Last;
+            begin
+               --  Then adds back all libraries already on the command-line
+               --  after libgnat to fulfill dependencies on OS libraries
+               --  that may be used by the GNAT runtime. These are libraries
+               --  added with a pragma Linker_Options in sources.
+
+               for K in 1 .. I loop
+                  declare
+                     O : constant String := Object_Files.Table (K).all;
+                  begin
+                     if O (O'First .. O'First + 1) = "-l" then
+                        Library_Options_Table.Append (new String'(O));
+                     end if;
+                  end;
+               end loop;
+            end;
 
          else
             Options_Table.Append (new String'("-L" & Runtime_Library_Dir.all));
