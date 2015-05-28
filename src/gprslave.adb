@@ -5,7 +5,7 @@
 --                                                                          --
 --                                 B o d y                                  --
 --                                                                          --
---         Copyright (C) 2012-2014, Free Software Foundation, Inc.          --
+--         Copyright (C) 2012-2015, Free Software Foundation, Inc.          --
 --                                                                          --
 -- This is free software;  you can redistribute it  and/or modify it  under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -54,10 +54,13 @@ with Types;
 
 with GNAT.Command_Line;             use GNAT;
 with GNAT.CRC32;
+with GNAT.Exception_Traces;
 with GNAT.OS_Lib;                   use GNAT.OS_Lib;
 with GNAT.Sockets;                  use GNAT.Sockets;
 with GNAT.String_Split;             use GNAT.String_Split;
 with GNAT.Strings;
+with GNAT.Traceback.Symbolic;       use GNAT.Traceback;
+                                    use GNAT.Traceback.Symbolic;
 
 with Gpr_Util;                      use Gpr_Util;
 with GPR_Version;
@@ -78,6 +81,7 @@ procedure Gprslave is
    --  concurrent access.
 
    type Status is record
+      Id     : UID;
       Locked : Boolean := False;
       Count  : Natural := 0;
    end record;
@@ -93,7 +97,6 @@ procedure Gprslave is
       Target       : Unbounded_String;
       Build_Env    : Unbounded_String;
       Sync         : Boolean;
-      Id           : UID;
       Status       : Shared_Status;
    end record;
 
@@ -189,6 +192,9 @@ procedure Gprslave is
       Force    : Boolean := False) with Inline;
    --  Display a message (in verbose mode) and adds a leading timestamp. Also
    --  display the message in debug mode if Is_Debug is set.
+
+   procedure Activate_Symbolic_Traceback;
+   --  Activate symbolic trace-back
 
    --  Protected builders data set (used by environment task and the
    --  Protocol_Handler).
@@ -331,6 +337,17 @@ procedure Gprslave is
       Builder.Status.Count := Builder.Status.Count + 1;
    end Adjust;
 
+   ---------------------------------
+   -- Activate_Symbolic_Traceback --
+   ---------------------------------
+
+   procedure Activate_Symbolic_Traceback is
+   begin
+      Exception_Traces.Trace_On (Exception_Traces.Unhandled_Raise);
+      Exception_Traces.Set_Trace_Decorator
+        (Traceback.Symbolic.Symbolic_Traceback'Access);
+   end Activate_Symbolic_Traceback;
+
    --------------
    -- Builders --
    --------------
@@ -346,7 +363,6 @@ procedure Gprslave is
          Pos     : Builder_Set.Cursor;
       begin
          Builder.Socket := Socket;
-         Builder.Id := 0;
 
          Pos := Builders.Find (Builder);
 
@@ -377,7 +393,7 @@ procedure Gprslave is
 
       procedure Initialize (Builder : in out Build_Master) is
       begin
-         Builder.Id := Current_Id;
+         Builder.Status.Id := Current_Id;
          Current_Id := Current_Id + 1;
       end Initialize;
 
@@ -470,6 +486,8 @@ procedure Gprslave is
       S.Count := S.Count - 1;
 
       if S.Count = 0 then
+         Message
+           ("# finalize builder" & UID'Image (S.Id), Is_Debug => True);
          Unchecked_Free (S);
       end if;
    end Finalize;
@@ -582,7 +600,10 @@ procedure Gprslave is
 
    overriding procedure Initialize (Builder : in out Build_Master) is
    begin
-      Builder.Status := new Status'(False, 1);
+      Builder.Status := new Status'(0, False, 1);
+      Message
+        ("# initialize builder"
+         & UID'Image (Builder.Status.Id), Is_Debug => True);
    end Initialize;
 
    -------------
@@ -621,7 +642,7 @@ procedure Gprslave is
          Critical_Section : begin
             Global_Lock.Seize;
 
-            UID_IO.Put (Builder.Id, Width => 4);
+            UID_IO.Put (Builder.Status.Id, Width => 4);
             Put (' ');
 
             Global_Lock.Release;
@@ -957,7 +978,7 @@ procedure Gprslave is
       when E : others =>
          Message
            (Builder, "Unrecoverable error: Protocol_Handler.", Force => True);
-         Message (Builder, Exception_Information (E), Force => True);
+         Message (Builder, Symbolic_Traceback (E), Force => True);
          OS_Exit (1);
    end Wait_Requests;
 
@@ -1332,7 +1353,7 @@ procedure Gprslave is
          when E : others =>
             Message
               (Builder,
-               "# Error in Execute_Job: " & Exception_Information (E),
+               "# Error in Execute_Job: " & Symbolic_Traceback (E),
                Is_Debug => True);
       end Do_Compile;
 
@@ -1367,7 +1388,7 @@ procedure Gprslave is
          when E : others =>
             Message
               (Builder,
-               "# clean-up error " & Exception_Information (E),
+               "# clean-up error " & Symbolic_Traceback (E),
                True);
             Send_Ko (Builder.Channel);
       end Do_Clean;
@@ -1646,7 +1667,7 @@ procedure Gprslave is
    exception
       when E : others =>
          Put_Line ("Unrecoverable error: Wait_Completion.");
-         Put_Line (Exception_Information (E));
+         Put_Line (Symbolic_Traceback (E));
          OS_Exit (1);
    end Wait_Completion;
 
@@ -1879,6 +1900,13 @@ procedure Gprslave is
 
       Builder.Channel := Create (Builder.Socket);
 
+      --  We must call explicitely Initialize here to ensure that the Builder
+      --  object Status access will be changed for this new builder.
+
+      Initialize (Builder);
+
+      --  Then initialize the new builder Id
+
       Builders.Initialize (Builder);
 
       Message (Builder, "Connecting with " & Image (Address));
@@ -1994,7 +2022,7 @@ procedure Gprslave is
       when E : others =>
          Message
            (Builder, "Unrecoverable error: Wait_For_Master.", Force => True);
-         Message (Builder, Exception_Information (E), Force => True);
+         Message (Builder, Symbolic_Traceback (E), Force => True);
          OS_Exit (1);
    end Wait_For_Master;
 
@@ -2019,6 +2047,8 @@ begin
    Snames.Initialize;
 
    Parse_Knowledge_Base (Base, Default_Knowledge_Base_Directory);
+
+   Activate_Symbolic_Traceback;
 
    --  Always create the lib/object directories on the slave, this is needed
    --  when parsing a projet file to retreive a specific driver.
@@ -2071,6 +2101,6 @@ begin
 exception
    when E : others =>
       Message ("Unrecoverable error: GprSlave.", Force => True);
-      Message (Exception_Information (E), Force => True);
+      Message (Symbolic_Traceback (E), Force => True);
       OS_Exit (1);
 end Gprslave;
