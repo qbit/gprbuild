@@ -1,0 +1,3 @@
+project Prj extends "common.gpr" is
+end Prj;
+

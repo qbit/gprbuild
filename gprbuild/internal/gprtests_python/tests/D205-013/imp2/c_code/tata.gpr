@@ -1,0 +1,5 @@
+project Tata is
+   for Languages use ("C");
+   for Source_Dirs use (".", "../../imp");
+end Tata;
+

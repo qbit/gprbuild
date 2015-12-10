@@ -1,0 +1,20 @@
+Project idl is
+
+   for Languages use ("Idl",
+                      "Project file");
+   for Object_Dir use "obj";
+
+   package Compiler is
+      for Driver("Idl") use "toto";
+      for Driver ("Project file") use "";
+      for Include_Switches ("Idl") use ("-aI");
+      for Required_Switches("Idl") use ("-d", ".");
+   end Compiler;
+
+   package Naming is
+      for Implementation_Suffix ("Idl") use ".idl";
+      for Specification_Suffix ("Project file") use ".gpr";
+   end Naming;
+
+end idl;
+

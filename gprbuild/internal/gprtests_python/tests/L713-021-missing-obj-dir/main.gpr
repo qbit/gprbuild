@@ -1,0 +1,4 @@
+with "lib";
+project main is
+   for main use ("main.adb");
+end main;

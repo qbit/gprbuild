@@ -1,0 +1,3 @@
+gcc toto.c
+gcc -c -gnatc pkg.ads
+gcc -c -gnatc pkg2.ads

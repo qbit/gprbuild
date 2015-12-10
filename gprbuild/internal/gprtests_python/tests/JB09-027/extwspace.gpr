@@ -1,0 +1,9 @@
+project extwspace extends all "wspace.gpr" is
+
+    for Languages use ("Ada") ;
+
+    for Main use ("run.adb") ;
+
+    for Locally_Removed_Files use ("p1.adb") ;
+
+end extwspace ;

@@ -1,0 +1,14 @@
+project Prj is
+   type Bool is ("true", "false");
+   TARG : Bool := external ("TARG", "false");
+
+   case TARG is
+      when "true" =>
+         for Target use "invalid";
+      when "false" =>
+         null;
+   end case;
+
+   for Main use ("main.adb");
+end Prj;
+

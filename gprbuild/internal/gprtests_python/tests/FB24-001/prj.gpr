@@ -1,0 +1,5 @@
+project Prj is
+   for Languages use ("Ada");
+   for Main use ("toto.adb");
+end Prj;
+

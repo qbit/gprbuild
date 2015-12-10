@@ -1,0 +1,6 @@
+project A is
+   for Source_Dirs use ("asrc");
+   for Object_Dir use "aobj";
+   for Library_Name use "a";
+end A;
+

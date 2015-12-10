@@ -1,0 +1,7 @@
+project lib is
+    for Source_Files use ("lib.ads", "lib.adb", "my_ctrl.ads", "my_ctrl.adb");
+    for Library_Dir use "lib";
+    for Library_Name use "mylib";
+    for Library_Interface use ("lib", "my_ctrl");
+--    for Library_Kind use "relocatable";
+end lib;

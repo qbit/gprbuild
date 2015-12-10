@@ -1,0 +1,7 @@
+library project L is
+   for Library_Dir  use "lib";
+   for Library_Kind use "dynamic";
+   for Library_Interface use ("l");
+   for Library_Standalone use "encapsulated";
+   for Library_Name use "l";
+end L;

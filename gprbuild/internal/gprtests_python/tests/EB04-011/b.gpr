@@ -1,0 +1,5 @@
+project B is
+
+   for Main use ("ada_test.adb");
+
+end B;

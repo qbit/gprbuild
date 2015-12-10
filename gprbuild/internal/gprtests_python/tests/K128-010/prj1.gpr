@@ -1,0 +1,6 @@
+project Prj1 is
+   package Compiler is
+      --  name of language is upper-case
+      for Switches ("Ada") use ("-O2");
+   end Compiler;
+end Prj1;

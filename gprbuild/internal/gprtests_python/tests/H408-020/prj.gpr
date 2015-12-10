@@ -1,0 +1,20 @@
+project Prj is
+   for Languages use ("Ada", "C", "Toto", "C1");
+
+   for Main use ("main.adb");
+
+   for Object_Generated ("Toto") use "false";
+   for Objects_Linked   ("C1")   use "false";
+   package Compiler is
+      for Driver ("Toto") use "./toto";
+      for Driver ("C1") use "gcc";
+      for Required_Switches   ("C1") use
+         Compiler'Required_Switches ("C") & ("-c", "-x", "c");
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix ("Toto") use ".toto";
+      for Body_Suffix ("C1") use ".c1";
+   end Naming;
+end Prj;
+

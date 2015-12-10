@@ -1,0 +1,12 @@
+project Prj is
+   for Main use ("main83.adb");
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-m");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnat83");
+   end Compiler;
+end Prj;
+

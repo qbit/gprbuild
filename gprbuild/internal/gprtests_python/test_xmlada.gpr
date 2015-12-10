@@ -1,0 +1,5 @@
+with "xmlada";
+
+project Test_XMLAda is
+   for Source_Dirs use ();
+end Test_XMLAda;

@@ -1,0 +1,6 @@
+project p is
+
+   for Source_Files use ("removed_unit.adb");
+
+end p;
+

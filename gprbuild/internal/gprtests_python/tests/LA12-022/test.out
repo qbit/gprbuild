@@ -1,0 +1,6 @@
+gcc -c p1.ads
+gcc -c p2.adb
+gcc -c p3.ads
+gcc -c p1.ads
+gcc -c p2.adb
+gcc -c p3.ads

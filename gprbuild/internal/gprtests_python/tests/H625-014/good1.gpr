@@ -1,0 +1,9 @@
+project Good1 is
+   for Main use ("filter.adb");
+
+   package Builder is
+      for Switches ("Ada") use ("-f");
+      for Global_Compilation_Switches ("Ada") use ("-O2");
+   end Builder;
+end Good1;
+

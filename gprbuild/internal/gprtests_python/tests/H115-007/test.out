@@ -1,0 +1,4 @@
+gprlib prj.lexch
+ar cr
+ar q
+ranlib libprj.a

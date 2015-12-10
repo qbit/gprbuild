@@ -1,0 +1,10 @@
+with "c.gpr";
+with "paths.gpr";
+
+project Lls_C is
+    for Main use ("main.c");
+    for Languages use C'Languages;
+    for Source_Dirs use Paths.Lls_C_Source_Dirs;
+    for Object_Dir use Paths.Lls_C_Object_Dir;
+
+end Lls_C;

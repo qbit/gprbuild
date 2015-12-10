@@ -1,0 +1,4 @@
+Warning: using Builder'Switches("ada"), as there are several mains
+gcc -c -O1 main1.adb
+gcc -c -O1 main2.adb
+gcc -c -O1 pkg.ads

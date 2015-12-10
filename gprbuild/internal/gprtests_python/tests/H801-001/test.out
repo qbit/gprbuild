@@ -1,0 +1,8 @@
+gcc -c pkg.adb
+gprbind main2.bexch
+gnatbind main2.ali
+gcc -c b__main2.adb
+gprbuild: "main" up to date
+gcc main2.o -o main2
+gprbuild: "main" up to date
+gprbuild: "main2" up to date

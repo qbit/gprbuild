@@ -1,0 +1,10 @@
+project Prj is
+   for Main use ("main.adb");
+   for Object_Dir use "obj";
+   for Exec_Dir   use "bin";
+
+   package Binder is
+      for Switches ("Ada") use ("-A=" & project'Exec_Dir & "/alifiles");
+   end Binder;
+end Prj;
+

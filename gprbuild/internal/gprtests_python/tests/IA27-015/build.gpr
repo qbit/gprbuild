@@ -1,0 +1,4 @@
+project Build is
+   for Main use ("build.adb");
+end Build;
+

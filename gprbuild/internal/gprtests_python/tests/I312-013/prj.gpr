@@ -1,0 +1,13 @@
+project Prj is
+   for Languages use ("Ada", "makefile");
+
+   package Compiler is
+      for Driver ("makefile") use "";
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix ("makefile") use "";
+      for Implementation_Exceptions ("makefile") use ("Makefile.toto");
+   end Naming;
+end Prj;
+

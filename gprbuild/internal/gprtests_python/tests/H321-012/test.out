@@ -1,0 +1,6 @@
+prj2.gpr:2:09: unit "pkg2" cannot belong to several projects
+prj2.gpr:2:09:   project "prj2", "src2/pkg2.ads"
+prj2.gpr:2:09:   project "prj1", "pkg.ads"
+gprbuild: "prj2.gpr" processing failed
+prj3.gpr:4:29: unit "pkg2" already belongs to project "prj4"
+gprbuild: "prj3.gpr" processing failed

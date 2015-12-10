@@ -1,0 +1,12 @@
+<<<
+C++: Constructor of Dog called
+Class wide calls to Carnivore ......
+ In C++ Dog::Number_Of_Teeth
+Class wide calls to Domestic ......
+ In C++ Dog::Set_Owner
+Class wide calls to Vaccinated_Dog ......
+ In C++ Animal::Set_Age
+ In C++ Dog::Number_Of_Teeth
+ In C++ Dog::Set_Owner
+ In Ada: Vaccination_Expired
+>>>

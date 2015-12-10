@@ -1,0 +1,155 @@
+with "options_compiler";
+
+project Options_Linker is
+
+   for Source_Files use (); -- no sources (and no warning)
+
+   -----------------------------------------------------------------------------------------------
+   package Linker is
+
+      case Options_Compiler.Platform is
+
+         when "qemu-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                                                          -- Generate debugging information
+               "--RTS=Zfp",                                                   -- runtime zfp
+               "-Wl,--gc-sections",                                           -- eliminate unused sections
+               "-Wl,--Map=..\..\exe\qemu-zfp\link_report.map",                -- map file destination
+               "-Wl,--entry=_start",                                          -- entry point
+               "-T", "..\..\build\mapping_qemu.ld",                           -- common module linker script mapping
+               "..\..\qemu_c\code\obj\qemu-zfp\startmainqemu.o",              -- load reference to main
+               "..\..\qemu_c\code\obj\qemu-zfp\cmainqemu.o",                  -- load reference to low level main in C
+               "..\..\qemu_c\code\obj\qemu-zfp\cioqemu.o",                    -- load reference to low level io in C
+               "..\..\aunit_v3\obj\qemu-zfp\sjlj.o",                          -- reference from Aunit to setjmp longjmp (not used but required for link)
+               "..\..\math_c_float\code\lib\powerpc-zfp\libmath_c_float.a",   -- cross math lib float in C
+               "..\..\math_c_double\code\lib\powerpc-zfp\libmath_c_double.a", -- cross math lib double in C
+               "..\..\trace_c\code\lib\powerpc-zfp\libtrace_c.a",             -- cross trace lib in C
+               "..\..\acos_c\code\lib\powerpc-zfp\libacos_c.a"                -- cross acos lib in C
+              );
+
+         when "xcov-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                                                          -- Generate debugging information
+               "--RTS=Zfp",                                                   -- runtime zfp
+               "-Wl,--gc-sections",                                           -- eliminate unused sections
+               "-Wl,--Map=..\..\exe\xcov-zfp\link_report.map",                -- map file destination
+               "-Wl,--entry=_start",                                          -- entry point
+               "-T", "..\..\build\mapping_qemu.ld",                           -- common module linker script mapping
+               "..\..\qemu_c\code\obj\qemu-zfp\startmainqemu.o",              -- load reference to main
+               "..\..\qemu_c\code\obj\qemu-zfp\cmainqemu.o",                  -- load reference to low level main in C
+               "..\..\qemu_c\code\obj\qemu-zfp\cioqemu.o",                    -- load reference to low level io in C
+               "..\..\aunit_v3\obj\xcov-zfp\sjlj.o",                          -- reference from Aunit to setjmp longjmp (not used but required for link)
+               "..\..\math_c_float\code\lib\powerpc-zfp\libmath_c_float.a",   -- cross math lib float in C
+               "..\..\math_c_double\code\lib\powerpc-zfp\libmath_c_double.a", -- cross math lib double in C
+               "..\..\trace_c\code\lib\powerpc-zfp\libtrace_c.a",             -- cross trace lib in C
+               "..\..\acos_c\code\lib\powerpc-zfp\libacos_c.a"                -- cross acos lib in C
+              );
+
+         when "native-full" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                                                          -- debugging information
+               -- "-lgmem",                                                   -- for gnatmem use
+               "--RTS=sjlj",                                                  -- runtime setjmp / longjmp
+               "..\..\math_c_float\code\lib\native-zfp\libmath_c_float.a",
+               "..\..\math_c_double\code\lib\native-zfp\libmath_c_double.a",
+               "..\..\acos_c\code\lib\native-zfp\libacos_c.a",
+               "..\..\trace_c\code\lib\native-zfp\libtrace_c.a",
+               -- "..\..\aunit_v3\obj\native-full\sjlj.o",                    -- reference from Aunit to setjmp longjmp (not used but required for link)
+               "..\..\museg_c\code\lib\native-full\libmuseg_c.a"
+              );
+
+         when "native-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                                                          -- debugging information
+               "--RTS=Zfp",                                                   -- runtime zfp
+			   "-Wl,--Map=..\..\exe\native-zfp\link_report.map",              -- map file destination
+               "..\..\math_c_float\code\lib\native-zfp\libmath_c_float.a",    -- math lib float C
+               "..\..\math_c_double\code\lib\native-zfp\libmath_c_double.a",  -- load math lib double C
+               "..\..\aunit_v3\obj\native-zfp\sjlj.o",                        -- reference from Aunit to setjmp longjmp (not used but required for link)
+               "..\..\acos_c\code\lib\native-zfp\libacos_c.a",                -- acos lib C
+               "..\..\trace_c\code\lib\native-zfp\libtrace_c.a"               -- trace rtoto C
+              );
+
+         when "powerpc-zfp"  =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                                                          -- Generate debugging information
+               "--RTS=Zfp",                                                   -- runtime zfp
+               "-nostdlib",                                                   -- do not use the standard system libraries
+               "-Wl,-r",                                                      -- relogeable
+               "-Wl,--Map=..\..\exe\powerpc-zfp\link_report.map",             -- map file destination
+               "..\..\trace_c\code\lib\powerpc-zfp\libtrace_c.a"              -- cross rtoto lib in C
+              );
+
+		when "stack-zfp" =>
+
+           for Default_Switches ("ada") use
+              (
+               "-g",                                                          -- Generate debugging information
+               "--RTS=Zfp",                                                   -- runtime zfp
+               "-nostdlib",                                                   -- do not use the standard system libraries
+               "-Wl,-r",                                                      -- relogeable
+               "-Wl,--Map=..\..\exe\stack-zfp\link_report.map",               -- map file destination
+               "..\..\trace_c\code\lib\powerpc-zfp\libtrace_c.a"              -- cross rtoto lib in C
+              );
+			  
+         when "gprof-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",
+               "-pg",
+               "--RTS=Zfp",
+               -- "-fprofile-generate",
+               "..\..\math_c_float\code\lib\gprof-zfp\libmath_c_float.a",
+               "..\..\math_c_double\code\lib\gprof-zfp\libmath_c_double.a",
+               "..\..\aunit_v3\obj\native-zfp\sjlj.o",                        -- reference from Aunit to setjmp longjmp (not used but required for link)
+               "..\..\acos_c\code\lib\gprof-zfp\libacos_c.a"
+              );
+
+         when "gprof-full" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                                                          -- debugging information
+               "-pg",                                                         -- profiling
+               -- "-lgmem",                                                   -- for gnatmem use
+               "--RTS=sjlj",                                                  -- runtime setjmp / longjmp
+               "..\..\math_c_float\code\lib\native-zfp\libmath_c_float.a",
+               "..\..\math_c_double\code\lib\native-zfp\libmath_c_double.a",
+               "..\..\acos_c\code\lib\native-zfp\libacos_c.a",
+               "..\..\trace_c\code\lib\native-zfp\libtrace_c.a",
+               -- "..\..\aunit_v3\obj\native-full\sjlj.o",                    -- reference from Aunit to setjmp longjmp (not used but required for link)
+               "..\..\museg_c\code\lib\native-full\libmuseg_c.a"
+              );
+
+         when "gcov-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g", "--RTS=Zfp",
+               -- "-ftest-coverage",                                          -- Produce a notes file that the gcov code-coverage utility
+               -- "-fprofile-arcs",                                           -- Add code so that program flow arcs are instrumented
+               "-fprofile-generate",
+               "..\..\math_c_float\code\lib\native-zfp\libmath_c_float.a",    -- math lib float C
+               "..\..\math_c_double\code\lib\native-zfp\libmath_c_double.a",  -- load math lib double C
+               "..\..\aunit_v3\obj\native-zfp\sjlj.o",                        -- reference from Aunit to setjmp longjmp (not used but required for link)
+               "..\..\acos_c\code\lib\native-zfp\libacos_c.a",                -- acos lib C
+               "..\..\trace_c\code\lib\native-zfp\libtrace_c.a"               -- trace rtoto C
+              );
+
+      end case;
+
+   end Linker;
+
+end Options_Linker;
+

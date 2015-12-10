@@ -1,0 +1,3 @@
+C,Ada,SHARED REQUIRED
+gnat-5.01a1 DEAD
+IRIX XFAIL "so_locations file not removed see GB22-006"

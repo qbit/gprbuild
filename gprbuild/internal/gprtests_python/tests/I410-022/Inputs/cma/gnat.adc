@@ -1,0 +1,2 @@
+pragma Restrictions (No_Initialize_Scalars);
+pragma Restrictions (No_Streams);

@@ -1,0 +1,9 @@
+with "p3/p3.gpr";
+project Prj is
+   for Main use ("main.adb");
+
+   package Linker is
+      for Leading_Switches ("Ada") use ("-Wl,--as-needed");
+   end Linker;
+end Prj;
+

@@ -1,0 +1,3 @@
+Ada,native required
+!AUTOCGPR,C++ OUT test.out_c++
+gnat-3.16a1 DEAD

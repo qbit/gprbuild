@@ -1,0 +1,12 @@
+library project HLF is
+
+   for Library_Dir use "lib";
+   for Library_Name use "hlf";
+   for Object_Dir use "obj";
+
+   package Naming is
+      for Spec ("Pcka")           use "pcka__one.ads";
+      for Body ("Pcka") use "pcka__one.adb";
+   end Naming;
+
+end HLF;

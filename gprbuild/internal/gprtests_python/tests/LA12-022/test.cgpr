@@ -1,0 +1,20 @@
+configuration project Test is
+   for Default_Language use "Ada";
+   package Compiler is
+      for Driver ("Ada") use "gcc";
+      for Leading_Required_Switches        ("Ada") use
+          Compiler'Leading_Required_Switches ("Ada")
+      & ("-c", "-x", "ada", "-gnatA");
+      for Object_File_Suffix ("Ada") use ".o";
+      For Language_Kind ("Ada") use "unit_based";
+      For Dependency_Kind ("Ada") use "ALI_Closure";
+      for Dependency_Switches ("Ada") use ();
+   end Compiler;
+
+   package Naming is
+      for Spec_Suffix ("Ada") use ".ads";
+      for Body_Suffix ("Ada") use ".adb";
+      for Casing use "lowercase";
+      for Dot_Replacement use "-";
+   end Naming;
+end Test;

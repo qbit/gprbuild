@@ -1,0 +1,6 @@
+project Toto is
+   for Languages use ("C");
+   for Library_Name use "toto";
+   for Library_Dir  use "..";
+end Toto;
+

@@ -1,0 +1,6 @@
+project Prj is
+   for Object_Dir use "obj";
+   for Library_Name use "prj";
+   for Library_Dir  use "lib";
+end Prj;
+

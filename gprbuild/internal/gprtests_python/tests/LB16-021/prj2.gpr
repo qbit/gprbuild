@@ -1,0 +1,4 @@
+project Prj2 is
+   for Target use "toto";
+end Prj2;
+

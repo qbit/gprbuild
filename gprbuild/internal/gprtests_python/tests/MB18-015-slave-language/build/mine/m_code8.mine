@@ -1,0 +1,7 @@
+
+#include <stdio.h>
+
+void m_code8 (void)
+{
+   printf ("This is MINE\n");
+}

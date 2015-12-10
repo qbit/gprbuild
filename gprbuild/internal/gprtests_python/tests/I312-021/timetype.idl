@@ -1,0 +1,36 @@
+
+module com{	module saabgroup{ module enterprisebus{ module generalservices {
+	module time{
+
+		//------------------------------------------------------------------------
+		// Version
+
+		/**
+		   * The version of this IDL file
+		   */
+		const string IDL_VERSION = "4.0.0";
+
+
+		//------------------------------------------------------------------------
+		// Common types
+
+		/**
+		  * The actual use of this type is ToBeDefined.
+		  */
+		typedef unsigned long qualityType;
+
+
+		//------------------------------------------------------------------------
+		// Time Type
+
+		/**
+		   * The time type is to be used by all interface data types that
+		   * needs to have a time stamp on their data.
+		   */
+		struct TimeType{
+			unsigned long timeSeconds;
+			unsigned long timeFractions;
+			qualityType quality; /**< Not yet used. */
+		}; //@top-level false
+	};
+}; }; }; };

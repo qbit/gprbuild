@@ -1,0 +1,47 @@
+project adatest_min is
+
+   for Languages use ("C++", "ada");
+   for Source_Dirs use (".",
+                        "lib",
+                        "code"
+                         );
+                         
+   for Object_Dir use "bin";
+   for Exec_Dir use "bin";
+   for Main use ("main.cpp");
+   
+
+   package Naming is
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".cpp";
+   end Naming;
+   
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-g");
+      for Default_Switches ("c++") use ("-g", "-DUSES_ADA");
+   end Compiler;
+
+   -- gnatlink params
+   package Linker is
+       -- for linking without any ada
+       for Default_Switches ("c++") use (
+          "-g",
+          "-Llib", "-llogger"
+          );
+
+       for Default_Switches ("ada") use (
+          "-g",
+        --  "-ladatest_min", 
+          "-Llib", "-llogger"
+          );
+   end Linker;
+
+   -- gnatmake params
+   package Builder is
+      for Default_Switches ("ada") use ("-v", "--RTS=sjlj");
+   end Builder;
+   
+      
+end adatest_min;
+

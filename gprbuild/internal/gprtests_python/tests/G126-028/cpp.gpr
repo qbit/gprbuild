@@ -1,0 +1,13 @@
+project cpp is
+
+   for Languages use ("C++");
+   Prefix := external ("PREFIX", "");
+   for Source_Dirs use ("ada", "cpp");    -- this causes the root project to be missing CPATH items
+   for Object_Dir use "obj";  
+
+   package Naming is
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".cc";
+   end Naming;
+
+end cpp;

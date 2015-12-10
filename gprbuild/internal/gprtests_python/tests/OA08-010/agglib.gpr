@@ -1,0 +1,11 @@
+aggregate library project Agglib is
+   for Project_Files use ("prj1/prj1.gpr", "prj2/prj2.gpr");
+   for Library_Name use "agglib";
+   for Library_Dir  use "lib";
+
+   package Builder is
+      for Switches (others) use ("-q");
+   end Builder;
+
+end Agglib;
+

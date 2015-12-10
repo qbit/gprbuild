@@ -1,0 +1,25 @@
+project Prj is
+   type Build_Type is ("NO_CHECK", "CHECK");
+   Build : Build_Type := external ("BUILD", "NO_CHECK");
+
+   for Main use ("main.adb");
+
+   package Builder is
+      case Build is
+         when "CHECK" =>
+            for Switches ("Ada") use ("--no-object-check");
+         when "NO_CHECK" =>
+            null;
+      end case;
+   end Builder;
+
+   package Compiler is
+      case Build is
+         when "CHECK" =>
+            for Switches ("Ada") use ("-gnatc");
+         when "NO_CHECK" =>
+            null;
+      end case;
+   end Compiler;
+end Prj;
+

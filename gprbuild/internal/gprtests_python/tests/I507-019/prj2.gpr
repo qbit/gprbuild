@@ -1,0 +1,4 @@
+project Prj2 extends "base/prj1.gpr" is
+   for Excluded_Source_Files use ("pkga.adb");
+end Prj2;
+

@@ -1,0 +1,6 @@
+project A is
+   type T_Runtime is ("ravenscar-full-leon", "ravenscar-sfp-leon");
+   R : T_Runtime := external ("RUNTIME", "ravenscar-full-leon");
+   for Runtime use R;
+end A;
+

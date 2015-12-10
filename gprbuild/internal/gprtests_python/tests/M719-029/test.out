@@ -1,0 +1,5 @@
+<<<
+Pkg.Execute
+>>>
+gcc -c -gnatc main.adb
+gcc -c -gnatc pkg.adb

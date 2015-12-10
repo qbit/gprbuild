@@ -1,0 +1,5 @@
+project Build_Pkgs is
+   for Main use ("build_pkgs.adb");
+   for Source_Files use ("build_pkgs.adb");
+end Build_Pkgs;
+

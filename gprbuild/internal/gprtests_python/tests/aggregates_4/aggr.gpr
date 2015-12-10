@@ -1,0 +1,28 @@
+
+-- Root aggregate project.
+-- It can override the value of external references.
+
+aggregate project Aggr is
+   type Hosts_Type is ("aaa", "bbb", "ccc");
+   Hostname : Hosts_Type := external ("MYHOST", "aaa");
+
+   case Hostname is
+      when "aaa" =>
+         for External ("MODE") use "DEBUG";
+      when "bbb" =>
+         for External ("MODE") use "PRODUCTION";
+      when "ccc" =>
+         for External ("VAR2") use "set";
+   end case;
+
+   type Var2_Type is ("default", "set");
+   Var2 : Var2_Type := external ("VAR2", "default");
+
+   case Var2 is
+      when "default" =>
+         for Project_Files use ("childaggr.gpr");
+      when "set" =>
+         for Project_Files use ();
+   end case;
+
+end Aggr;

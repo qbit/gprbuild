@@ -1,0 +1,39 @@
+[GPRbuild 2.0.1]
+
+- Support cleaning arbitrary intermediate artifacts in gprclean
+
+  A new package Clean is added in project files. It can contain declarations
+  of attributes Source_Artifact_Extensions and Object_Artifact_Extensions,
+  that specify the extensions of files whose names are derived from source or
+  object file names, that reside in the object directory and that are to be
+  cleaned by gprclean.
+
+- Automated installation of the software product defined by the project
+
+  A new tool named gprinstall can be used to install a standard or a library
+  project.
+
+- Support for aggregate and aggregate library projects
+
+  Aggregate and aggregate library projects are now fully implemented.
+
+[GPRbuild 2.3.1]
+
+- Stability and useability improvements in distributed mode
+
+  Many subtle race conditions and malfunctions when the build farm is forcibly
+  terminated have been fixed.
+
+- Make GPR toolkit standalone and publish it to GitHub
+
+- Update GNATCOLL.Projects and make all project-aware tools use consistent API.
+
+- Provide gpr for runtimes
+
+  Every runtime will come with a gpr, that would allow user to rebuild it
+  (gnatmake -a replacement).
+
+- New tools gprls and gprname
+
+  Multilanguage project-aware equivalents of gnatls and gnatname.
+

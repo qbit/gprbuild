@@ -1,0 +1,33 @@
+project Common is
+
+   for Source_Dirs use ();
+
+   package Linker is
+      for Linker_Options use ("-Wl,-z,origin,-R$ORIGIN/../lib");
+      for Default_Switches ("ada") use ("-g");
+      for Default_Switches ("c") use ("-g");
+      for Default_Switches ("c++") use ("-g");
+   end Linker;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-O3", "-funroll-loops", "-fPIC", "-gnatf", "-gnato", "-g", "-gnata", "-gnatwcfijklmopruvz", "-gnatyabefhiklmnprt", "-gstabs+", "-gnatX");
+      for Default_Switches ("c") use ("-O3", "-funroll-loops", "-fPIC", "-g");
+      for Default_Switches ("c++") use ("-O3", "-funroll-loops", "-fPIC", "-g");
+   end Compiler;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-j4", "-g");
+   end Builder;
+
+   package Ide is
+      for Vcs_Kind use "CVS";
+      for Compiler_Command ("c++") use "g++-3.4";
+   end Ide;
+
+end Common;
+
+

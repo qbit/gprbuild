@@ -1,0 +1,9 @@
+project Prj is
+   for Library_Name use "prj";
+   for Library_Dir  use "lib";
+
+   package Builder is
+      for Switches (others) use ("-g");
+   end Builder;
+end Prj;
+

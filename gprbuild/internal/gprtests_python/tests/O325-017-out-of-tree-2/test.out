@@ -1,0 +1,19 @@
+object directory "build/obj/" created
+main.gpr:1:09: warning: "build/obj" cannot relocate absolute object directory
+gcc -c main.adb
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+gcc main.o -o main
+<<<
+Ada Main
+>>>
+--- build
+build/obj/auto.cgpr present
+build/obj/main.o present
+build/obj/b__main.o present
+build/obj/b__main.ali present
+--- clean
+main.gpr:1:09: warning: "build/obj" cannot relocate absolute object directory
+build/obj/auto.cgpr not found
+build/obj/main.o not found

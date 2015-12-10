@@ -1,0 +1,9 @@
+warning: option --create-map-file is not supported in this configuration
+--create-map-file does not create main.map
+warning: option --create-map-file is not supported in this configuration
+--create-map-file=toto.map does not create toto.map
+warning: option --create-map-file is not supported in this configuration
+--create-map-file in Builder does not create main.map
+warning: option --create-map-file is not supported in this configuration
+--create-map-file=toto.map in Builder does not create toto.map
+gprbuild: illegal option "--create-map-file=" on the command line

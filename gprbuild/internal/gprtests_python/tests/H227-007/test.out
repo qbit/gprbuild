@@ -1,0 +1,34 @@
+gprbuild -q prj.gpr
+"main.c" cannot import "imp/titi.h":
+  it is not part of the interfaces of its project "Imp"
+gprbuild: *** compilation phase failed
+gprbuild -q prj.gpr
+"main.c" cannot import "imp/titi.h":
+  it is not part of the interfaces of its project "Imp"
+gprbuild: *** compilation phase failed
+gprbuild -f -q prj2.gpr
+Unit "main" cannot import unit "pkg2":
+  it is not part of the interfaces of its project "Imp2"
+gprbuild: *** compilation phase failed
+gprbuild -f -q prj3.gpr
+Unit "main" cannot import unit "pkg2":
+  it is not part of the interfaces of its project "Imp2"
+gprbuild: *** compilation phase failed
+gprbuild -f -q prj4.gpr
+gprbuild -f -q prj5.gpr
+gprbuild -f -q prj6.gpr
+Unit "main" cannot import unit "pkg2":
+  it is not part of the interfaces of its project "Imp2"
+gprbuild: *** compilation phase failed
+gprbuild -f --no-direct-imports direct/prj.gpr -k -q
+Unit "main2" cannot import unit "pkg2":
+  "Prj" does not directly import project "Imp2"
+"direct/toto.c" cannot import "direct/imp1/imp2/titi.h":
+  it is not part of the interfaces of its project "Imp2"
+"direct/toto.c" cannot import "direct/imp1/imp2/titi.h":
+  "Prj" does not directly import project "Imp2"
+
+   compilation of main2.adb failed
+   compilation of toto.c failed
+
+gprbuild: *** compilation phase failed

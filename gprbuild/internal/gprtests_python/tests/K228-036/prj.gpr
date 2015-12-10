@@ -1,0 +1,10 @@
+project Prj is
+   for Main use ("main1.adb", "main2.adb");
+
+   package Builder is
+      for Switches ("main1.adb") use ("-g", "-s");
+      for Switches ("main2.adb") use ("-f", "-O2");
+      for Switches ("Ada") use ("-O1");
+   end Builder;
+end Prj;
+

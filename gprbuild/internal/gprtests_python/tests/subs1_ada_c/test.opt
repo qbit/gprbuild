@@ -1,0 +1,10 @@
+Ada,C REQUIRED
+ZFP DEAD
+ravenscar-cert XFAIL Ada.Text_IO
+No_Assert DEAD
+vxworksae XFAIL "C main not supported"
+vxworksmils XFAIL "C main not supported"
+vxworks6cert XFAIL "C main not supported"
+PikeOS DEAD exceptions
+x86-vx7,windows-host,vxsim DEAD Windows-hosted vxsim issue? (NA30-001)
+x86-vx6,windows-host,vxsim DEAD Windows-hosted vxsim issue? (NA30-001)

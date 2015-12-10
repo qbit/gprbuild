@@ -1,0 +1,4 @@
+project Pkg is
+   for Source_Files use ("pkg.ads");
+end Pkg;
+

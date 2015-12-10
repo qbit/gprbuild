@@ -1,0 +1,4 @@
+Ada,shared required
+gnat-6.4.2 DEAD
+!native DEAD
+NT out test-nt.out

@@ -1,0 +1,7 @@
+configuration project Default is
+   for Target use "dotnet";
+
+   package Compiler is
+      for Driver                   ("Ada") use "<pwd>/install/bin/dotnet-gnatcompile";
+   end Compiler;
+end Default;

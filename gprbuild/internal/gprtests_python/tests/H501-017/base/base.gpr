@@ -1,0 +1,4 @@
+project Base is
+   for Main use ("main_base.adb");
+end Base;
+

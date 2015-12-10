@@ -1,0 +1,21 @@
+module com{
+  module saabgroup {
+    module enterprisebus {
+      // The version of this IDL file
+      //
+      const string IDL_VERSION = "2.1.0";
+
+      // ----------------------------------------------------------------
+      // Typedefs
+      //
+      typedef double RADIAN;
+      typedef double RADIAN_PER_SECOND;
+      typedef double RADIAN_PER_SECOND_SQUARE;
+      typedef double METER;
+      typedef double METER_PER_SECOND;
+      typedef double METER_PER_SECOND_SQUARE;
+      typedef boolean VALID;
+
+    };
+  };
+};

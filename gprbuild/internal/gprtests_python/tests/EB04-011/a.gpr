@@ -1,0 +1,7 @@
+with "b";
+
+project A is
+
+   for Source_Dirs use ();
+
+end A;

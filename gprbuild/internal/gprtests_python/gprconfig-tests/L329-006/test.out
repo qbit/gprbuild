@@ -1,0 +1,13 @@
+Creating configuration file: output.gpr
+
+configuration project Default is
+   for Target use "powerpc-elf";
+
+   package Compiler is
+      from "GNAT" node
+      PREFIX=
+      VERSION=6.1
+      RUNTIME_DIR=<pwd>/rtssubdir/
+      from "GNAT" and not "mingw" target
+   end Compiler;
+end Default;

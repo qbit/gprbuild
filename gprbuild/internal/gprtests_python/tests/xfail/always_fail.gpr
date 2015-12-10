@@ -1,0 +1,4 @@
+project always_fail is
+   for Languages    use ("Ada");
+   for Main         use ("main.adb");
+end always_fail;

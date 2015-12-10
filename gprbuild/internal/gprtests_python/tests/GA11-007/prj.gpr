@@ -1,0 +1,12 @@
+project Prj is
+
+   --for Source_Dirs use ("src");
+   --for Object_Dir use "obj";
+   for Main use ("main.adb");
+
+   package Naming is
+      for Body ("main.do_it") use "not_found.adb";
+   end Naming;
+
+end Prj;
+

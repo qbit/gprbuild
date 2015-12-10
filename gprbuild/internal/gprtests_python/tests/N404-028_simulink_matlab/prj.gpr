@@ -1,0 +1,5 @@
+project Prj is
+   for Languages use ("Ada", "Simulink", "Matlab");
+   for Main use ("main.adb");
+end Prj;
+

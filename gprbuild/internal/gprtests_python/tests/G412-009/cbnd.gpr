@@ -1,0 +1,5 @@
+project Cbnd is
+   for Main use ("cbnd.adb");
+   for Source_Files use ("cbnd.adb");
+end Cbnd;
+

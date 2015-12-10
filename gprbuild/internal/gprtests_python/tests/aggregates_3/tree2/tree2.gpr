@@ -1,0 +1,8 @@
+project Tree2 is
+   for Main use ("a.adb");
+
+   package Compiler is
+      for Switches ("Ada") use ("-O1");
+   end Compiler;
+
+end Tree2;

@@ -1,0 +1,24 @@
+project Launch_Gprime is 
+    for Languages   use ("sh");
+    for Source_Dirs use (".");
+    for Source_Files use ( "launch_gprime_script");
+
+    for Object_Dir use ".";
+
+    package Naming is
+        for Body_Suffix("sh") use ".sh";
+        -- otherwise, gprbuild will complain that the file extension is not
+        -- '.sh'
+        for implementation_exceptions("sh") use ("launch_gprime_script");
+    end Naming;
+
+    -- we will 'build' the sh file using a python script
+    package Compiler is 
+        for Driver("sh") use "python";
+        for Default_Switches("sh") use ( "./compile.py" );
+        for Dependency_Driver("sh") use ("python", "./compile.py", "-d");
+        for Object_File_Suffix("sh") use ".o";
+    end Compiler;
+
+end Launch_Gprime;
+

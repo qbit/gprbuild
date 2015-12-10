@@ -1,0 +1,2 @@
+p.gpr:4:09: attribute reference not allowed here
+gprbuild: "p.gpr" processing failed

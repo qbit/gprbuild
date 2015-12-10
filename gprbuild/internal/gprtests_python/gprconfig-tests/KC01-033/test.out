@@ -1,0 +1,15 @@
+--------------------------------------------------
+gprconfig has found the following compilers on your PATH.
+Only those matching the target and the selected compilers are displayed.
+   1. GNAT for Ada in <pwd>/install/bin/ version 6.1 (default [native] runtime)
+   2. GNAT for Ada in <pwd>/install/bin/ version 6.1 (sjlj runtime)
+   3. GCC-ASM for Asm in <pwd>/install/bin/ version 3.4.6
+   4. GCC-ASM for Asm2 in <pwd>/install/bin/ version 3.4.6
+   5. GCC-ASM for Asm_Cpp in <pwd>/install/bin/ version 3.4.6
+   6. GCC_Pro for C in <pwd>/install/bin/ version 3.4.6
+Select or unselect the following compiler (or "s" to save):
+You can regenerate the same config file in batch mode
+  with the following command line:
+gprconfig --batch --target=i686-pc-linux-gnu
+No valid configuration found
+Generation of configuration files failed

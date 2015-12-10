@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+
+<gprconfig>
+  <!--  A base configuration for any version of GNAT
+        That will need to be adjusted, and is provided mostly as
+        an example. Note that the value of
+        GNAT_Runtime_Dir and Toolchain_Version are currently incorrect -->
+
+  <configuration>
+   <compilers><compiler name="GNAT" /></compilers>
+   <config>
+   package Compiler is
+      from "GNAT" node
+      PREFIX=${PREFIX(ada)}
+      VERSION=${VERSION(ada)}
+      RUNTIME_DIR=${RUNTIME_DIR(ada)} 
+   end Compiler;
+   </config>
+  </configuration>
+
+  <!-- DOTNET -->
+  <configuration>
+   <compilers>
+    <compiler name="GNAT_DOTNET"/>
+   </compilers>
+   <config>
+   package Compiler is
+      for Driver                   ("Ada") use "${PATH(ada)}${PREFIX(ada)}gnatcompile";
+   end Compiler;
+   </config>
+  </configuration>
+
+  <configuration>
+   <compilers><compiler name="GCC_Pro"/></compilers>
+   <config>
+   package Compiler is
+      from "GCC_Pro" node
+   end Compiler;
+   </config>
+  </configuration>
+
+  <configuration>
+   <compilers><compiler name="GCC"/></compilers>
+   <config>
+   package Compiler is
+      from "GCC" node
+   end Compiler;
+   </config>
+  </configuration>
+
+  <!--  Whether -fPIC is needed -->
+  <configuration>
+   <compilers><compiler name="GNAT" /></compilers>
+   <targets negate="true">
+      <target name=".*mingw.*" />
+   </targets>
+   <config>
+   package Compiler is
+      from "GNAT" and not "mingw" target
+   end Compiler;
+   </config>
+  </configuration>
+
+  <configuration>
+   <compilers>
+     <compiler name="GNAT" runtime="sjlj" />
+   </compilers>
+   <config>
+   package Compiler is
+      from "GNAT" and "sjlj" runtime
+   end Compiler;
+   </config>
+  </configuration>
+
+  <!-- Unsupported config -->
+  <configuration>
+     <compilers><compiler name="GNAT"/></compilers>
+     <targets><target name=".*lynxos.*"/></targets>
+     <config />
+  </configuration>
+</gprconfig>

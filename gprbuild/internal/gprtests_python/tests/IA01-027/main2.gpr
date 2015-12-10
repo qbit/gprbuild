@@ -1,0 +1,8 @@
+with "lib3";
+project main2 is
+   for languages use ("ada", "c");
+   for Main use ("main.adb");
+   for source_dirs use (".", "h1", "h2");
+   for source_files use ("main.adb", "x.c", "x.h");
+   for object_dir use "main2_o";
+end main2;

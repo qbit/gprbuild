@@ -1,0 +1,12 @@
+This contains two libraries :
+1) libdsdp5.8, for semidefinite programming
+2) a wrapper around this library, libconeprogramming, to be used in gprime.
+
+to build (DSDP):
+$./build.sh
+
+to build libconeprogramming:
+gprbuild -Pconesolving
+
+In practice, the wrapper should be built automatically when building gprime.
+

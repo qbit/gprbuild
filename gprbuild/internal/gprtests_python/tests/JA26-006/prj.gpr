@@ -1,0 +1,5 @@
+with "sa_lib.gpr";
+project Prj is
+   for Main use ("ada_main.adb");
+end Prj;
+

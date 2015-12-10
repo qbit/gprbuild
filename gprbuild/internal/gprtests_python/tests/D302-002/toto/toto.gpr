@@ -1,0 +1,8 @@
+project Toto is
+   for Languages use ("C++");
+
+   package Naming is
+      for Implementation_Suffix ("C++") use ".cc";
+   end Naming;
+end Toto;
+

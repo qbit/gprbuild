@@ -1,0 +1,7 @@
+gcc -c -g -O0 -O1 -O2 main.adb
+gcc -c -g -O1 -O1 toto.c
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+ar
+gcc main.o -o main

@@ -1,0 +1,3 @@
+project ext is
+   for source_dirs use (".");
+end ext;

@@ -1,0 +1,14 @@
+configuration project Toto is
+
+   package Naming is
+      for Body_Suffix ("toto") use ".txt";
+   end Naming;
+
+   for Object_Generated ("toto") use "False";
+
+   package Compiler is
+      for Driver ("toto") use "cat";
+   end Compiler;
+
+end Toto;
+

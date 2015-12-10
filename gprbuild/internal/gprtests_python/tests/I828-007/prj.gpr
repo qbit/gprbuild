@@ -1,0 +1,4 @@
+project Prj is
+   for Main use ("filter.adb", "sort_output.adb");
+end Prj;
+

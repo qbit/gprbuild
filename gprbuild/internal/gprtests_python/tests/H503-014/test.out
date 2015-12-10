@@ -1,0 +1,6 @@
+prj.gpr:1:09: "main.adb" and "main.c" have the same object file name
+gprbuild: "prj.gpr" processing failed
+prj3.gpr:1:09: "pkg3.ads" and "pkg3.c" have the same object file name
+gprbuild: "prj3.gpr" processing failed
+prj4.gpr:1:09: "pkg4.c" and "pkg4.ads" have the same object file name
+gprbuild: "prj4.gpr" processing failed

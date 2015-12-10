@@ -1,0 +1,6 @@
+project Imp is
+   for Library_Name use "imp";
+   for Library_Dir use  "lib";
+   for Languages use ("C");
+end Imp;
+

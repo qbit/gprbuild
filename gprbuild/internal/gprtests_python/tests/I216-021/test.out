@@ -1,0 +1,3 @@
+Unit "main2" cannot import unit "pkg2":
+  "Prj1" does not directly import project "Imp2"
+gprbuild: *** compilation phase failed

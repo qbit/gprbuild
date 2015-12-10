@@ -1,0 +1,8 @@
+project SAL is
+   for Languages use ("Ada", "C");
+   for Library_Name use "sal";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+   for Interfaces use ("pkg.ads", "toto.h");
+end SAL;
+

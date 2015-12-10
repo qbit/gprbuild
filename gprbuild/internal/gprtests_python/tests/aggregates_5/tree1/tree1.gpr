@@ -1,0 +1,8 @@
+with "tree2.gpr";  --  Found through the aggregate's Project_Path
+project Tree1 is
+   for Main use ("a.adb");
+
+   package Compiler is
+      for Switches ("Ada") use ("-O2");
+   end Compiler;
+end Tree1;

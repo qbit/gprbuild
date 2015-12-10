@@ -1,0 +1,15 @@
+
+configuration project RC2 is
+
+  package Compiler is
+     for Driver ("RC") use "mydriver";
+     for Object_File_Suffix ("RC") use ".coff";
+     for Object_File_Switches ("RC") use ("-o", "");
+     for Source_File_Switches ("RC") use ("--source=");
+  end Compiler;
+
+  package Naming is
+     for Body_Suffix ("RC") use ".rc";
+  end Naming;
+
+end RC2;

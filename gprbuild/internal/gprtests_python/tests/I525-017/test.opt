@@ -1,0 +1,5 @@
+Ada,AUTOCGPR required
+ZFP dead
+ravenscar-cert XFAIL Ada.Text_IO
+cert XFAIL default restrictions
+minimal XFAIL default restrictions

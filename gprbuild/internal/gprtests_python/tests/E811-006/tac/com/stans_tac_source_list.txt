@@ -1,0 +1,12 @@
+stans_tactical.adb
+addresses.adb
+addresses.ads
+interrupts.ads
+message.adb
+message.ads
+semaphores.adb
+semaphores.ads
+sockets.adb
+sockets.ads
+memMap.c
+sharedMem.c

@@ -1,0 +1,5 @@
+project Toto is
+   for Languages use ("Ada", "C");
+   for Main use ("dummy.adb");
+end Toto;
+

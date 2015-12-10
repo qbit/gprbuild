@@ -1,0 +1,7 @@
+project Prj is
+   for Main use ("main.adb");
+
+   package Linker is
+      for Switches ("main.adb") use ("libtoto.a");
+   end Linker;
+end Prj;

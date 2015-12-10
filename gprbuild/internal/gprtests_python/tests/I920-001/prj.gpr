@@ -1,0 +1,9 @@
+project Prj is
+   for Main use ("main.adb");
+   for Exec_Dir use "bin";
+
+   package Builder is
+      for Executable_Suffix use ".dll";
+   end Builder;
+end Prj;
+

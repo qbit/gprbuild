@@ -1,0 +1,10 @@
+gnat-5.04a1 DEAD invalid warnings when compiling templates_parser.adb
+gnat-5.03a1 DEAD invalid warnings when compiling templates_parser.adb
+gnat-6.02 DEAD invalid warnings when compiling templates_parser.adb
+gnat-3.16a1 DEAD
+gnat-5.01a1 DEAD
+gnat-5.02a1 DEAD
+ZFP DEAD
+ravenscar-cert DEAD Ada.Calendar
+cert XFAIL standard library
+minimal XFAIL standard library

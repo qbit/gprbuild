@@ -1,0 +1,3 @@
+aggregate project Aggr is
+   for Project_Files use ("lib_test.gpr", "lib_asw.gpr");
+end Aggr;

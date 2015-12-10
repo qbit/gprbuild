@@ -1,0 +1,7 @@
+<<<
+UNIX
+>>>
+Install project Main
+cp bin/mymain inst/bin/mymain
+cp bin/run inst/bin/run
+OK, removed

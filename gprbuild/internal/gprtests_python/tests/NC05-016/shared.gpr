@@ -1,0 +1,13 @@
+with "gpr.gpr";
+project Shared is
+   for Source_Dirs use ();
+   for Library_Kind use GPR'Library_Kind;
+   package Naming is
+      for Casing use GPR.Naming'Casing;
+      for Dot_Replacement use GPR.Naming'Dot_Replacement;
+      for Spec_Suffix ("Ada") use GPR.Naming'Spec_Suffix ("Ada");
+   end Naming;
+
+   package Linker renames GPR.Linker;
+end Shared;
+

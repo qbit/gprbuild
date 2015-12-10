@@ -1,0 +1,8 @@
+library project zlib is
+   for languages use ("C");
+   for source_dirs use (".");
+   for object_dir use "zobj";
+   for library_dir use "zlib";
+   for library_name use "z";
+   for library_kind use "static";
+end zlib;

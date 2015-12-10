@@ -1,0 +1,9 @@
+with "lib/toto.gpr";
+project Prj is
+   for Main use ("main.adb");
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-R");
+   end Builder;
+end Prj;
+

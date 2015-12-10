@@ -1,0 +1,5 @@
+project Titi is
+   for Languages use ("Ada", "c");
+   for Main use ("dummy.adb");
+end Titi;
+

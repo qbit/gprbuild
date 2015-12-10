@@ -1,0 +1,2 @@
+Ada,Native,!gnat-5.04a1 required
+!AUTOCGPR,C++ OUT test.out_c++

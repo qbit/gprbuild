@@ -1,0 +1,18 @@
+
+project Mine is
+
+  for Languages use ("C", "mine", "Ada");
+
+  for Source_Dirs use ("mine");
+  for Object_Dir use "mobj";
+
+  package Naming is
+     for Body_Suffix("mine") use ".mine";
+  end Naming;
+
+  package Compiler is
+     for Driver("mine") use "gcc";
+     for Required_Switches("mine") use ("-xc", "-c");
+  end Compiler;
+
+end Mine;

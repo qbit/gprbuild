@@ -1,0 +1,37 @@
+# After editing this file, please check that it is still valid by running
+# python local_machines.py
+
+# Description of the machines
+# For each machine, list the platforms it supports. For each platform, list
+# the configs.
+# For each platform or config, you can specify "discs", which is the lists of
+# discrimants to apply. A config inherits the discrimants of the platform
+# unless it overrides them. A config can also override, via its "gprconfig"
+# key, the default gprconfig parameters inherited from the global configs
+# dict.
+
+from machines import *
+
+machines = {
+    'tah' : {
+        'x86_64-linux' : {
+            discs: 'LIBADDR2LINE SHARED',
+            'AdaC_w' : {},
+            'Ada_w-CC++_gcc43' : {
+                gprconfig: '--config Ada --config C,,,/usr/bin --config C++,,,/usr/bin'
+            },
+        },
+        'avr-elf' : {
+            discs : 'ZFP,No_Float_IO,No_Assert,No_Local_Exception',
+            'AdaCASM_w' : {
+                gprconfig : '--config Ada,,zfp, --config C,,, --config ASM,,,',
+            },
+        },
+        'erc32-elf' : {
+            discs : 'ZFP,No_Float_IO,No_Assert,No_Local_Exception',
+            'AdaCASM_w' : {
+                gprconfig : '--config Ada,,zfp, --config C,,, --config ASM,,,',
+            },
+        },
+    },
+}

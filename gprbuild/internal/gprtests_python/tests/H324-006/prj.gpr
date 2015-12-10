@@ -1,0 +1,9 @@
+project Prj is
+   for Languages use ("Ada", "C");
+
+   package Naming is
+      for Body ("toto") use "titi.adb";
+      for Implementation_Exceptions ("C") use ("none.c");
+   end Naming;
+end Prj;
+

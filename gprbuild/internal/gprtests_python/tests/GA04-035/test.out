@@ -1,0 +1,47 @@
+<<<
+test4_cpp_main: called
+test4_cpp_main: creating cpp_model
+Test4_Common_Root::constructor called
+test4_cpp_main: cpp_model created
+test4_cpp_main: creating ada_model
+Test4_Common_Root::constructor called
+test4_cpp_main: ada_model created
+test4_cpp_main: executing models by state
+
+test4_cpp_main: State = 1
+Test4_Cpp_model_base::Execute called, State = 1
+Test4_Cpp_model::do_initialize()
+Test4_Ada_Model_Base::Execute called, State =  1
+Test4_Ada_model::Do_Initialize
+
+test4_cpp_main: State = 2
+Test4_Cpp_model_base::Execute called, State = 2
+Test4_Cpp_model::do_stabilize()
+Test4_Ada_Model_Base::Execute called, State =  2
+Test4_Ada_model::Do_Start_Of_Exercise
+
+test4_cpp_main: State = 3
+Test4_Cpp_model_base::Execute called, State = 3
+Test4_Cpp_model::do_freeze()
+Test4_Ada_Model_Base::Execute called, State =  3
+Test4_Ada_model::Do_Freeze
+
+test4_cpp_main: State = 4
+Test4_Cpp_model_base::Execute called, State = 4
+Test4_Cpp_model::do_run()
+Test4_Ada_Model_Base::Execute called, State =  4
+Test4_Ada_model::Do_Run
+
+test4_cpp_main: State = 5
+Test4_Cpp_model_base::Execute called, State = 5
+Test4_Cpp_model::do_end_of_exercise()
+Test4_Ada_Model_Base::Execute called, State =  5
+Test4_Ada_model::Do_End_Of_Exercise
+
+test4_cpp_main: State = 6
+Test4_Cpp_model_base::Execute called, State = 6
+Test4_Cpp_model::do_shutdown()
+Test4_Ada_Model_Base::Execute called, State =  6
+Test4_Ada_model::Do_Shutdown
+test4_cpp_main: returning
+>>>

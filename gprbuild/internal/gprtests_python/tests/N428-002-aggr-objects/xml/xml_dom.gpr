@@ -1,0 +1,7 @@
+project xml_dom is
+   for library_name use "xml_dom";
+   for source_dirs use ("src");
+   for library_dir use "xlib";
+   for object_dir use "xobj";
+   for externally_built use "true";
+end xml_dom;

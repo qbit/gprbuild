@@ -1,0 +1,12 @@
+
+configuration project Default is
+   for Target use "i686-pc-linux-gnu";
+
+   package Compiler is
+      for Driver ("Project File") use "";
+   end Compiler;
+
+   package Naming is
+      for Spec_Suffix ("Project File") use ".gpr";
+   end Naming;
+end Default;

@@ -1,0 +1,20 @@
+project prj is
+   for Main use ("main.adb");
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("");
+   end Binder;
+
+   package Linker is
+      for Default_Switches ("Ada") use ("");
+   end Linker;
+
+   package Builder is
+      for Default_Switches ("Ada") use ("");
+   end Builder;
+end Prj;
+

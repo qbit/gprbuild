@@ -1,0 +1,3 @@
+asal.gpr:3:08: "library_name" is not valid in aggregate projects
+asal.gpr:4:08: "library_dir" is not valid in aggregate projects
+gprbuild: "asal.gpr" processing failed

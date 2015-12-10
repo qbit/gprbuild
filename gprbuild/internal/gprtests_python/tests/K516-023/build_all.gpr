@@ -1,0 +1,5 @@
+with "paths.gpr";
+aggregate project Build_All is
+   for Project_Path use (Paths.Prefix & "hom" & Paths.Postfix);
+   for Project_Files use ("lls_c.gpr");
+end Build_All;

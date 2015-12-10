@@ -1,0 +1,9 @@
+project Bad3 is
+   for Main use ("filter.adb");
+
+   package Builder is
+      for Switches ("Ada") use ("-k", "-toto");
+      for Global_Compilation_Switches ("C") use ("-O2");
+   end Builder;
+end Bad3;
+

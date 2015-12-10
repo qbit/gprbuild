@@ -1,0 +1,7 @@
+project Prj is
+   for Library_Name use "relocatable";
+   for Library_Dir  use "relocatable";
+   for Library_Kind use "relocatable";
+   for Library_GCC  use "gcc";
+end Prj;
+

@@ -1,0 +1,8 @@
+project Prj is
+   for Languages use ("C");
+
+   package Compiler is
+      for Default_Switches ("C") use ("-g");
+   end Compiler;
+end Prj;
+

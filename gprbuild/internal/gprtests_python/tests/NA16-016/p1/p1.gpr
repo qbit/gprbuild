@@ -1,0 +1,5 @@
+project p1 extends "../ext/ext.gpr" is
+   for source_dirs use (".");
+   for object_dir use "obj";
+   for main use ("main.adb");
+end p1;

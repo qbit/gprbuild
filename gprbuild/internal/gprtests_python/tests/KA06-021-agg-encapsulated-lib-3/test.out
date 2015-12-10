@@ -1,0 +1,4 @@
+gprbuild: encapsulated library projects not supported on this platform
+<<<
+run: executable main not found
+>>>

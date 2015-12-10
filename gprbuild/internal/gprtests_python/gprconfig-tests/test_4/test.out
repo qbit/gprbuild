@@ -1,0 +1,11 @@
+
+configuration project Default is
+   for Target use "i686-pc-mingw32";
+
+   package Compiler is
+      from "GNAT" node
+      PREFIX=
+      VERSION=6.1
+      RUNTIME_DIR=<pwd>/install/lib/gcc/pentium-mingw32msv/3.4.6/rts-native/
+   end Compiler;
+end Default;

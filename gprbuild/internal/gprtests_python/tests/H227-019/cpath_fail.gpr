@@ -1,0 +1,18 @@
+with "c_project_dir/c_project.gpr";
+
+project cpath_fail is
+
+   for Languages    use ("C++");
+   for Source_Dirs  use (".");
+   for Main use ("cpp_main.cpp");
+   for Object_Dir   use ".";
+
+   package Compiler is
+      for Default_Switches ("c++") use ("-g", "-Wall");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("c++") use ("-g");
+   end Linker;
+
+end cpath_fail;

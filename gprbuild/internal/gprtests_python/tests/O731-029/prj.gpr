@@ -1,0 +1,8 @@
+with "toto";
+with "abst.gpr";
+project Prj is
+   for Main use ("main.adb");
+
+   package Compiler renames Abst.Compiler;
+end Prj;
+

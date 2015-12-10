@@ -1,0 +1,44 @@
+Introduction
+------------
+
+GPRbuild is a multi-language builder based on GNAT project files. It extends
+gnatmake's capabilities to other languages than Ada. GPRbuild offers similar
+capabilities for all supported languages and toolchains, in particular:
+   - recompilation based on dependency information computed at compile time
+   - hierarchical organization in subsystems
+   - support for building static and dynamic libraries
+
+GPRbuild is independent on the version of GNAT Pro and can be used with any
+production version beginning with 3.16a1. It currently supports Ada, C, C++,
+Fortran, and ASM with different toolchains and in particular most of the
+gcc-based ones. Thanks to its configuration database, support for new languages
+and toolchains can be added directly by users. It supports both native and cross
+compilation.
+
+GPRbuild has a companion tool called GPRconfig that helps in selecting the
+desired combination of toolchains for a given project and stores the result in a
+configuration file (.cgpr) used by GPRbuild.When the desired toolchains are
+accessible from the user path, GPRbuild offers an auto-configuration feature
+that makes the toolchain selection transparent to the casual user. When
+full control over the selected toolchains is desired, the user can use gprconfig
+in interactive mode.
+
+Documentation and examples
+--------------------------
+
+The GPRbuild package comes with full examples and documentation. The
+latter is directly accessible from GPS or can be accessed at
+<root>/share/doc/gprbuild in 4 different formats (html, info, pdf & txt).
+
+Similarly, the examples can be found in <root>/share/examples/gprbuild.
+Note that the chapter 'Guided Tour' of the documentation is heavily
+based on the distributed examples and it is recommended to have the
+examples at hand when reading this chapter.
+
+GPRbuild & GPS
+--------------
+
+GPRbuild is the preferred GPS's multi-language builder and will be used by
+default as soon as a project declares more than one language. Recent GPS
+versions have a configurable build interface which can easily be adapted to
+use gprbuild even for Ada-only projects.

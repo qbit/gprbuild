@@ -1,0 +1,12 @@
+with "common";
+library project A2 is
+   for source_Dirs use ("a2_src");
+   for library_name use "a2";
+   for library_dir use "a2lib";
+   for object_dir use "o2lib";
+   for library_kind use Common.Library_Type;
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-O2");
+   end Compiler;
+end A2;

@@ -1,0 +1,7 @@
+library project lib2 is
+   for source_dirs use ("src2");
+   for library_name use "l2";
+   for object_dir use "o2";
+   for library_dir use "l2";
+   for externally_built use "true";
+end lib2;

@@ -1,0 +1,12 @@
+library project A1 is
+   for Source_Dirs use ("a1_src");
+   for Library_Name use "a1";
+   for Library_Dir use "a1lib";
+   for Object_Dir use "o1lib";
+   for Library_Kind use "relocatable";
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-O1");
+   end Compiler;
+
+end A1;

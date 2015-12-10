@@ -1,0 +1,190 @@
+with "gnat_default.gpr";
+--limited with "dds-libnddsc.gpr";
+--limited with "dds-libnddscore.gpr";
+
+Project DDS is
+   for Languages use ("Ada", "C");
+
+
+
+   NDDSHOME := External ("NDDSHOME", ".");
+   Architecure := "i86Win32gcc";
+
+   for Source_Dirs use (".",
+                        "src",
+                        "support");
+
+
+   for Object_Dir use Gnat_Default'Object_Dir;
+   for Library_Dir use Project'Object_Dir & "/lib";
+   for Library_Src_Dir use Project'Object_Dir & "/src";
+
+   Name := "AdaNDDS";
+   
+   case Gnat_Default.Library_Kind is
+      when "None" =>
+         for Library_Kind    use "static";
+         for Library_Dir     use Gnat_Default'Library_Dir;
+         for Library_Src_Dir use Gnat_Default'Library_Src_Dir;
+      when "static" | "dynamic" =>
+         for Library_Kind    use Gnat_Default'Library_Kind;
+         for Library_Dir     use Gnat_Default'Library_Dir;
+         for Library_Src_Dir use Gnat_Default'Library_Src_Dir;
+         for Library_Name use Name;
+         case Gnat_Default.Library_Kind is
+            when "dynamic" =>
+               for Library_Auto_Init use "True";
+               for Library_Name use Project'Library_Name & Gnat_Default.Dynamic_Lib_Sufix;
+               for Library_Interface use ("dds.abstractnativesequence",
+                                          "dds.abstractpolicycontainer",
+                                          "dds.abstractqospolicycontainer",
+                                          "dds.cache",
+                                          "dds.cacheaccess",
+                                          "dds.cachedescription",
+                                          "dds.cachefactory",
+                                          "dds.cachelistener",
+                                          "dds.collectionbase",
+                                          "dds.condition",
+                                          "dds.conditionseq",
+                                          "dds.contentfilteredtopic",
+                                          "dds.datareader",
+                                          "dds.datareaderlistener",
+                                          "dds.datareaderseq",
+                                          "dds.datareader_maps",
+                                          "dds.datawriter",
+                                          "dds.datawriterlistener",
+                                          "dds.datawriter_maps",
+                                          "dds.domainparticipant",
+                                          "dds.domainparticipantfactory.threadlistners",
+                                          "dds.domainparticipantfactory",
+                                          "dds.domainparticipantlistener",
+                                          "dds.domain_entity",
+                                          "dds.entity",
+                                          "dds.guardcondition",
+                                          "dds.images",
+                                          "dds.infrastructure.instancehandle",
+                                          "dds.infrastructure",
+                                          "dds.instancehandle_vectors",
+                                          "dds.intmapbase",
+                                          "dds.intmaprelation",
+                                          "dds.intmaprelationdescription",
+                                          "dds.listbase",
+                                          "dds.listener",
+                                          "dds.listrelation",
+                                          "dds.listrelationdescription",
+                                          "dds.multitopic",
+                                          "dds.object",
+                                          "dds.objectextent",
+                                          "dds.objectfilter",
+                                          "dds.objecthome",
+                                          "dds.objectlistener",
+                                          "dds.objectmodifier",
+                                          "dds.objectquery",
+                                          "dds.objectreferenceseq",
+                                          "dds.publisher.skel",
+                                          "dds.publisher",
+                                          "dds.publisherlistener.low_level",
+                                          "dds.publisherlistener",
+                                          "dds.qospolicy",
+                                          "dds.querycondition",
+                                          "dds.readcondition",
+                                          "dds.refrelation",
+                                          "dds.relationdescription",
+                                          "dds.rootseqence",
+                                          "dds.selection",
+                                          "dds.selectionlistener",
+                                          "dds.sequences_generic",
+                                          "dds.statuscondition",
+                                          "dds.strmapbase",
+                                          "dds.strmaprelation",
+                                          "dds.strmaprelationdescription",
+                                          "dds.struct",
+                                          "dds.subscriber",
+                                          "dds.subscriberlistener",
+                                          "dds.tag_maps",
+                                          "dds.topic.skel",
+                                          "dds.topic",
+                                          "dds.topicdescription",
+                                          "dds.topiclistener.low_level",
+                                          "dds.topiclistener",
+                                          "dds.typesupport",
+                                          "dds.vectors",
+                                          "dds.waitset",
+                                          "dds",
+                                          "dds_support.sequences_generic.images_generic",
+                                          "dds_support.sequences_generic",
+                                          "dds_support.strings",
+                                          "dds_support",
+                                          "mig.rtps",
+                                          "mig",
+                                          "ndds.config.logger",
+                                          "ndds.config",
+                                          "ndds",
+                                          "rti.cdr",
+                                          "rti.disc_dynamic",
+                                          "rti.log",
+                                          "rti.obj_impl",
+                                          "rti.osapi_thread",
+                                          "rti",
+                                          "Dds.condition_Impl",
+                                          "Dds.waitset_Impl",
+                                          "Dds.listener.low_Level",
+                                          "Dds.datawriterlistener.low_Level",
+                                          "Dds.guardcondition_Impl",
+                                          "Dds.datawriter_Impl",
+                                          "Dds.domain_Entity_Impl",
+                                          "Dds.entity_Impl",
+                                          "Dds.statuscondition_Impl",
+                                          "Dds.datareader_Impl");
+            when "static" =>
+               for Library_Name use Project'Library_Name & Gnat_Default.Static_Lib_Sufix;
+            when "None" =>
+               for Library_Name use Project'Library_Name & Gnat_Default.Static_Lib_Sufix;
+         end case;
+
+         case Gnat_Default.Build is
+            when "release" =>
+               for Library_Name use Project'Library_Name & Gnat_Default.Release_Lib_Sufix;
+            when "debug" =>
+               for Library_Name use Project'Library_Name & Gnat_Default.Debug_Lib_Sufix;
+            when "normal" =>
+               for Library_Name use Project'Library_Name & Gnat_Default.Normal_Lib_Sufix;
+         end case;
+
+   end case;
+
+
+   package Builder is
+      for Default_Switches ("ada") use
+        Gnat_Default.Builder'Default_Switches ("ada") ;
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use
+        Gnat_Default.Compiler'Default_Switches ("ada");
+      for Default_Switches ("C") use
+        Gnat_Default.Compiler'Default_Switches ("C") & ("-DRTI_WIN32",
+                                                        "-D_WIN32",
+                                                        "-DRTI_64BIT");
+   end Compiler;
+
+   package Naming is
+      for Implementation ("DDS.DomainParticipantFactory.ThreadListners") use
+        "dds-domainparticipantfactory-threadlistners__gnat.adb";
+   end Naming;
+
+   package Binder is
+      for Default_Switches ("ada") use
+        Gnat_Default.Binder'Default_Switches ("ada");
+   end Binder;
+
+   package Linker is
+      for Default_Switches ("ada") use
+        Gnat_Default.Linker'Default_Switches ("ada");
+   end Linker;
+
+   package IDE is
+      for Vcs_Kind use "Subversion";
+   end Ide;
+end DDS;
+

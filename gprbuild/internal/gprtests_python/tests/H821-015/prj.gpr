@@ -1,0 +1,11 @@
+project Prj is
+   for Library_Name use "prj";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+   for Library_Options use ("-L.", "-ltoto");
+
+   package Linker is
+      for Max_Command_Line_Length use "5";
+   end Linker;
+end Prj;
+

@@ -1,0 +1,4 @@
+project Prj4 is
+   for Object_Dir use "obj4";
+end Prj4;
+

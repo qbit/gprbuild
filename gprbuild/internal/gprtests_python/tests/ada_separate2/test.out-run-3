@@ -1,0 +1,5 @@
+MLib.Tgt.VMS.ia64: elab
+Do VMS
+MLib: Do it
+MLib.Utl: Do it
+MLib.Tgt: Do it

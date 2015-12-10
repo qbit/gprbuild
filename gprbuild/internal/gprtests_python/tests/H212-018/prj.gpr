@@ -1,0 +1,8 @@
+with "imp/imp.gpr";
+with "imp2/imp2.gpr";
+project Prj is
+   for Languages use ("C++");
+   for Main use ("main.cpp");
+--   for Main use ("main.c");
+end Prj;
+

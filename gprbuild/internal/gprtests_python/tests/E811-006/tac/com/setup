@@ -1,0 +1,7 @@
+if ( ! $?GNAT_SETUP ) then
+   setenv GNAT_SETUP 1
+   setenv MAKE_ROOT /3rdparty/gnatpro/gnat-5.03a1
+endif
+if ( `echo $PATH | sed -e "s/.*gnatpro.*/gnatpro/"` != "gnatprot" ) then
+   setenv PATH $MAKE_ROOT/bin:${PATH} 
+endif

@@ -1,0 +1,12 @@
+with "toto/toto.gpr";
+project Prj is
+   for Languages use ("Ada", "C");
+   for Main use ("main.adb");
+   for Object_Dir use "obj";
+   for Exec_Dir   use "bin";
+
+   package Naming is
+      for Spec_Suffix ("C++") use ".h";
+   end Naming;
+end Prj;
+

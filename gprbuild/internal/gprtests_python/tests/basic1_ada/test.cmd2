@@ -1,0 +1,31 @@
+#!../gprtest
+GPRCONFIG -config GNAT,,,Ada
+
+ECHO == First case
+PROJECT basic1
+BUILD 2
+RUN main
+LS_OBJ main.adb
+CLEAN
+ECHO After clean:
+LS_OBJ
+
+ECHO == Second case: using a default project
+RESET
+BUILD_NO_PROJECT 2 main.adb
+RUN main
+LS_OBJ main.adb
+CLEAN
+ECHO After clean:
+LS_OBJ
+
+ECHO == Third case: additional options on command line
+RESET
+BUILD 2 -cargs:ada -gnata
+RUN main
+LS_OBJ main.adb
+CLEAN
+ECHO After clean:
+LS_OBJ
+
+RESET

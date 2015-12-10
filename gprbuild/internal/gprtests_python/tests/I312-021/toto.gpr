@@ -1,0 +1,5 @@
+project Toto is
+   for Main use ("toto.adb");
+   for Source_Files use ("toto.adb");
+end Toto;
+

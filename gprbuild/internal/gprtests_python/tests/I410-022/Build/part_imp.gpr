@@ -1,0 +1,20 @@
+
+project Part_Imp extends "Apps.gpr" is
+
+   for Source_Dirs use (external("GNAT_PROJ_ROOT") & "\Build\Source\Part_Imp");
+   for Object_Dir use external("GNAT_PROJ_ROOT") & "\Build\Objects\Part_Imp";
+
+   for Library_Dir use external("GNAT_PROJ_ROOT") & "\Build\Library";
+
+   package Builder renames Apps.Builder;
+
+   package Compiler renames Apps.Compiler;
+
+   package Binder renames Apps.Binder;
+
+   package Linker renames Apps.Linker;
+
+   package Pretty_Printer renames Apps.Pretty_Printer;
+
+end Part_Imp;
+

@@ -1,0 +1,8 @@
+project P3 is
+  for Source_Dirs use (".");
+  for Source_Files use ("p3.adb");
+
+  for languages use ("Ada");
+  for Main use ("p3.adb");
+
+end P3;

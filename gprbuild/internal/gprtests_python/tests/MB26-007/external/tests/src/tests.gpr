@@ -1,0 +1,22 @@
+with "../../zlib-1.2.3/contrib/ada/zlib.gpr";
+--with "../../../src/gprime.gpr";
+
+project Tests is
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-c", "-gnat05", "-O3");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-static");
+   end Binder;
+   
+   package Linker is
+      for Default_Switches ("ada") use ("-lz");
+   end Linker;
+
+   for Object_Dir use "../builds";
+   for Main use ("t_zlib_01.adb");
+
+end Tests;
+

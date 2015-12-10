@@ -1,0 +1,11 @@
+project Common is
+   for Source_Files use ();
+
+   package Naming is
+      for Spec_Suffix ("Ada") use ".1.ada";
+      for Body_Suffix ("Ada") use ".2.ada";
+      for Casing use "lowercase";
+      for Dot_Replacement use ".";
+   end Naming;
+end Common;
+

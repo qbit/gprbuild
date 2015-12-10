@@ -1,0 +1,4 @@
+Error: unknown language 'Lang with spaces'
+No valid configuration found
+Generation of configuration files failed
+Report from test driver: No output.gpr file created

@@ -1,0 +1,5 @@
+project Base extends "toto.gpr" is
+   for Source_Files use ("pkg.ads");
+   for Object_Dir use "obj";
+end Base;
+

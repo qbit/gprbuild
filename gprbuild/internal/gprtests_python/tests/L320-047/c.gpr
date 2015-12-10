@@ -1,0 +1,6 @@
+with "b.gpr";
+project C is
+   for Source_Files use ("c.adb");
+   for Main use ("c.adb");
+end C;
+

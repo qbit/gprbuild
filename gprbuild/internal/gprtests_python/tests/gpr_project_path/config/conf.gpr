@@ -1,0 +1,6 @@
+project Conf is
+   for Source_Files use ();
+
+   type Build_Type is ("debug", "prod");
+   Build : Build_Type := External ("BUILD", "debug");
+end Conf;

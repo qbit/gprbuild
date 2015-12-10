@@ -1,0 +1,5 @@
+source p-c.ads is not a source of a project
+source p-c-g.adb is not a source of a project
+gprbuild: *** compilation phase failed
+sources q-f.adb and q.adb belong to different projects: Prj2 and Prj1
+gprbuild: *** compilation phase failed

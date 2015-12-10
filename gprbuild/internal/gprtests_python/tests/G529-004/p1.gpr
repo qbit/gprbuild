@@ -1,0 +1,7 @@
+project P1 is
+   for Languages use ("C");
+   for Library_Name use "p1";
+   for Library_Dir use "lib";
+   for Object_Dir use "obj";
+end P1;
+

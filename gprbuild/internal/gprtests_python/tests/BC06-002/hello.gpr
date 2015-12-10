@@ -1,0 +1,11 @@
+with "./included.gpr"; 
+
+project Hello is 
+   for Languages use Included'Languages; 
+
+   for Source_Dirs use ("."); 
+
+   for Main use ("use_of_import.adb"); 
+
+end Hello; 
+

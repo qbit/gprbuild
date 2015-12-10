@@ -1,0 +1,19 @@
+project Test is
+
+   type YN is ("Yes", "No");
+   SAL : YN := external ("SAL", "No");
+
+   for Source_Dirs use (".");
+   for Library_Name use "cw";
+   for Library_Dir use "dll";
+   for Library_Kind use "dynamic";
+   for Library_Options use ("-L.");
+
+   case SAL is
+      when "Yes" =>
+         for Library_Interface use ("pck");
+      when "No" =>
+         null;
+   end case;
+
+end Test;

@@ -1,0 +1,4 @@
+#! /bin/csh
+source setup
+echo "updating names..."
+gnatname -Pstans_tac -d../src/STANS -d../../common/src "*.a*" "*.c" "*.h"

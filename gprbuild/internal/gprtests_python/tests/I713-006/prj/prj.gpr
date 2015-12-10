@@ -1,0 +1,9 @@
+with "toto/toto.gpr";
+with "../titi/titi.gpr";
+with "../tutu/tutu.gpr";
+with "../tata/tata.gpr";
+project Prj is
+   for Source_Dirs use ("src");
+   for Main use ("main.adb");
+end Prj;
+

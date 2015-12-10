@@ -1,0 +1,4 @@
+Ada required
+ZFP DEAD
+ravenscar-cert XFAIL Ada.Text_IO
+PikeOS XFAIL Integer'Image

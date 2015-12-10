@@ -1,0 +1,9 @@
+aggregate
+project GNAT_Agg is
+  for Project_Path use
+    ("../");
+
+  for Project_Files use ("gnat_12.gpr");
+
+end GNAT_Agg;
+

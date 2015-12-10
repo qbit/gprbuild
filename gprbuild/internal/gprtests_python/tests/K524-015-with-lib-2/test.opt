@@ -1,0 +1,3 @@
+Ada,Native Required
+AIX OUT test.out_no_ranlib
+ia64-hpux OUT test.out_no_ranlib

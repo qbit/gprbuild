@@ -1,0 +1,80 @@
+<<<
+--- test2_cpp_main: called
+test2_cpp_main: creating cpp_model
+CPP::test2_create_cpp_model()
+CPP:Test2_Common_Root::constructor called
+test2_cpp_main: cpp_model created 
+
+test2_cpp_main: creating ada_model
+  Ada_Model::Create (allocating CPP object)
+CPP:Test2_Common_Root::constructor called
+
+>>> Ada_Model_Base.Test_Dispatching
+ Testing Do_Initialize ..........CPP:Test2_Cpp_model::do_initialize()
+ Testing Do_Start_Of_Exercise ...CPP:Test2_Cpp_model::do_stabilize()
+ Testing Do_Freeze ..............CPP:Test2_Cpp_model::do_freeze()
+ Testing Do_Run .................CPP:Test2_Cpp_model::do_run()
+ Testing Do_End_Of_Exercise .....CPP:Test2_Cpp_model::do_end_of_exercise()
+ Testing Do_Shutdown ............CPP:Test2_Cpp_model::do_shutdown()
+ Testing Execute
+   CPP:Test2_Cpp_model_base::Execute called, State = 1
+CPP:Test2_Cpp_model::do_initialize()
+   CPP:Test2_Cpp_model_base::Execute called, State = 2
+CPP:Test2_Cpp_model::do_stabilize()
+   CPP:Test2_Cpp_model_base::Execute called, State = 3
+CPP:Test2_Cpp_model::do_freeze()
+   CPP:Test2_Cpp_model_base::Execute called, State = 4
+CPP:Test2_Cpp_model::do_run()
+   CPP:Test2_Cpp_model_base::Execute called, State = 5
+CPP:Test2_Cpp_model::do_end_of_exercise()
+   CPP:Test2_Cpp_model_base::Execute called, State = 6
+CPP:Test2_Cpp_model::do_shutdown()
+>>> Ada_Model_Base.Test_Dispatching (end of test)
+
+test2_cpp_main: ada_model created
+
+test2_cpp_main: executing models by state
+
+CPP:test2_cpp_main: State = 1
+CPP:Test2_Cpp_model_base::Execute called, State = 1
+CPP:Test2_Cpp_model::do_initialize()
+Ada:test2_cpp_main: State = 1
+CPP:Test2_Cpp_model_base::Execute called, State = 1
+CPP:Test2_Cpp_model::do_initialize()
+
+CPP:test2_cpp_main: State = 2
+CPP:Test2_Cpp_model_base::Execute called, State = 2
+CPP:Test2_Cpp_model::do_stabilize()
+Ada:test2_cpp_main: State = 2
+CPP:Test2_Cpp_model_base::Execute called, State = 2
+CPP:Test2_Cpp_model::do_stabilize()
+
+CPP:test2_cpp_main: State = 3
+CPP:Test2_Cpp_model_base::Execute called, State = 3
+CPP:Test2_Cpp_model::do_freeze()
+Ada:test2_cpp_main: State = 3
+CPP:Test2_Cpp_model_base::Execute called, State = 3
+CPP:Test2_Cpp_model::do_freeze()
+
+CPP:test2_cpp_main: State = 4
+CPP:Test2_Cpp_model_base::Execute called, State = 4
+CPP:Test2_Cpp_model::do_run()
+Ada:test2_cpp_main: State = 4
+CPP:Test2_Cpp_model_base::Execute called, State = 4
+CPP:Test2_Cpp_model::do_run()
+
+CPP:test2_cpp_main: State = 5
+CPP:Test2_Cpp_model_base::Execute called, State = 5
+CPP:Test2_Cpp_model::do_end_of_exercise()
+Ada:test2_cpp_main: State = 5
+CPP:Test2_Cpp_model_base::Execute called, State = 5
+CPP:Test2_Cpp_model::do_end_of_exercise()
+
+CPP:test2_cpp_main: State = 6
+CPP:Test2_Cpp_model_base::Execute called, State = 6
+CPP:Test2_Cpp_model::do_shutdown()
+Ada:test2_cpp_main: State = 6
+CPP:Test2_Cpp_model_base::Execute called, State = 6
+CPP:Test2_Cpp_model::do_shutdown()
+--- test2_cpp_main: returning
+>>>

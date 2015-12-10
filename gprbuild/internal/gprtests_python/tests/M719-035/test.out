@@ -1,0 +1,2 @@
+gcc -c main.adb
+gcc -c pkg.ads

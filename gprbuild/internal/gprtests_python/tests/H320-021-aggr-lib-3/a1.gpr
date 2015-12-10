@@ -1,0 +1,9 @@
+project A1 is
+   for source_Dirs use ("a1_src");
+   for object_dir use "o1lib";
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-O1");
+   end Compiler;
+
+end A1;

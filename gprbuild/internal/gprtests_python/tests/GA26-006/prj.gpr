@@ -1,0 +1,4 @@
+project Prj is
+   for Source_Files use ("a/main.adb");
+end Prj;
+

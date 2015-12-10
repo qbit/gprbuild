@@ -1,0 +1,3 @@
+Unit "main" cannot import unit "pkg2":
+  it is not part of the interfaces of its project "Sal"
+gprbuild: *** compilation phase failed

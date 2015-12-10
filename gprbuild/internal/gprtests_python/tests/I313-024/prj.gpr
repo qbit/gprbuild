@@ -1,0 +1,14 @@
+project Prj is
+   for Languages use ("Ada", "windres");
+
+   package Compiler is
+      for Driver ("windres") use "windres";
+      for Required_Switches ("windres") use ("-i");
+      for Object_File_Suffix ("windres") use ".coff";
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix ("windres") use ".rc";
+   end Naming;
+end Prj;
+

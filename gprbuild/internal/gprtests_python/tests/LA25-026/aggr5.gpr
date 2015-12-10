@@ -1,0 +1,6 @@
+aggregate library project Aggr5 is
+   for Project_Files use ("aggr5.gpr");
+   for Library_Dir use "lib";
+   for Library_Name use "aggr";
+end Aggr5;
+

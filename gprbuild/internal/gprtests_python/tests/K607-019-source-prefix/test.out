@@ -1,0 +1,9 @@
+ 4
+-i
+res.rc
+-o
+res.coff
+ 3
+--source=res.rc
+-o
+res.coff

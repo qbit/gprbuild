@@ -1,0 +1,13 @@
+project Prj is
+   for Languages use ("Ada", "C");
+   for Main use ("main.2.ada", "toto.c");
+
+   package Naming is
+      for Body_Suffix ("Ada") use ".2.ada";
+      for Spec_Suffix ("Ada") use ".1.ada";
+   end Naming;
+
+   package Builder is
+      for Switches ("main.2.ada") use ("-g");
+   end Builder;
+end Prj;

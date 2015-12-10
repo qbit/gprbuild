@@ -1,0 +1,6 @@
+C REQUIRED
+ZFP DEAD
+x86-vx6cert XFAIL files from run-cross
+ppc-vx6cert XFAIL files from run-cross
+e500v2-vx6cert XFAIL files from run-cross
+vxworks-5.5 XFAIL LC06-012

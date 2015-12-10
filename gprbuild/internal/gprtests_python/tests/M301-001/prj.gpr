@@ -1,0 +1,10 @@
+project Prj is
+   for Languages use ("C");
+
+   package Compiler is
+      Common_Required_Switches := ("");
+      for Leading_Required_Switches   ("C") use
+         Compiler'Leading_Required_Switches ("C") & Common_Required_Switches;
+   end Compiler;
+end Prj;
+

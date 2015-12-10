@@ -1,0 +1,26 @@
+project Prj is
+
+   for Languages use ("Ada", "C");
+
+   for Main use ("main.adb");
+
+   for Source_Files use ("main.adb", "toto.cxx");
+
+   package Builder is
+--      for Default_Switches ("Ada") use ("-q");
+   end Builder;
+
+   package Naming is
+      for Implementation_Suffix ("C") use ".cxx";
+   end Naming;
+
+   package Linker is
+--      for Default_Switches ("Ada") use ("-v", "-v");
+   end Linker;
+
+   package IDE is
+      for Compiler_Command ("C") use "gcc";
+   end IDE;
+
+end Prj;
+

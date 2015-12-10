@@ -1,0 +1,7 @@
+aggregate project Build_All is
+
+  for Project_Path use (".");
+
+  for Project_Files use ("c.gpr", "ada.gpr");
+
+end Build_All;

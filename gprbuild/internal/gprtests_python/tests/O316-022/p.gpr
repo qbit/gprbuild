@@ -1,0 +1,5 @@
+project P is
+   for Object_Dir use "obj";
+   for Languages use ("Asm");
+   for Main use ("foo.s");
+end P;

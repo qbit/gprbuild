@@ -1,0 +1,23 @@
+library project DSDP is
+    for Languages   use ("C");
+    for Source_Dirs use ("DSDP5.8/src/bounds",
+                         "DSDP5.8/src/lp",
+                         "DSDP5.8/src/solver",
+                         "DSDP5.8/src/sys",
+                         "DSDP5.8/src/sdp",
+                         "DSDP5.8/src/vecmat");
+    for Library_Name use "dsdp";
+
+    for Object_Dir use "DSDP5.8/obj";
+    for Library_Dir use "DSDP5.8/lib";
+
+    package Compiler is 
+        for Default_Switches("C") use (
+                                      "-O3",
+                                      "-std=c99",
+                                      "-Wall", "-Wextra", "-Wshadow", 
+                                      "-g", 
+                                      "-I../include" );
+    end Compiler;
+
+end DSDP;

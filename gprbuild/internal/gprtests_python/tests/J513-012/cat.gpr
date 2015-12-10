@@ -1,0 +1,13 @@
+project Cat is
+   for Languages use ("Cat");
+   for Object_Generated ("Cat") use "False";
+
+   package Compiler is
+      for Driver ("Cat") use "cat";
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix ("Cat") use ".ads";
+   end Naming;
+end Cat;
+

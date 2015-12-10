@@ -1,0 +1,2 @@
+pragma Extend_System (Aux_DEC);
+pragma Restrictions (No_Entry_Calls_In_Elaboration_Code);

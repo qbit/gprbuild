@@ -1,0 +1,5 @@
+gprbuild -c
+gcc -c main.adb
+gcc -c pkg.ads
+gprbuild -U
+gcc -c pkg2.ads

@@ -1,0 +1,14 @@
+-- $Id: gnat.adc,v 1.6 2013/04/22 10:09:37 ocertner Exp $
+
+-- Common pragmas
+-- Keep them in sync with the content of 'gnat_gpr.adc'!!
+
+pragma Restrictions (No_Asynchronous_Control);
+pragma Restrictions (Max_Asynchronous_Select_Nesting => 0);
+pragma Restrictions (No_Abort_Statements);
+
+
+-- Naming pragmas
+-- Keep them in sync with the content of 'gprime*unix*.gpr' project files in 'src/'!!
+
+pragma Source_File_Name (Unit_Name => Prime_C_Api, Spec_File_Name => "prime_c_api_unix.ads");

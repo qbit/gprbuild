@@ -1,0 +1,7 @@
+Ada,C REQUIRED
+ZFP DEAD
+ravenscar-cert XFAIL Ada.Text_IO
+vxworksae XFAIL "gnatpython appwrapper error"
+vxworks6cert XFAIL "gnatpython appwrapper error"
+leon-vx6 XFAIL static link against kernel => C main not supported
+PikeOS XFAIL Integer'Image

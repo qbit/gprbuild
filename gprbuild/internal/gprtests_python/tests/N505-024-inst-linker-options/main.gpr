@@ -1,0 +1,5 @@
+with "lib2";
+project Main is
+   for Source_Dirs use (".");
+   for Main use ("main.adb");
+end Main;

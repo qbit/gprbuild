@@ -1,0 +1,14 @@
+project Project1 is
+
+   for Library_Name use "Project1a";
+   for Library_Dir use  "lib";
+   
+   for Source_Files use ("file1_spec.ada", "file1_body.ada");
+
+   package Naming is
+      for Spec ("file1") use "file1_spec.ada";
+      for Body ("file1") use "file1_body.ada";
+   end Naming;
+
+end Project1;
+

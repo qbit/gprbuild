@@ -1,0 +1,24 @@
+pkg.o
+pkg
+OK pkg.adb
+main.o
+main
+OK main.adb
+pkg.o
+pkg
+MOK pkg.adb
+main.o
+main
+OK main.adb
+pkg.o
+pkg
+DIF pkg.adb
+main.o
+main
+OK main.adb
+pkg.o
+pkg
+??? pkg.adb
+main.o
+main
+OK main.adb

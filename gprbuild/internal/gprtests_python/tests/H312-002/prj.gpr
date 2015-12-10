@@ -1,0 +1,12 @@
+project Prj is
+   for Languages use ("unknown", "idl", "C");
+
+   package Naming is
+      for Body_Suffix ("idl") use ".idl";
+   end Naming;
+
+   package Compiler is
+      for Driver ("idl") use "";
+   end Compiler;
+end Prj;
+

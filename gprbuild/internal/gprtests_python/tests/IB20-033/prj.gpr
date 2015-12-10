@@ -1,0 +1,5 @@
+with "titi/titi.gpr";
+project Prj is
+   for Languages use ("Ada", "C");
+end Prj;
+

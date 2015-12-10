@@ -1,0 +1,15 @@
+project Logger is
+
+   for Languages use ("C++");
+
+   package Naming is
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".cpp";
+   end Naming;
+
+   for Source_Dirs use (".", "code");
+
+
+
+end Logger;
+

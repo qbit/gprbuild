@@ -1,0 +1,5 @@
+project Imp is
+   for Languages use ("Ada");
+   for Locally_Removed_Files use ("pkg2.ads", "pkg2.adb");
+end Imp;
+

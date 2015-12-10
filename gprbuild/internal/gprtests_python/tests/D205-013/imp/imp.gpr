@@ -1,0 +1,13 @@
+project Imp is
+   for Languages use ("C");
+
+   package Compiler is
+      for Default_Switches ("C") use ("-g");
+   end Compiler;
+
+   package Linker is
+      for Linker_Options use ("-Lc_code", "-ltiti");
+   end Linker;
+
+end Imp;
+

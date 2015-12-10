@@ -1,0 +1,5 @@
+project C is
+   for Languages use ("C");
+   for Object_Dir use "objc";
+end C;
+

@@ -1,0 +1,15 @@
+
+ifeq (OS,Winows_NT)
+EXE=.exe
+endif
+
+PREFIX=$(dir $(shell which gnatls))..
+GPRMAKE=gprbuild${EXE} -p
+MKDIR=mkdir${EXE} -p
+CP=cp${EXE} -rf
+RM=rm${EXE} -rf
+SVNRoot=T.B.D
+
+##################################
+export LIBDIR=${PREFIX}/lib/gprbuildproblem
+export INCLUDEDIR=${PREFIX}/include/gprbuildproblem

@@ -1,0 +1,14 @@
+with "static/static";
+with "shared/shared";
+project Prj is
+
+   for Languages use ("C");
+
+   for Main use ("main.c");
+
+   package Linker is
+--     for Switches ("main.c") use ("-shared-libgcc");
+   end Linker;
+
+end Prj;
+

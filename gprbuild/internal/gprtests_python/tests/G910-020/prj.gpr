@@ -1,0 +1,7 @@
+project Prj is
+   for Languages use ("Ada");
+   for Library_Name use "prj";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+end Prj;
+

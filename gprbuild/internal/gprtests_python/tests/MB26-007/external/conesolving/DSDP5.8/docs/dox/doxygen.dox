@@ -1,0 +1,18 @@
+/*!
+
+\page pageDoxygen Creating the Documentation
+
+DSDP uses <a href="http://www.doxygen.org/index.html">Doxygen</a> for documentation. 
+
+The DSDP documentation is available online at 
+<a href="http://www.mcs.anl.gov/~benson/dsdp/">http://www.mcs.anl.gov/~benson/dsdp/</a>.
+
+To generate a local copy of the documentation,
+<ol> 
+<li>Make sure you have Doxygen, version 1.3.8 or later, installed. 
+<li>Change directory to \p DSDPROOT/dox .
+<li>Type \c doxygen.
+<li>Point your browser to \p DSDPROOT/dox/html/index.html .
+</ol>
+
+*/

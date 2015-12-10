@@ -1,0 +1,33 @@
+/*!
+
+\page Authors Authors and Acknowledgments
+
+This version of DSDP was developed by
+<ul>
+<li> <A HREF = "http://www.mcs.anl.gov/~benson/">Steve Benson</A>,
+</li>
+<li> <A HREF = "http://www.stanford.edu/~yyye/">Yinyu Ye</a>,
+</li>
+</ul>
+
+We thank Xiong Zhang and Cris Choi
+for their help in developing this code.  Xiong Zhang
+made an enormous contribution in the initial version of DSDP.
+We also thank Johan Lofberg and Stefan Ratschan
+for suggesting many improvements to the
+software and Hans Mittelmann for his efforts
+in testing and benchmarking it.  Finally, we thank all of the users who have
+commented on previous releases.  Their contributions
+have made DSDP a more reliable, robust, and efficient package.
+
+
+This work was supported by the Mathematical, Information, and Computational
+Sciences Division subprogram of the Office of Advanced Scientific Computing
+Research, Office of Science, U.S. Department of Energy, under Contract
+W-31-109-ENG-38.
+
+
+Please notify the authors of DSDP of your experiences with it.  Your
+feedback helps our research and futher improves the package.
+
+*/

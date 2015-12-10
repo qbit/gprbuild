@@ -1,0 +1,4 @@
+project Prj extends all "a/a.gpr" is
+   for Main use ("main.adb");
+end Prj;
+

@@ -1,0 +1,5 @@
+project Prj2 is
+   for Target use project'Target & "_toto";
+   for Main use ("main.adb");
+end Prj2;
+

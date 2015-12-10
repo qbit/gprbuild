@@ -1,0 +1,5 @@
+--  kill this test, it uses rsync and cannot pass on the nightly
+--  test suite.
+--  ALL DEAD
+Ada,C,native,AUTOCGPR required
+--  NT DEAD

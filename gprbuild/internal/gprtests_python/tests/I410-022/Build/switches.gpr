@@ -1,0 +1,9 @@
+project Switches is
+   for Source_Dirs use ();
+   Build_Switches := ();--"-k", "-vl", "-j2");
+   Compiler_Switches := ("-g", "-march=pentium4", "-mtune=pentium4", "-gnat05", "-gnatf", "-gnatU", "-gnatq", "-gnatwaL");
+   Bind_Switches := ("-E", "-u40");
+   Link_Switches := ("-g");--, "-lws2_32", "-lnetapi32");
+   Optimised_Switches := ("-gnatn", "-O3", "-fno-strict-aliasing");
+   --Global_Configuration_Pragmas := "D:\cspif\builds\CVF\v07\Inputs\CI\cma\gnat.adc";
+end Switches;

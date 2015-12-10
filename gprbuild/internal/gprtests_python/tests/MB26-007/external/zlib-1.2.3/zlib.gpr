@@ -1,0 +1,32 @@
+library project ZLib is
+    for Languages   use ("C");
+    for Source_Dirs use (".");
+    for Source_Files use (
+       "adler32.c",
+       "compress.c",
+       "crc32.c",
+       "gzio.c",
+       "uncompr.c",
+       "deflate.c",
+       "trees.c",
+       "zutil.c",
+       "inflate.c",
+       "infback.c",
+       "inftrees.c",
+       "inffast.c"
+       );
+
+    for Library_Name use "z";
+
+    for Object_Dir use "obj";
+    for Library_Dir use "lib";
+
+    package Compiler is 
+        for Default_Switches("C") use (
+                                      "-Wall", "-Wextra", "-Wshadow", 
+                                      "-O3", "-g",
+                                      "-DUSE_MMAP"
+                                      );
+    end Compiler;
+
+end Zlib;

@@ -1,0 +1,8 @@
+aggregate project Aggr is
+   for Project_Files use ("prj1/prj1.gpr", "prj2/prj2.gpr");
+
+   package Builder is
+      for Switches (others) use ("-d");
+   end Builder;
+end Aggr;
+

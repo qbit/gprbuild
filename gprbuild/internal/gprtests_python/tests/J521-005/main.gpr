@@ -1,0 +1,5 @@
+with "lib.gpr";
+project main is
+   for Source_Files use ("main.adb", "ctrl_obj.ads");
+   for main use ("main.adb");
+end main;

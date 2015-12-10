@@ -1,0 +1,8 @@
+project lib is
+   for source_dirs use ("src");
+   for object_dir use "obj";
+   package linker is
+      for default_switches ("ada") use ("-L.");
+   end linker;
+   for externally_built use "true";
+end lib;

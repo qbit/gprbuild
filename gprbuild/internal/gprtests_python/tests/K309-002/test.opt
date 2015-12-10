@@ -1,0 +1,2 @@
+gnat-5.04a1 DEAD
+ravenscar-cert XFAIL Ada.Text_IO

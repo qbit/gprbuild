@@ -1,0 +1,8 @@
+aggregate library project ASAL is
+   for Project_Files use ("lib1.gpr", "lib2.gpr");
+   for Library_Name use "asal";
+   for Library_Dir  use "alib";
+   for Library_Kind use "relocatable";
+   for Library_Interface use ("pck2");
+   for Library_Standalone use "encapsulated";
+end ASAL;

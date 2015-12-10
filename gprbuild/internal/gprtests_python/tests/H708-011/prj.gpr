@@ -1,0 +1,9 @@
+with "opt/option.gpr";
+
+project Prj is
+   for Main use ("main.adb");
+
+   package Builder renames Option.Builder;
+
+end Prj;
+

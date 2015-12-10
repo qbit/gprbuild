@@ -1,0 +1,5 @@
+project Titi is
+   for Library_Name use "titi";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+end Titi;

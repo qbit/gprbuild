@@ -1,0 +1,259 @@
+/*! 
+\defgroup DSDPBasic DSDP Basics
+
+DSDP can be used within a C application through a set of subroutines.
+
+The subroutines listed below use DSDP to
+solve problems in \ref PDForm "DSDP Standard Form".
+Several examples of applications that use the DSDP application program interface
+are included in the distribution.
+
+Each of these applications includes the header 
+\code 
+#include dsdp5.h 
+\endcode
+and link to the DSDP library.
+
+
+\retval 0 if successful
+
+The documentation of DSDP subroutines in this chapter will not show the return integer, but
+we highly recommend that applications check for errors after each subroutine.
+
+*/
+
+/*! 
+\defgroup DSDPConverge DSDP Convergence 
+
+The subroutines listed below define convergence
+and termination criteria for the solver and
+problems in \ref PDForm "DSDP Standard Form".
+
+\code 
+#include dsdp5.h 
+\endcode
+
+\retval 0 if successful
+
+*/
+
+/*! 
+\defgroup DSDPSolution DSDP Statistics for Data and Current Solution
+
+DSDP can provide information about the problem and its current
+solution in \ref PDForm "DSDP Standard Form".
+
+\code 
+#include dsdp5.h 
+\endcode
+
+\retval 0 if successful
+
+*/
+
+/*! 
+\defgroup DSDPSolver DSDP Tuning Options
+
+Improve performance of DSDP and customize the solver
+for problems in \ref PDForm "DSDP Standard Form".
+
+
+\code 
+#include dsdp5.h 
+\endcode
+
+
+\retval 0 if successful
+
+*/
+
+/*! 
+\defgroup SDPBasic Semidefinite Blocks (Basics)
+
+Routines that create the SDPCone object, set the data, and
+get the solution
+for problems.
+
+
+\code 
+#include dsdp5.h 
+\endcode
+
+
+In \ref PDForm "DSDP Standard Form",
+a semidefinite program is given by the pair of problems
+\f[
+  \begin{array}{llllllllll}
+(P) \ \ \ & \mbox{minimize} & {\displaystyle \sum_{j=0}^{n_b-1} C_j \bullet  X_j }
+   &\mbox{subject to}& {\displaystyle \sum_{j=0}^{n_b-1} A_{i,j} \bullet X_{j}  = b_i } ,& i=1,\ldots, m,
+   &                 &  X_j \succeq 0, \\
+  \end{array} 
+\f]
+\f[
+  \begin{array}{lllllllll}
+(D) \ \ \ & \mbox{maximize} & {\displaystyle \sum_{i=1}^m b_i \ y_i }
+   &\mbox{subject to}&{\displaystyle \sum_{i=1}^m A_{i,j}y_i + S_{j} } = C_{j},  & j=0, \ldots, n_b-1, & S_j \succeq 0 \\
+  \end{array}
+\f]
+where the data \f$A_{i,j}\f$ and \f$C_j\f$ are symmetric matrices 
+of the same dimension and the inner product of
+two \f$n \times n\f$ matrices \f$C=(c_{k,l})\f$ and \f$X=(x_{k,l})\f$
+is defined by
+\f$ C \bullet X  := trace (C^T X) = \sum_{k,l}c_{k,l} x_{k,l} \f$.
+
+Blocks are labelled from 0 to \e nblocks, where \e nblocks is the
+total number of blocks in the SDPCone object.
+
+Variables y are numbered 1 through m. 
+Variable 0 designates the C matrices, which are also denoted \f$ A_{0,j}\f$.
+
+By default, this cone represents symmetric \f$ n \times n\f$ matrices 
+in packed symmetric format.  This format uses
+an array of length \f$ n(n+1)/2 \f$ and orders the
+the elements of the matrix as follows:
+\f[
+\begin{array}{llllllll}
+[ a_{1,1} & a_{2,1} & a_{2,2} & a_{3,1} & a_{3,2} & a_{3,3} & \ldots & a_{n,n} ] \\  
+\end{array}.
+\f]
+
+\retval 0 if successful
+
+*/
+
+/*! 
+\defgroup SDPRoutines Semidefinite Blocks (Operational Routines)
+
+Additional routines that operate on the data.
+
+\code 
+#include dsdp5.h 
+\endcode
+
+In \ref PDForm "DSDP Standard Form"
+a semidefinite program is given by the pair of problems
+\f[
+  \begin{array}{llllllllll}
+(P) \ \ \ & \mbox{minimize} & {\displaystyle \sum_{j=0}^{n_b-1} C_j \bullet  X_j }
+   &\mbox{subject to}& {\displaystyle \sum_{j=0}^{n_b-1} A_{i,j} \bullet X_{j}  = b_i } ,& i=1,\ldots, m,
+   &                 &  X_j \succeq 0, \\
+  \end{array} 
+\f]
+\f[
+  \begin{array}{lllllllll}
+(D) \ \ \ & \mbox{maximize} & {\displaystyle \sum_{i=1}^m b_i \ y_i }
+   &\mbox{subject to}&{\displaystyle \sum_{i=1}^m A_{i,j}y_i + S_{j} } = C_{j},  & j=0, \ldots, n_b-1, & S_j \succeq 0 \\
+  \end{array}
+\f]
+where the data \f$A_{i,j}\f$ and \f$C_j\f$ are symmetric matrices 
+of the same dimension and the inner product of
+two \f$n \times n\f$ matrices \f$C=(c_{k,l})\f$ and \f$X=(x_{k,l})\f$
+is defined by
+\f$ C \bullet X  := trace (C^T X) = \sum_{k,l}c_{k,l} x_{k,l} \f$.
+
+Blocks are labelled from 0 to \e nblocks, where \e nblocks is the
+total number of blocks in the SDPCone object.
+
+Variables y are numbered 1 through m. 
+Variable 0 designates the C matrices, which are also denoted \f$ A_{0,j}\f$.
+
+\retval 0 if successful
+
+
+*/
+
+/*! 
+\defgroup SDPData Semidefinite Blocks (Advanced Data)
+
+Less frequently used routines to set data into the SDPCone object
+and operate on the variables.
+
+
+\code 
+#include dsdp5.h 
+\endcode
+
+In \ref PDForm "DSDP Standard Form", 
+a semidefinite program is given by the pair of problems
+\f[
+  \begin{array}{llllllllll}
+(P) \ \ \ & \mbox{minimize} & {\displaystyle \sum_{j=0}^{n_b-1} C_j \bullet  X_j }
+   &\mbox{subject to}& {\displaystyle \sum_{j=0}^{n_b-1} A_{i,j} \bullet X_{j}  = b_i } ,& i=1,\ldots, m,
+   &                 &  X_j \succeq 0, \\
+  \end{array} 
+\f]
+\f[
+  \begin{array}{lllllllll}
+(D) \ \ \ & \mbox{maximize} & {\displaystyle \sum_{i=1}^m b_i \ y_i }
+   &\mbox{subject to}&{\displaystyle \sum_{i=1}^m A_{i,j}y_i + S_{j} } = C_{j},  & j=0, \ldots, n_b-1, & S_j \succeq 0 \\
+  \end{array}
+\f]
+where the data \f$A_{i,j}\f$ and \f$C_j\f$ are symmetric matrices 
+of the same dimension and the inner product of
+two \f$n \times n\f$ matrices \f$C=(c_{k,l})\f$ and \f$X=(x_{k,l})\f$
+is defined by
+\f$ C \bullet X  := trace (C^T X) = \sum_{k,l}c_{k,l} x_{k,l} \f$.
+
+Blocks are labelled from 0 to \e nblocks, where \e nblocks is the
+total number of blocks in the SDPCone object.
+
+Variables y are numbered 1 through m. 
+Variable 0 designates the C matrices, which are also denoted \f$ A_{0,j}\f$.
+
+\retval 0 if successful
+
+*/
+
+
+/*! 
+\defgroup LPRoutines Linear Programming
+
+Routines that create the LP cone object for linear inequalites, 
+set the data, and provide access to the solutions.
+
+\code 
+#include dsdp5.h 
+\endcode
+
+In \ref PDForm "DSDP Standard Form"
+a pure linear program is given by the following pair of problems.
+\f[ \begin{array}{lllllllll}
+\mbox{Maximize} & b^T y & & \mbox{such that} & A^T y & \leq c \\
+\mbox{Minimize} & c^T x & & \mbox{such that} & A x  & = b, & x \geq 0 \\
+\end{array}
+\f]
+
+Slack variables \f$ s:= c - A^Ty \f$ must be positive. Variables \f$ x,s \in \Re^n\f$.
+
+LP data may be used in conjuction with semidefinite data.
+
+\retval 0 if successful
+
+*/
+
+/*!
+\defgroup Bounds Bounds
+
+Bounds on the variables y are a special type of semidefinite and LP cone.
+Corresponding to lower and upper bounds on the y variables are
+surplus and slack variables in (P) with an a cost. 
+
+Variables y are numbered 1 through m. 
+
+\code 
+#include dsdp5.h 
+\endcode
+
+\retval 0 if successful
+
+*/
+
+/*!
+\defgroup Examples Examples
+
+Examples that formulate problems in 
+ \ref PDForm "DSDP Standard Form".
+and solve them using DSDP.
+
+\note These routines are examples! They not part of the subroutine library.
+*/

@@ -1,0 +1,2 @@
+Ada,C Required
+vxworksmils XFAIL kernel with 2 amioserver.c found by recursive src search (N130-011)

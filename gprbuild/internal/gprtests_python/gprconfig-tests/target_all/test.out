@@ -1,0 +1,22 @@
+--------------------------------------------------
+gprconfig has found the following compilers on your PATH.
+Only those matching the target and the selected compilers are displayed.
+   1. GNAT for Ada in <pwd>/install/bin/ on i686-pc-linux-gnu version 6.1 (native runtime)
+   2. GNAT for Ada in <pwd>/install/bin/ on i686-pc-linux-gnu version 6.1 (sjlj runtime)
+   3. GNAT for Ada in <pwd>/install2/bin/ on sparc-solaris version 6.1 (native runtime)
+   4. GNAT for Ada in <pwd>/install2/bin/ on sparc-solaris version 6.1 (sjlj runtime)
+   5. GCC-ASM for Asm in <pwd>/install/bin/ on i686-pc-linux-gnu version 3.4.6
+   6. GCC-ASM for Asm in <pwd>/install2/bin/ on sparc-solaris version 3.4.6
+   7. GCC-ASM for Asm2 in <pwd>/install/bin/ on i686-pc-linux-gnu version 3.4.6
+   8. GCC-ASM for Asm2 in <pwd>/install2/bin/ on sparc-solaris version 3.4.6
+   9. GCC-ASM for Asm_Cpp in <pwd>/install/bin/ on i686-pc-linux-gnu version 3.4.6
+  10. GCC-ASM for Asm_Cpp in <pwd>/install2/bin/ on sparc-solaris version 3.4.6
+  11. GCC_Pro for C in <pwd>/install/bin/ on i686-pc-linux-gnu version 3.4.6
+  12. GCC_Pro for C in <pwd>/install2/bin/ on sparc-solaris version 3.4.6
+Select or unselect the following compiler (or "s" to save): 
+You can regenerate the same config file in batch mode
+ with the following command line:
+gprconfig --batch --target=all
+
+No valid configuration found
+Generation of configuration files failed

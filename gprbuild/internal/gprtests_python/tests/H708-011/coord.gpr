@@ -1,0 +1,14 @@
+with "..\..\OptionsZfp.gpr";
+with "..\..\Lang\Code\Lang.gpr";
+
+project Coord is
+
+   for Source_Dirs use (".");
+   for Object_Dir use "Obj";
+         
+   package Ide renames OptionsZfp.Ide;
+   package Pretty_Printer renames OptionsZfp.Pretty_Printer;
+   package Builder renames OptionsZfp.Builder;
+   package Compiler renames OptionsZfp.Compiler;
+
+end Coord;

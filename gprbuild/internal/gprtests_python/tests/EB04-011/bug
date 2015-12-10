@@ -1,0 +1,90 @@
+From nicolai.soelter@space.eads.net  Fri Nov  4 10:16:33 2005
+From: Nicolai Soelter <nicolai.soelter@space.eads.net>
+To: Report <report@adacore.com>
+Message-Id: <20051104151533.651B7B84B5@province.act-europe.fr>
+Date: Fri,  4 Nov 2005 16:15:33 +0100 (CET)
+Subject: [EB04-011] - gprmake raised exception (ACT#356)
+
+Architectures: x86-linux  
+Products     : gprmake  
+Branches     : 5.03    
+Priority     : low  
+Problem      : tool_problems    
+---------
+We have a simple example:
+
+a.gpr:
+
+with "b";
+
+project A is
+
+   for Source_Dirs use ();
+
+end A;
+
+
+b.gpr:
+
+project B is
+
+   for Main use ("ada_test.adb");
+
+end B;
+
+
+calling gnatmake is OK:
+
+gnatmake -v -P a ada_test
+
+Parsing Project File "a".
+Checking project file "b"
+Checking project file "a"
+ 8 lines: No errors
+
+Parsing of Project File "a" is finished.
+Adding source directory "/users20/adt_3/soelter/gpr".
+Adding object directory "/users20/adt_3/soelter/gpr".
+
+GNATMAKE Pro 5.02a (20040116) Copyright 1995-2003 Free Software Foundation, Inc.
+Main source file: "ada_test.adb".
+  "/users20/adt_3/soelter/gpr/ada_test.ali" being checked ...
+End of compilation
+gnatmake: "/users20/adt_3/soelter/gpr/ada_test" up to date.
+
+
+calling gprmake is leading to an error:
+
+gprmake -v -P a
+04w (20050627-34) Copyright 2004 Free Software Foundation, Inc.
+
+Parsing Project File "a".
+Checking project file "b"
+Checking project file "a"
+ 8 lines: No errors
+
+Parsing of Project File "a" is finished.
+
+raised SYSTEM.ASSERTIONS.ASSERT_FAILURE : namet.adb:631
+[nico.cgs-6.2] [adt_3@linpc1 gpr]$ gprmake -v -P a ada_test
+
+GPRMAKE Pro 5.04w (20050627-34) Copyright 2004 Free Software Foundation, Inc.
+
+Parsing Project File "a".
+Checking project file "b"
+Checking project file "a"
+ 8 lines: No errors
+
+Parsing of Project File "a" is finished.
+
+raised SYSTEM.ASSERTIONS.ASSERT_FAILURE : namet.adb:631
+
+
+Is this still the problem TN E118-011 ?
+
+
+Nicolai Soelter
+
+
+
+

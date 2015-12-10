@@ -1,0 +1,4 @@
+gprbuild ft.gpr
+./fobj/ess
+6
+2097152

@@ -1,0 +1,4 @@
+project Prj1 is
+   for Languages use ("C");
+end Prj1;
+

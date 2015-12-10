@@ -1,0 +1,10 @@
+
+project P1 is
+  for Source_Dirs use (".");
+  for Object_Dir use "obj";
+  for Source_Files use ("p1.adb");
+
+  for languages use ("Ada");
+  for Main use ("p1.adb");
+
+end P1;

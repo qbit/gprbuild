@@ -1,0 +1,106 @@
+
+project Config is
+
+   type Mode_Type is
+      ("Production", "Debug");
+   Build : Mode_Type := external ("BUILD", "Debug");
+
+   type Comm_Type is
+      ("Sockets", "CORBA");
+   Comm : Comm_Type := external ("SS_COMM", "Sockets");
+
+   type Boolean is
+      ("true", "false");
+
+   type DMS_Version_Type is ("Full", "Lite");
+
+   type Os_Type is ("sparc-solaris", "x86-solaris", "Windows_NT");
+
+
+   Datalink_Enabled : Boolean := external ("DATALINK_ENABLED", "false" );
+   RATT_Enabled : Boolean := external ("RATT_ENABLED", "true" );
+   DMS_VERSION   : DMS_Version_Type := external ("DMS_VERSION", "Full");
+   OS  : OS_Type := external ("OS", "sparc-solaris");
+
+
+   for Source_Files use ();
+   for Source_Dirs use ();
+
+   package Compiler is
+
+      for Default_Switches ("ada") use
+        ("-s",             --recompile if compilation options have changed
+         "-gnato",         --disabled to try and allow debugging on windows
+         "-fstack-check",  --disabled to try and allow debugging on windows
+
+         --"-gnatVa", --experimental (was in dmslite)
+         "-gnatE", "-gnat05", "-gnateDADACORE");
+
+
+      case Datalink_Enabled is
+         when "true" =>
+            for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDWITH_DATALINK");
+         when "false" =>
+            for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDNO_DATALINK");
+      end case;
+--      for Default_Switches ("ada") use ("-gnato", "-fstack-check", "-gnateDNO_DATALINK", "-gnatE", "-gnat05");
+
+      case Build is
+
+         when "Debug" =>
+            for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-g");
+            for Default_Switches ("c") use Compiler'Default_Switches("c") &("-g");
+            for Default_Switches ("c++") use Compiler'Default_Switches("c++") &("-g");
+
+         when "Production" =>
+            null;
+
+      end case;
+      case Comm is
+        when "CORBA" =>
+          for Default_Switches("ada") use  Compiler'Default_Switches ("ada") & ("-gnateDSS_POLYORB" );
+        when others =>
+          null;
+      end case;
+
+      case RATT_Enabled is
+        when "true" =>
+          for Default_Switches("ada") use  Compiler'Default_Switches ("ada") & ("-gnateDRATT_ENABLED" );
+        when others =>
+          null;
+      end case;
+
+      -- pervasive throughout poi...
+      case DMS_VERSION is
+        when "Full" =>
+          for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDFULL_DMS");
+        when "Lite" =>
+          for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDDMS_LITE");
+      end case;
+
+--        case OS is
+--          when "sparc-solaris" =>
+--            for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDSPARC_HOST");
+--
+--          when "x86-solaris" =>
+--            for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDX86_HOST");
+--
+--          when "Windows_NT" =>
+--            for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDX86_HOST");
+--
+--        end case;
+
+
+      -- pervasive throughout poi...
+--        case OS is
+--          when "Windows_NT" =>
+--            for Default_Switches ("ada") use Compiler'Default_Switches("ada") & ("-gnateDWINDOWS_NT");
+--          when others =>
+--            null;
+--        end case;
+
+   end Compiler;
+
+
+
+end Config;

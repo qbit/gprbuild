@@ -1,0 +1,7 @@
+
+with "prj";
+
+project Main is
+   for Languages use ("Ada");
+   for Main use ("main.adb");
+end Main;

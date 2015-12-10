@@ -1,0 +1,20 @@
+project Prj is
+
+   type Build_Type is ("default", "advanced");
+
+   Build : Build_Type := external ("BUILD", "default");
+
+   for Languages use ("Ada", "C");
+
+   case Build is
+      when "default" =>
+         for Source_Dirs use ("src1", "src2");
+
+      when "advanced" =>
+         for Source_Dirs use ("src1", "src3");
+   end case;
+
+   for Main use ("main.adb");
+
+end Prj;
+

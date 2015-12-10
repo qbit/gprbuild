@@ -1,0 +1,7 @@
+abstract project Paths is
+   Prefix := "";
+   Postfix := "";
+
+   Lls_C_Source_Dirs := ("lls_c_src");
+   Lls_C_Object_Dir := "lls_c_obj";
+end Paths;

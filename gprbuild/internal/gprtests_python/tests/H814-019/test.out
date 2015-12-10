@@ -1,0 +1,2 @@
+gprbuild: cannot specify a main program on the command line for a library project file
+gprclean: Cannot specify executable(s) for a Library Project File

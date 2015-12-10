@@ -1,0 +1,27 @@
+
+with "build";
+
+project main_prog_1 is
+
+   for Source_Dirs use ("Source/Main_Progs");
+   for Object_Dir use "Objects/Main_Prog";
+   for Exec_Dir use "Executables/Main_Prog_1";
+                
+   
+   for Main use (
+                 "prog1.adb"
+                );
+
+            
+   package Builder renames Build.Builder;
+
+   package Compiler renames Build.Compiler;
+
+   package Binder renames Build.Binder;
+
+--   package Linker renames Build.Linker;
+
+   package Pretty_Printer renames Build.Pretty_Printer;
+                
+
+end main_prog_1;

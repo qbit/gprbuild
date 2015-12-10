@@ -1,0 +1,7 @@
+--  with "a1", "a2";
+with "aggr";
+project main is
+   for languages use ("Ada");
+   for source_dirs use (".");
+   for Main use ("main.adb");
+end main;

@@ -1,0 +1,7 @@
+<<<
+in A::A, a_value = 1010 
+in A::method1, a_value = 2020 
+      The command name : main_cpp
+The number of arguments: 0
+in A::method2, a_value = 3030
+>>>

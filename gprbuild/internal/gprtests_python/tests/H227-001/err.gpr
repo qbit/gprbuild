@@ -1,0 +1,14 @@
+project Err is
+
+   for Object_Dir use "lib-obj";
+   for Exec_Dir   use ".";
+   for Main use ("err.adb");
+
+   package Compiler is
+      for Switches ("ada") use ("-gnat05");
+   end Compiler;
+
+   for Languages use ("Ada", "C");
+
+end Err;
+

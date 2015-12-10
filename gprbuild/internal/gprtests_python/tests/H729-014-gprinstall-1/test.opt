@@ -1,0 +1,5 @@
+Ada,shared required
+gnat-6.4.2 DEAD
+gnat-7.1.2 DEAD
+!native DEAD
+windows,!gnat-6.4.2,!gnat-7.1.2 OUT test-win.out

@@ -1,0 +1,8 @@
+project Toto is
+   for Languages use ("C", "Ada");
+
+   for Main use ("main2.adb");
+
+   for Source_Files use ("toto.c", "main2.adb");
+end Toto;
+

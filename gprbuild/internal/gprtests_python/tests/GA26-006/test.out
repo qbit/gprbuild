@@ -1,0 +1,4 @@
+prj.gpr:2:26: file name cannot include directory information ("a/main.adb")
+gprbuild: "prj.gpr" processing failed
+prj2.gpr:2:29: file name cannot include directory information ("a/main.adb")
+gprbuild: "prj2.gpr" processing failed

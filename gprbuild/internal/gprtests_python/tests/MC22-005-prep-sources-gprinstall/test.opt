@@ -1,0 +1,4 @@
+C required
+ZFP DEAD
+gnat-5.04a1 DEAD
+x86-vx6cert XFAIL path too long for vxsim (N814-028)

@@ -1,0 +1,76 @@
+/*!
+\page PDForm Standard Form
+
+The %DSDP package uses a dual-scaling algorithm to solve conic
+optimization problems of the form
+\f[
+  \begin{array}{llllllllll}
+(P) \ \ \ & \mbox{minimize} & {\displaystyle \sum_{j=1}^{n_b} \langle C_j, X_j \rangle }
+   &\mbox{subject to}& {\displaystyle \sum_{j=1}^{n_b} \langle A_{i,j}, X_{j}  \rangle }  = b_i ,& i=1,\ldots, m,
+   &                 &  X_j \in K_j,\\
+  \end{array}
+\f]
+\f[
+  \begin{array}{lllllllll}
+(D) \ \ \ & \mbox{maximize} & {\displaystyle \sum_{i=1}^m b_i \ y_i }
+   &\mbox{subject to}&{\displaystyle \sum_{i=1}^m A_{i,j}y_i + S_{j} } = C_{j},  & j=1, \ldots, n_b, & S_j \in  K_j, \\
+  \end{array}
+\f]
+where \f$K_j\f$ is a cone, \f$\langle \cdot , \cdot \rangle\f$ 
+is the associated inner product,
+and \f$b_i\f$, \f$y_i\f$ are scalars.
+For semidefinite programming each cone \f$K_j\f$ is a set of 
+symmetric positive definite matrices,
+the data \f$A_{i,j}\f$ and \f$C_j\f$ are symmetric matrices of the same dimension, 
+and the inner product
+of two \f$n \times n\f$ matrices \f$C=(c_{k,l})\f$ and \f$X=(x_{k,l})\f$
+is defined by
+\f$\langle C , X \rangle := trace (C^T X) = \sum_{k,l}c_{k,l} x_{k,l} \f$.
+In linear programming the cone \f$K_j\f$ is the nonnegative orthant \f$(\Re_{+}^n)\f$,
+the data  \f$A_{i}\f$ and \f$C\f$ are vectors of the same dimension, 
+and the inner product
+\f$\langle C , X \rangle\f$ is the usual vector inner product.
+
+The convergence of the algorithm assumes that both (P) and (D) have
+an interior feasible region and the current solutions are elements of the interior.
+To satisfy these assumptions,
+DSDP bounds
+the variables \f$y\f$ such that \f$l \leq y \leq u\f$ where \f$l,u \in \Re^m\f$.  
+Furthermore,
+DSDP bounds the trace of \f$X\f$ by a penalty parameter \f$\Gamma\f$.
+By adding these auxiliary variables and parameters, DSDP solves following pair of problems:
+\f[
+  \begin{array}{llccccll}
+\vspace{0.25cm}
+(PP) & \mbox{minimize} & {\displaystyle \sum_{j=1}^{n_b} \langle C_j, X_j \rangle } & + & u^T x^u - l^T x^l \\
+   &\mbox{subject to}& {\displaystyle \sum_{j=1}^{n_b} \langle A_{i,j}, X_{j} \rangle}  & + & x^u_i - x^l_i  & = &
+b_i ,& i=1,\ldots, m,  \\
+& & {\displaystyle \sum_{j=1}^{n_b} \langle I_j , X_{j}  \rangle } & &    & \leq & \Gamma, \\
+   &                 &  X_j \in K_j, & & x^u, x^l & \geq & 0, \\
+  \end{array}
+\f]
+\f[
+  \begin{array}{llrcll}
+  \vspace{0.25cm}
+(DD) & \mbox{maximize} & {\displaystyle \sum_{i=1}^m b_i \ y_i - \Gamma r} \\
+&   \mbox{subject to}&{\displaystyle C_{j} - \sum_{i=1}^m A_{i,j}y_i + r I_j } & = & S_{j} \in  K_j, & j=1, \ldots, n_b,  \\
+&  & l_i \leq y_i \leq u_i, & & & i=1,\ldots, m, \\
+& &  r \geq 0, \\
+  \end{array}
+\f]
+where \f$I_j\f$ is the identity element of \f$K_j\f$, and \f$x^l, x^u \in \Re^m \f$ .
+The variables \f$x^l\f$ and \f$x^u\f$ correspond to the Lagrangian multipliers of
+the bounds  \f$l\f$ and \f$u\f$.  The difference of these variables
+can be interpreted as the infeasibility in the solution of (P).
+The positive variable \f$r\f$ augments the variable \f$S_{j}\f$ so that it
+is a element of \f$K_{j}\f$.
+The parameters \f$\Gamma\f$, \f$l\f$, and \f$u\f$ bound these 
+auxiliary variables and penalize infeasibility in (D) and (P).
+By default, the bounds and the penalty parameter \f$\Gamma\f$ are very large to force
+\f$r\f$, \f$x^l\f$, and \f$x^u\f$ to be near zero at the solution.
+Unbounded and infeasible solutions to either (P) or (D) are
+determined through examination of the solutions to (PP) and (DD).
+Note that the reformulation (PP) and (DD) is bounded and feasible,
+and it can be expressed in the form of (P) and (D).
+
+*/

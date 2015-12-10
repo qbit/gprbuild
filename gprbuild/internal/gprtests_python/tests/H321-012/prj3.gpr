@@ -1,0 +1,7 @@
+with "prj4.gpr";
+project Prj3 is
+   package Naming is
+      for Spec ("Pkg2") use "pkg.ads";
+   end Naming;
+end Prj3;
+

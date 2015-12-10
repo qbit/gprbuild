@@ -1,0 +1,10 @@
+aggregate library project Aggr is
+   for Project_Files use (
+   "a/a.gpr",
+   "b/b.gpr",
+   "c/c.gpr"
+   );
+
+   for Library_Name use "aggr";
+   for Library_Dir  use "lib";
+end Aggr;

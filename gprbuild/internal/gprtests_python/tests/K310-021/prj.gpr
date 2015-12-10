@@ -1,0 +1,8 @@
+project Prj is
+   for Source_Files use ("toto.body");
+   package Naming is
+      for Body ("driver") use "toto.body";
+      for Body_Suffix ("ada") use ".body";
+   end Naming;
+
+end Prj;

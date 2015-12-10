@@ -1,0 +1,9 @@
+with "prj.gpr";
+project Prja is
+   for Source_Dirs use ("srca");
+   for Object_Dir  use "obja";
+   for Exec_Dir    use ".";
+
+   for Main use ("maina.adb");
+end Prja;
+

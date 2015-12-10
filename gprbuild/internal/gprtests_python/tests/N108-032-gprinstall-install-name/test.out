@@ -1,0 +1,8 @@
+Install project lib
+Install project lib
+bin/main
+include/myapp/lib/api.ads
+lib/myapp/lib/api.ali
+lib/myapp/lib/liblnm.a
+share/gpr/lib.gpr
+OK, removed

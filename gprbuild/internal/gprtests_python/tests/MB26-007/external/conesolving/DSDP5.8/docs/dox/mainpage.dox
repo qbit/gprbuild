@@ -1,0 +1,101 @@
+/*!
+\mainpage Interior Point Solver for Semidefinite Programming and Linear Matrix Inequalities
+
+The %DSDP package uses a dual-scaling algorithm to solve conic
+optimization problems of the form
+\f[
+  \begin{array}{llllllllll}
+(P) \ \ \ & \mbox{minimize} & {\displaystyle \sum_{j=1}^{n_b} \langle C_j, X_j \rangle }
+   &\mbox{subject to}& {\displaystyle \sum_{j=1}^{n_b} \langle A_{i,j}, X_{j}  \rangle }  = b_i ,& i=1,\ldots, m,
+   &                 &  X_j \in K_j,\\
+  \end{array}
+\f]
+\f[
+  \begin{array}{lllllllll}
+(D) \ \ \ & \mbox{maximize} & {\displaystyle \sum_{i=1}^m b_i \ y_i }
+   &\mbox{subject to}&{\displaystyle \sum_{i=1}^m A_{i,j}y_i + S_{j} } = C_{j},  & j=1, \ldots, n_b, & S_j \in  K_j, \\
+  \end{array}
+\f]
+where \f$K_j\f$ is a cone, \f$\langle \cdot , \cdot \rangle\f$ is the associated inner product,
+and \f$b_i\f$, \f$y_i\f$ are scalars.
+For semidefinite programming each cone \f$K_j\f$ is a set of symmetric positive definite matrices,
+the data \f$A_{i,j}\f$ and \f$C_j\f$ are symmetric matrices of the same dimension, and the inner product
+of two \f$n \times n\f$ matrices \f$C=(c_{k,l})\f$ and \f$X=(x_{k,l})\f$
+is defined by
+\f$\langle C , X \rangle := trace (C^T X) = \sum_{k,l}c_{k,l} x_{k,l} \f$.
+In linear programming the cone \f$K_j\f$ is the nonnegative orthant \f$(\Re_{+}^n)\f$,
+the data  \f$A_{i}\f$ and \f$C\f$ are vectors of the same dimension, and the inner product
+\f$\langle C , X \rangle\f$ is the usual vector inner product.
+Formulation (P) will be referred to as the \e primal problem, and formulation
+(D) will be referred to as the \e dual problem.
+
+%DSDP is an implementation of the interior-point
+dual-scaling algorithm for conic programming.
+The source code, written entirely in ANSI C, is freely available.  The solver
+can be used as a subroutine library, as a function within the MATLAB
+environment, or as an executable that reads and writes to files.
+Initiated in 1997, DSDP
+has developed into an efficient and robust general purpose
+solver for semidefinite programming.
+Although the solver is written with semidefinite programming in
+mind, it can also be used for linear programming and other constraint cones.
+
+The features of DSDP include:
+- a robust algorithm with a convergence proof and polynomially bounded complexity under mild assumptions on the data,
+- primal and dual solutions,
+- feasible solutions when they exist or approximate certificates of infeasibity,
+- initial points that can be feasible or infeasible,
+- relatively low memory requirements for an interior-point method,
+- sparse and low-rank data structures,
+- extensibility that allows applications to customize the solver and improve its performance,
+- a subroutine library that enables it to be linked to larger applications,
+- scalable performance for large problems on parallel architectures, and
+- a well documented interface and examples of its use.
+
+The package has been used in many applications and
+tested for efficiency, robustness, and ease of use.
+Some of the most popular applications of semidefinite programming and
+linear matrix inequalities
+are model control, truss topology design,
+and semidefinite relaxations of combinatorial and global optimization problems.
+We welcome and encourage further use under the terms
+of the license included in the distribution.
+
+<p>
+
+\section Download Download
+Download the most recent version of DSDP from the
+<a href="http://www.mcs.anl.gov/~benson/dsdp/index.html">DSDP Homepage</a>.
+
+\section authors Authors
+DSDP was developed by
+<A HREF = "http://www.mcs.anl.gov/~benson/">Steve Benson</A>,
+<A HREF = "http://www.stanford.edu/~yyye/">Yinyu Ye</a>,
+and Xiong Zhang.
+Please notify the authors of DSDP of your experiences with it.  Your
+feedback helps us promote our research and futher improve
+the package.
+
+\section References
+A complete description of the algorithm and a proof of convergence can be found in
+<a href="http://epubs.siam.org/sam-bin/dbq/article/32800">
+Solving Large-Scale Sparse Semidefinite Programs for Combinatorial Optimization</a>,
+SIAM Journal on Optimization, 10(2), 2000, pp. 443-461.
+<p>
+For implementation details, see a publication submitted to
+ACM Transactions on Mathematical Software: 
+DSDP5: Software For Semidefinite Programming,
+Preprint ANL/MCS-P1289-0905,
+Mathematics and Computer Science Division, Argonne National Laboratory,
+Argonne, IL,
+September, 2005.
+<p>
+For specific use of the software, consult:
+DSDP5 User Guide --- Software for Semidefinite Programming,
+Technical Report ANL/MCS-TM-277,
+Mathematics and Computer Science Division, Argonne National Laboratory,
+Argonne, IL,
+September, 2005.
+<p>
+
+*/

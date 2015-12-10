@@ -1,0 +1,41 @@
+Date	: 02/02/11
+Author	: Dubuc Damien
+binary	: Libgmalloc
+
+
+Resume:
+------
+
+This library is a tools to display the heap memory in any executable. 
+The display help the users and developpers to understand the problem 
+of memory during their executions.
+This libray is only enable on Linux system.
+
+How to use ?
+------------
+
+	To use this library : 
+	- Go to the directory : ${CVSROOT}/gprime/external/tools/gmalloc/
+	- (Not necessary) update source file
+	- $> make distclean all
+	- Copy the library libgmalloc.so where you have your binary
+   	- $> LD_PRELOAD=./libgmalloc.so ./{your_binary}
+
+Exemple :
+		[gprime@cg99-gpu01 gmalloc]$ make distclean all
+		rm -f internal_alloc.o gmalloc.o *~
+		rm -f libgmalloc.so
+		gcc -W -Wall -fPIC -c internal_alloc.c -o internal_alloc.o
+		gcc -W -Wall -fPIC -c gmalloc.c -o gmalloc.o
+		gcc -W -Wall -fPIC -shared internal_alloc.o gmalloc.o -o libgmalloc.so -ldl -rdynamic
+		
+		[gprime@cg99-gpu01 gmalloc]$ cp libgmalloc.so ~/prod/
+		
+		[gprime@cg99-gpu01 gmalloc]$ cd ~/prod/
+		
+		[gprime@cg99-gpu01 prod]$ LD_PRELOAD=./libgmalloc.so ./gprime-3.214.1-linux -check
+		PRIME 3.214.2 27Jan2011 -check
+		MEM> Heap peak 110870 bytes
+		
+		[gprime@cg99-gpu01 prod]$ 
+

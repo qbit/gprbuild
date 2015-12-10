@@ -1,0 +1,17 @@
+project foo is
+   type Language_Type is ("french", "english");
+
+   Language : Language_Type := External ("language");
+
+   package Naming is
+     case Language is
+        when "french" =>
+             for Spec ("Phrases") use "phrases_french.ads";
+        when "english" =>
+             for Spec ("Phrases") use "phrases_english.ads";
+     end case;
+   end Naming;
+
+   for Main use ("hello.adb");
+end foo;
+

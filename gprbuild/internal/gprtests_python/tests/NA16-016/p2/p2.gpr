@@ -1,0 +1,6 @@
+with "ext2/ext2.gpr";
+project p2 is
+   for source_dirs use (".");
+   for object_dir use "obj";
+   for main use ("main.adb");
+end p2;

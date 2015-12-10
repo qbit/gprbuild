@@ -1,0 +1,5 @@
+Ada required
+vxworks DEAD "entry point (driver) not found by gnatpython"
+vxworks6 DEAD "entry point (driver) not found by gnatpython"
+vxworksae DEAD "entry point (driver) not found by gnatpython"
+PikeOS DEAD "entry point (driver) not found"

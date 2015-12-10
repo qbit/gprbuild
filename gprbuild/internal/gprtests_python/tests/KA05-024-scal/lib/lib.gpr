@@ -1,0 +1,9 @@
+project Lib is
+   type Library_Mode is ("relocatable", "static");
+   LT : Library_Mode := external ("LIBRARY_TYPE", "static");
+
+   for Library_Name use "static";
+   for Library_Dir  use "lib";
+   for Library_Kind use LT;
+end Lib;
+

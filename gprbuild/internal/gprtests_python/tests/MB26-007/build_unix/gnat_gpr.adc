@@ -1,0 +1,8 @@
+-- $Id: gnat_gpr.adc,v 1.1 2011/05/13 15:15:52 ocertner Exp $
+
+-- Common pragmas
+-- Keep them in sync with the first part of 'gnat.adc'!!
+
+pragma Restrictions (No_Asynchronous_Control);
+pragma Restrictions (Max_Asynchronous_Select_Nesting => 0);
+pragma Restrictions (No_Abort_Statements);

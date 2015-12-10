@@ -1,0 +1,9 @@
+aggr.gpr:4:08: "library_name" is not valid in aggregate projects
+aggr.gpr:5:08: "library_dir" is not valid in aggregate projects
+aggr.gpr:6:08: "main" is not valid in aggregate projects
+aggr.gpr:7:08: "roots" is not valid in aggregate projects
+aggr.gpr:8:08: "externally_built" is not valid in aggregate projects
+aggr.gpr:11:11: "executable" is not valid in aggregate projects
+aggr.gpr:12:11: "executable_suffix" is not valid in aggregate projects
+aggr.gpr:13:11: "default_switches" is not valid in aggregate projects
+gprbuild: "aggr.gpr" processing failed

@@ -1,0 +1,7 @@
+with "aggr";
+with "xml/xml";
+project main is
+   for source_dirs use (".");
+   for object_dir use "obj";
+   for main use ("main.adb");
+end main;

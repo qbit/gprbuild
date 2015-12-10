@@ -1,0 +1,14 @@
+default.gpr:5:08: "project_files" is only valid in aggregate projects
+gprbuild: "default.gpr" processing failed
+aggr1.gpr:1:19: Attribute "project_files" must be specified in aggregate project
+gprbuild: "aggr1.gpr" processing failed
+aggr2.gpr:4:04: package "naming" is forbidden in aggregate projects
+gprbuild: "aggr2.gpr" processing failed
+aggr3.gpr:3:25: can only import abstract projects, not "foo.gpr"
+gprbuild: "aggr3.gpr" processing failed
+aggr4.gpr:6:27: file "prj1.gpr" not found
+gprbuild: "aggr4.gpr" processing failed
+aggr5.gpr:4:27: Missing file name or pattern in "./"
+aggr5.gpr:5:27: file "." not found
+aggr5.gpr:6:27: Missing file name or pattern in ""
+gprbuild: "aggr5.gpr" processing failed

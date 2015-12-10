@@ -1,0 +1,32 @@
+library project LuaSocket_Base is
+    for Languages   use ("C");
+    for Source_Dirs use (".", "../lua/src");
+    for Source_Files use (
+                   "auxiliar.c",
+                   "buffer.c",
+                   "except.c",
+                   "inet.c",
+                   "io.c",
+                   "luasocket.c",
+                   "mime.c",
+                   "options.c",
+                   "select.c",
+                   "tcp.c",
+                   "timeout.c",
+                   "udp.c"
+                    );
+
+    for Library_Name use "luasocket";
+
+    for Object_Dir use "obj";
+    for Library_Dir use "lib";
+
+    package Compiler is 
+        for Default_Switches("C") use (
+                                      "-Wall", "-Wextra", "-Wshadow", 
+                                      "-O2", "-g",
+                                      "-DLUA_COMPAT_MODULE"
+                                      );
+    end Compiler;
+
+end LuaSocket_Base;

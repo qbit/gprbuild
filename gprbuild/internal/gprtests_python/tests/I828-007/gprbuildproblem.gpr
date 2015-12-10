@@ -1,0 +1,21 @@
+-- ---------------------------------------------
+--
+--
+--
+--
+-- ---------------------------------------------
+project gprbuildproblem is
+
+--   for Object_Dir use "obj";
+   for Languages use ("foo");
+
+   package Compiler is
+      for Driver ("foo") use "filter";
+      for Include_Switches ("foo") use ("-I"); 
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix  ("foo") use ".txt";
+   end Naming;
+
+end gprbuildproblem;

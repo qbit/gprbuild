@@ -1,0 +1,2 @@
+other.gpr:1:16: warning: file name does not match project name, should be "other1.gpr"
+other.gpr:1:09: warning: there are no Ada sources in this project

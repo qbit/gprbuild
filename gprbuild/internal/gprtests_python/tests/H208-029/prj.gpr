@@ -1,0 +1,11 @@
+project Prj is
+   for Main use ("main.adb");
+   package Builder is
+      for Default_Switches ("ada") 
+        use ("-cargs:ada", "-g",
+             "-bargs",
+             "-bargs:ada", "-E",
+             "-largs" );
+   end Builder;
+end Prj;
+

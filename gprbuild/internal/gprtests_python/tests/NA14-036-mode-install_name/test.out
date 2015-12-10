@@ -1,0 +1,9 @@
+<<<
+gprinstall pck1
+gprinstall pck2
+>>>
+OK, inst directory found
+OK, manifest/azerty
+OK, manifest/querty
+OK, manifest/agg
+OK, no install dir

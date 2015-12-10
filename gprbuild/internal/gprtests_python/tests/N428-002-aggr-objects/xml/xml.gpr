@@ -1,0 +1,4 @@
+with "xml_dom";
+project xml is
+   for source_dirs use ();
+end xml;

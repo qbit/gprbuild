@@ -1,0 +1,4 @@
+project A is
+   for Source_Files use ("a.ads", "a.adb");
+end A;
+

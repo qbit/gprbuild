@@ -1,0 +1,4 @@
+with "../imp2/imp2.gpr";
+project Imp1 is
+end Imp1;
+

@@ -1,0 +1,11 @@
+project Prj is
+   for Languages use ("Ada", "C");
+   for Main use ("main.adb");
+
+   package Builder is
+      for Default_Switches ("ada") use ("-O2", "-g");
+      for Default_Switches ("C")   use ("-g");
+   end Builder;
+
+end Prj;
+

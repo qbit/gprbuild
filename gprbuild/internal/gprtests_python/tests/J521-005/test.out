@@ -1,0 +1,7 @@
+<<<
+before init  <global> : INIT
+before final <global> : INIT
+before final <lib>    : INIT
+after final <global>  : INIT
+after final <lib>     : FINAL
+>>>

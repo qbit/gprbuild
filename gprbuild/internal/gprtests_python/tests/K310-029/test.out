@@ -1,0 +1,10 @@
+=== gprbuild, main files from same imported project
+gcc -c imp1.adb
+gcc -c imp2.adb
+imp1.o
+imp2.o
+=== gprbuild, main files from two different projects
+gcc -c root.adb
+gcc -c imp1.adb
+imp1.o
+root.o

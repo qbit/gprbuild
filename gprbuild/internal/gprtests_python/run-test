@@ -1,0 +1,104 @@
+#!/usr/bin/env gnatpython
+"""Usage: run-test [options] test_dir
+
+Run a gprbuild test located in test_dir
+"""
+
+from gnatpython.env import Env
+from gnatpython.fileutils import mv
+from gnatpython.main import Main
+from gnatpython.testdriver import TestRunner, add_run_test_options
+
+import os
+import sys
+import re
+
+
+class TestGPR(TestRunner):
+    """Use default TestRunner with additional filters"""
+
+    def set_output_filter(self):
+        """Override TestRunner.set_ouput_filter"""
+        TestRunner.set_output_filter(self)
+
+        # Additional filter for gprbuild
+        # strip -I options
+        self.output_filter.append(["-[a]*I[cC:]*/\S* ", ""])
+
+        # strip -D options
+        self.output_filter.append(["-D\S+=\S+ ", ""])
+
+        # strip -mmcu=avr6 on avr
+        self.output_filter.append([" -mmcu=avr6", ""])
+
+        # strip ranlib -c option
+        self.output_filter.append(["ranlib -c", "ranlib"])
+
+        # strip gcc prefix
+        self.output_filter.append([Env().target.triplet + '-', ''])
+
+        # strip gcc path
+        self.output_filter.append([r'^.*/bin/gcc', r'gcc'])
+
+        # strip exeext
+        self.output_filter.append([Env().target.os.exeext, ''])
+        if Env().target.platform.endswith('-vx6') or \
+                Env().target.platform.endswith('-vx7'):
+            # The executable suffix, on this platform, depends on
+            # the RTS being used.  But unfortunately, we do not seem
+            # to have access to that info, at this point.  So just
+            # add all other possible extensions (in addition to
+            # the default one we just added above).
+            self.output_filter.append(['\.vxe', ''])
+
+        # Filter lowercase work_dir path (fixes H227-007 on windows)
+        self.output_filter.append([r'([^ \'"]*)%s/src/' %
+                                   re.escape(self.work_dir.lower()), r'\1'])
+        self.output_filter.append([r'[^ \'"]*%s/src/' %
+                                   re.escape(os.path.basename(
+                                       self.work_dir).lower()),
+                                   r''])
+
+    def apply_output_filter(self, lines):
+        lines = TestRunner.apply_output_filter(self, lines)
+        if os.environ.get('GPRBUILD_TEST_SKIP', ''):
+            # Ignore completely the output of run()
+            return re.sub('^<<<.*>>>$', '', '\n'.join(lines),
+                          flags=re.M + re.S).splitlines()
+        else:
+            return lines
+
+    def clean(self):
+        if self.result['is_failure']:
+            if os.path.exists(os.path.join(self.work_dir, 'bin')):
+                mv(os.path.join(self.work_dir, 'bin'),
+                   os.path.join(os.path.dirname(self.result_prefix),
+                                'failed_bin', self.test_name))
+        TestRunner.clean(self)
+
+
+def main():
+    """Run a gprbuild test"""
+    m = Main(add_targets_options=True)
+    add_run_test_options(m)
+    m.parse_args()
+    if not m.args:
+        sys.exit("Error: 1 argument expected. See -h")
+
+    if m.options.restricted_discs is not None:
+        m.options.restricted_discs = m.options.restricted_discs.split(',')
+    t = TestGPR(m.args[0],
+                m.options.discs,
+                m.options.output_dir,
+                m.options.tmp,
+                m.options.enable_cleanup,
+                m.options.restricted_discs,
+                len(m.args) > 1 and m.args[1:] or None,
+                failed_only=m.options.failed_only,
+                default_timeout=m.options.timeout)
+
+    t.execute()
+
+
+if __name__ == '__main__':
+    main()

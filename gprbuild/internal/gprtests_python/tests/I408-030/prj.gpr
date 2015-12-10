@@ -1,0 +1,10 @@
+project Prj is
+   for Main use ("main.2.ada");
+
+   package Naming is
+      for Spec_Suffix ("Ada") use ".1.ada";
+      for Body_Suffix ("Ada") use ".2.ada";
+   end Naming;
+
+end Prj;
+

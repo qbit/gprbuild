@@ -1,0 +1,4 @@
+Ada required
+ZFP dead "not supported by libbareboard"
+ravenscar-cert DEAD Image attribute
+PikeOS XFAIL Integer'Image

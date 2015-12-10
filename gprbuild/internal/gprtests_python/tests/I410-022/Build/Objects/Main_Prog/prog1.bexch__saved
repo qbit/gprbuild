@@ -1,0 +1,39 @@
+[VERBOSE]
+[TOOLCHAIN VERSION]
+ada
+GNAT 6.3
+[MAIN BASE NAME]
+prog1
+[COMPILER PATH]
+/home/celier/local/bin/gcc
+[COMPILER LEADING SWITCHES]
+-c
+-x
+ada
+-gnatA
+[MAIN DEPENDENCY FILE]
+/home/celier/bugs/I410-022/Build/Objects/Main_Prog/prog1.ali
+[DEPENDENCY FILES]
+[BINDING OPTIONS]
+-I-
+-E
+-u40
+[PROJECT FILES]
+/home/celier/bugs/I410-022/Build/main_prog_1.gpr
+20091024204307
+/home/celier/bugs/I410-022/Build/ext_apps.gpr
+20091024204307
+/home/celier/bugs/I410-022/Build/ext_comp_b.gpr
+20091024204312
+/home/celier/bugs/I410-022/Build/ext_comp_c.gpr
+20091024204307
+/home/celier/bugs/I410-022/Build/ext_comp_a.gpr
+20091024204308
+/home/celier/bugs/I410-022/Build/cma.gpr
+20091024204308
+/home/celier/bugs/I410-022/Build/switches.gpr
+20091024204306
+/home/celier/bugs/I410-022/Build/common.gpr
+20091024204308
+/home/celier/bugs/I410-022/Build/build.gpr
+20091024204309

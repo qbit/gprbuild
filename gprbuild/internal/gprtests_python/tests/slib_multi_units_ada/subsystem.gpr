@@ -1,0 +1,38 @@
+project Subsystem is
+   for Languages use ("Ada");
+   for Source_Dirs use ("subsystem_src");
+   for Object_Dir use "subsystem_obj";
+   for Library_Name use "subsystem";
+   for Library_Kind use "static";
+   for Library_Dir use "subsystem_lib";
+
+   type OS_Type is ("unix", "alpha_vms", "itanium_vms", "Windows_NT");
+   OS : OS_Type := External ("OS", "unix");
+
+  case OS is
+      when "alpha_vms" =>
+         for Locally_Removed_Files use ("mlib-tgt-vms-ia64.adb");
+      when "itanium_vms" =>
+         for Locally_Removed_Files use ("mlib-tgt-vms-alpha.adb");
+      when "unix" | "Windows_NT" =>
+         for Locally_Removed_Files use
+           ("mlib-tgt-vms.ads",
+            "mlib-tgt-vms.adb",
+            "mlib-tgt-vms-alpha.adb",
+            "mlib-tgt-vms-ia64.adb");
+   end case;
+
+   package Naming is
+      case OS is
+         when "unix" | "Windows_NT" =>
+            null;
+         when "alpha_vms" =>
+            for Body ("mlib.tgt.specific")
+              use "mlib-tgt-vms-alpha.adb";
+         when "itanium_vms" =>
+            for Body ("mlib.tgt.specific")
+              use "mlib-tgt-vms-ia64.adb";
+      end case;
+   end Naming;
+
+end Subsystem;

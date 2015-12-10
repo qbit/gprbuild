@@ -1,0 +1,112 @@
+with "../external/zlib-1.2.3/zlib.gpr";
+with "../external/lua/lua_linux.gpr";
+with "../external/launch_gprime/launch_gprime.gpr";
+
+project Gprime_Unix is
+
+   -- TODO : move the lua part to a separate project.
+   for Languages use ("ada", "lua");
+
+  -- source folders
+  for Source_Dirs use (".", 
+                        "../external/zlib-1.2.3/contrib/ada", 
+                        "../external/lua/ada", -- lua bindings
+                        "./lua"                -- embedded lua script files
+                        ) ;
+  for Main use ("main.adb");
+
+  for Object_Dir use "../build_unix";
+
+  package Pretty_Printer is
+
+      for Default_Switches ("ada") use ("-A0", "--no-separate-loop-then", "-cl1", "-c3", "-c5", "-A1", "-A4", "-N", "-c0", "-M150");
+
+   end Pretty_Printer;
+
+   package Binder is
+      --link directories
+      for Default_Switches ("ada") use ("-Sev", "-E", "-static", "-aO../external/builds/x86_64-pc-linux-gnu/lib", "-aO../external/Intel/Intel64/uMath");
+
+   end Binder;
+
+   package Naming is
+      for Body_Suffix("lua") use ".lua";
+   end Naming;
+
+   package Linker is
+       -- library list
+      for Default_Switches ("ada") use (
+          "-limf", -- intel Math
+          -- MKL Link line. There must be a full pathname.
+          -- the start-group/end-group linker parameter is there to resolve
+          -- circular references.
+          "-Wl,--start-group","../external/builds/x86_64-pc-linux-gnu/lib/libmkl_intel_lp64.a",
+                              "../external/builds/x86_64-pc-linux-gnu/lib/libmkl_sequential.a",
+                              "../external/builds/x86_64-pc-linux-gnu/lib/libmkl_core.a",
+          "-Wl,--end-group");
+
+   end Linker;
+
+   package Compiler is
+      for Default_Switches ("c") use ("-g");
+      for Default_Switches ("c++") use ("-g");
+
+      -- we are 'compiling' the lua files to object files
+      for Driver("lua") use "python";
+      for Required_Switches("lua") use ("../script/lua_compile.py");
+      for Dependency_Driver("lua") use ("python", "../script/lua_compile.py", "-d");
+
+      -- module.lua will become module_lua.o
+      for Object_File_Suffix("lua") use "_lua.o";
+
+      
+      ADA_2012 := ("-gnat12");
+      Common_Flags := ADA_2012;
+      Validity_Checks := ("-gnatVc", -- validity checks for copies
+                          "-gnatVd", -- default validity checks
+                          "-gnatVf", -- validity checks for floating point values
+                          "-gnatVi", -- validity checks for in mode parameters
+                          "-gnatVm", -- validity checks for in out mode parameters
+                          "-gnatVo", -- validity checks for operator and attribute operands
+                          "-gnatVr", -- validity checks for function returns
+                          "-gnatVs", -- validity checks for subscripts
+                          "-gnatVt"  -- validity checks for tests
+                          );
+
+            for Default_Switches ("ada") use ("-O3", "-g") & Common_Flags;
+
+   end Compiler;
+
+   package Builder is
+
+      for Executable ("gprime.adb") use "gprime";
+      for Global_Configuration_Pragmas use "gnat_gpr.adc";
+
+      Make_Flags := ("-j7"); -- use 7 processes
+      Warning_Error_Flags := (
+                            "-k",      -- don't stop if there are multiple errors
+                            "-gnatQ",  -- don't quit, generate ALI and tree files even if illegalities
+                            "-gnatq",  -- don't quit, try semantics, even if parse errors
+                            "-gnatf",  -- full errors ( multiple errors per line, all undef. refs, etc )
+                            "-gnatwu", -- warning on unused entities
+                            "-gnatwF"  -- no warning on unused formals
+                            );
+      All_Flags := Make_Flags & Warning_Error_Flags;
+
+      for Default_Switches ("ada") use ("-m") & All_Flags;
+
+   end Builder;
+
+   package Ide is
+      for Vcs_Kind use "CVS";
+      for Debugger_Command use "gdb -fullname";
+   end Ide;
+
+  package Remote is
+     for Root_Dir use "..";
+     for Included_Patterns use ("*.adc", "*.adb", "*.ads", "*.h", "*.c", "*.py", "*.gpr", "*.lua", "*/");
+     for Included_Artifact_Patterns use ("*.o", "ali");
+  end Remote;
+
+end Gprime_Unix;
+

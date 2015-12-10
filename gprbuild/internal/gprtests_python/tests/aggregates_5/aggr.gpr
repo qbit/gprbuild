@@ -1,0 +1,4 @@
+aggregate project Aggr is
+   for Project_Path use ("tree1/", "tree2");
+   for Project_Files use ("tree1/tree1.gpr");
+end Aggr;

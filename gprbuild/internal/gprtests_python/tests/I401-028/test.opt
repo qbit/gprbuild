@@ -1,0 +1,8 @@
+Ada required
+gnat-5.04a1 DEAD
+gnat-5.03a1 DEAD
+gnat-3.16a1 DEAD
+gnat-5.01a1 DEAD
+gnat-5.02a1 DEAD
+ravenscar-cert XFAIL Ada.Text_IO
+PikeOS DEAD gnatchop index not supported by gprbuild_utils.get_mains

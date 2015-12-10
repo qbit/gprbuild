@@ -1,0 +1,4 @@
+project Imp is
+   for Languages use ("C");
+end Imp;
+

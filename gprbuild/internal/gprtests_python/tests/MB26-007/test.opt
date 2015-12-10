@@ -1,0 +1,3 @@
+Ada,native,AUTOCGPR required
+Linux,!ia64,!gnat-5.04a1
+ALL DEAD

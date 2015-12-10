@@ -1,0 +1,16 @@
+with "imp/imp";
+project Prj is
+
+   for Languages use ("C", "C++");
+
+   for Main use ("main.c");
+
+   for Source_Dirs use
+      (".", "aaaaaaaaaaaaaaaaaaaa/**", "bbbbbb/**", "cccccc/**");
+
+   package Naming is
+      for Implementation_Suffix ("C++") use ".cpp";
+   end Naming;
+
+end Prj;
+

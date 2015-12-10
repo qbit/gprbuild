@@ -1,0 +1,4 @@
+   compilation of pkg1.ads failed
+   compilation of pkg2.ads failed
+   compilation of pkg3.ads failed
+gprbuild: *** compilation phase failed

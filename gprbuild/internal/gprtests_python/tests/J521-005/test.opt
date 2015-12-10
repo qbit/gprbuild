@@ -1,0 +1,5 @@
+Ada,AUTOCGPR required
+ZFP DEAD
+ravenscar-cert DEAD Ada.Finalization
+cert DEAD Ada.Finalization
+minimal DEAD Ada.Finalization

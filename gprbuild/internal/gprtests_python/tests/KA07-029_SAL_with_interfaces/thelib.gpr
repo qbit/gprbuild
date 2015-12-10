@@ -1,0 +1,21 @@
+    project thelib is
+
+        for Languages use ("Ada", "C");
+        for Source_Dirs use ("src");
+        for Library_Name use "thelib";
+        for Library_Dir  use "lib";
+        for Library_Kind use "dynamic";
+
+        for LIbrary_Interface use ("bar");
+        for Interfaces use ("foo.h", "bar.ads");
+
+        package Naming is
+            for Spec_Suffix ("Ada") use ".ads";
+            for Body_Suffix ("Ada") use ".adb";
+            for Separate_Suffix use ".adb";
+            for Casing use "lowercase";
+            for Dot_Replacement use ".";
+        end Naming;
+
+    end thelib;   
+

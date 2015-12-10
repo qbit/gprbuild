@@ -1,0 +1,3 @@
+Ada required
+ravenscar-cert XFAIL Ada.Text_IO
+

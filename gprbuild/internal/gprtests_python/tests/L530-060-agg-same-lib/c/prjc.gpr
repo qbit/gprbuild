@@ -1,0 +1,6 @@
+with "../b/prjb";
+project prjc is
+   for source_dirs use (".");
+   for Library_Name use "c";
+   for Library_Dir use "lib";
+end prjc;

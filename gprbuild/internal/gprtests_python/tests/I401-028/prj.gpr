@@ -1,0 +1,21 @@
+project Prj is
+
+   for Source_Files use ("sources.ada", "pkg2.ada");
+
+   for Main use ("sources.ada" at 3, "sources.ada" at 4);
+
+   package Naming is
+      for Body ("pkg2") use "pkg2.ada" at 2;
+      for Spec ("pkg2") use "pkg2.ada" at 1;
+      for Body ("main2") use "sources.ada" at 4;
+      for Body ("main") use "sources.ada" at 3;
+      for Body ("pkg") use "sources.ada" at 2;
+      for Spec ("pkg") use "sources.ada" at 1;
+   end Naming;
+
+   package Builder is
+      for Executable ("sources.ada" at 3) use "main";
+      for Executable ("sources.ada" at 4) use "main2";
+   end Builder;
+
+end Prj;

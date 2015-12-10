@@ -1,0 +1,15 @@
+project Prj is
+   for Main use ("main.ada");
+
+   for Source_Dirs use ("src", "exec");
+
+   package Compiler is
+      for Switches ("Ada") use ("-gnatep=prep.data");
+   end Compiler;
+
+   package Naming is
+      for Spec_Suffix ("Ada") use "_.ada";
+      for Body_Suffix ("Ada") use ".ada";
+   end Naming;
+end Prj;
+

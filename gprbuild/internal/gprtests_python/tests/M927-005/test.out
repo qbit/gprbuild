@@ -1,0 +1,9 @@
+prj.gpr:3:09: several main sources "toto.c"
+gprbuild: problems with main sources
+<<<
+Prj1.toto
+>>>
+<<<
+Prj2.toto
+>>>
+gprbuild: "prj3/toto.c" is not a source of any project

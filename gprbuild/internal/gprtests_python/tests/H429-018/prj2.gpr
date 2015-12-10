@@ -1,0 +1,8 @@
+project Prj2 is
+   for Languages use ("C");
+
+   package Compiler is
+      for Switches ("C") use ("-S");
+   end Compiler;
+end Prj2;
+

@@ -1,0 +1,4 @@
+Ada,C required
+ZFP DEAD
+vxworksae XFAIL "build warnings polluting the output"
+vxworksmils XFAIL "this test is a mess for cross-compilers"

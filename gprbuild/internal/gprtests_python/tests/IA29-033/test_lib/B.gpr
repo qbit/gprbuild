@@ -1,0 +1,10 @@
+project B is
+
+  for Source_Dirs use ( "srcB");
+  for Object_Dir use "objB";
+
+   for Library_Dir use "libB";
+   for Library_Name use "B";
+   for Library_Kind use "dynamic";
+
+end B;

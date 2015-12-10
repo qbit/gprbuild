@@ -1,0 +1,6 @@
+project Prjls is
+   for Source_Dirs use ("src");
+   for Library_Name use "sone";
+   for Library_Dir use "lib";
+   for Library_Kind use "relocatable";
+end Prjls;

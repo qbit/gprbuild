@@ -1,0 +1,17 @@
+adiru_fit sjlj
+        Compiler'Leading_Required_Switches ("Ada") & ("--RTS=sjlj");
+        Binder'Required_Switches ("Ada") & ("--RTS=sjlj");
+adiru_fit zfp
+        Compiler'Leading_Required_Switches ("Ada") & ("--RTS=zfp");
+        Binder'Required_Switches ("Ada") & ("--RTS=zfp");
+prj sjlj
+        Compiler'Leading_Required_Switches ("Ada") & ("--RTS=sjlj");
+        Binder'Required_Switches ("Ada") & ("--RTS=sjlj");
+two different --RTS
+gprbuild: several different run-times cannot be specified for the same language
+two similar --RTS
+        Compiler'Leading_Required_Switches ("Ada") & ("--RTS=sjlj");
+        Binder'Required_Switches ("Ada") & ("--RTS=sjlj");
+prj default
+--RTS without auto-configuration
+warning: --RTS is taken into account only in auto-configuration

@@ -1,0 +1,7 @@
+gcc -c a.ads
+----- -XMYHOST=bbb
+gcc -c b.ads
+----- -XMODE=PRODUCTION
+gcc -c b.ads
+----- -XMYHOST=ccc
+gprbuild: there are no non-aggregate projects

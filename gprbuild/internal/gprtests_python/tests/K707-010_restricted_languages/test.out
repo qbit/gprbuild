@@ -1,0 +1,18 @@
+Ada only
+gcc -c main.adb
+C only
+gcc -c toto.c
+C++ only
+g++ -c titi.cpp
+Ada again
+C again
+cleaning
+building main
+running
+<<<
+Main
+>>>
+cleaning
+Ada and C
+gcc -c main.adb
+gcc -c toto.c

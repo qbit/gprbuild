@@ -1,0 +1,28 @@
+project GVD_CPP is
+
+   type CPP_ENABLED is ("true", "false");
+   CPP_TESTING : CPP_ENABLED := external ("CPP_TESTING", "true");
+
+   for Source_Dirs use (".");
+   for Object_Dir use ".";
+
+   case CPP_TESTING is
+      when "true" =>
+         for Languages use ("C", "C++");
+         for Main use ("parse_c.c", "parse_cpp.cc");
+
+      when others =>
+         for Languages use ("C");
+         for Main use ("parse_c.c");
+   end case;
+
+   package Compiler is
+      for Switches ("C++") use ("-g");
+      for Switches ("C") use ("-g");
+   end Compiler;
+
+   package Naming is
+      for Implementation_Suffix ("C++") use ".cc";
+   end Naming;
+
+end GVD_CPP;

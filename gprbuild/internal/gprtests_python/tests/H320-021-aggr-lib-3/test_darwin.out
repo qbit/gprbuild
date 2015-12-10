@@ -1,0 +1,8 @@
+after compilation
+./a2lib/cst.ali
+./laggr/libaggr.dylib
+./o1lib/api.ali
+./o1lib/api.o
+./o2lib/cst.ali
+./o2lib/cst.o
+after clean

@@ -1,0 +1,5 @@
+aggregate library project aggr is
+   for project_files use ("src/src.gpr");
+   for library_dir use "lib";
+   for library_name use "aggr";
+end aggr;

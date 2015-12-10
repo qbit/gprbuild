@@ -1,0 +1,8 @@
+aggregate project AggrKO is
+   --  Project_Path is not used to find aggregated projects, only to
+   --  resolve the "with" within the aggregated projects
+   for Project_Path use ("tree1/", "tree2");
+
+   --  Error: these are not found in the current directory
+   for Project_Files use ("tree1.gpr", "tree2.gpr");
+end AggrKO;

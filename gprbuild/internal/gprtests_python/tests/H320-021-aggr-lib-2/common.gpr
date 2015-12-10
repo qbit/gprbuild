@@ -1,0 +1,4 @@
+abstract project Common is
+   type Library_Kind is ("relocatable", "static");
+   Library_Type : Library_Kind := external ("LIBRARY_TYPE", "static");
+end Common;

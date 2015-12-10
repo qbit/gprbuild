@@ -1,0 +1,8 @@
+C required
+ZFP DEAD
+vxworksae XFAIL "C main not supported"
+x86-vx6cert XFAIL "C main not supported"
+ppc-vx6cert XFAIL "C main not supported"
+e500v2-vx6cert XFAIL "C main not supported"
+leon-vx6 XFAIL static link against kernel => C main not supported
+vxworks-5.5 XFAIL LC06-012

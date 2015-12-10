@@ -1,0 +1,9 @@
+aggregate library project Aggr is
+
+   for Project_Files use ("a1.gpr", "a2.gpr");
+   for Library_Name use "saggr";
+   for Library_Dir use "laggr";
+   for Library_Kind use "relocatable";
+   for Library_Interface use ("api", "cst");
+
+end Aggr;

@@ -1,0 +1,3 @@
+Ada required
+ravenscar-cert XFAIL Ada.Text_IO
+leon-vx6 XFAIL mysteriously failing in nightly builds only (M513-025)

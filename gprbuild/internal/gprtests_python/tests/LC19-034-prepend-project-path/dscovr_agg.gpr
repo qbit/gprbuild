@@ -1,0 +1,4 @@
+aggregate project DSCOVR_Agg is
+   for Project_Path use ("-", "sal.work");
+   for Project_Files use ("dscovr.work/dscovr.gpr");
+end DSCOVR_Agg;

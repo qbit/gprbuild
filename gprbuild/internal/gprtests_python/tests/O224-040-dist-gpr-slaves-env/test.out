@@ -1,0 +1,9 @@
+No env
+gprbuild: missing hosts for distributed mode compilation
+With env
+<<<
+Hello!
+from C : 8
+>>>
+OK, build env present
+OK, removed

@@ -1,0 +1,17 @@
+project Default is
+   for Main use ("a.adb");
+   for Languages use ("Ada", "C");
+
+   package Compiler is
+      for Default_Switches ("b.adb") use ("-O2");
+   end Compiler;
+
+   package Naming is
+      for Implementation ("c") use "c2.adb";
+      for Specification ("c") use "c2.ads";
+   end Naming;
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-s");
+   end Builder;
+end Default;

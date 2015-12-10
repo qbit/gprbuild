@@ -1,0 +1,4 @@
+Ada,shared,native required
+gnat-6.4.2 DEAD
+windows OUT test_win.out
+

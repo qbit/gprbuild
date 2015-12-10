@@ -1,0 +1,7 @@
+project Imp is
+   for Library_Name use "imp";
+   for Library_Dir  use "lib";
+ 
+   for Externally_Built use "true";
+end Imp;
+

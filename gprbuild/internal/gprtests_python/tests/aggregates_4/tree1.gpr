@@ -1,0 +1,12 @@
+project Tree1 is
+   type Mode_Type is ("DEBUG", "PRODUCTION");
+   Mode : Mode_Type := external ("MODE");
+
+   case Mode is
+      when "DEBUG" =>
+         for Source_Files use ("a.ads");
+      when "PRODUCTION" =>
+         for Source_Files use ("b.ads");
+   end case;
+
+end Tree1;

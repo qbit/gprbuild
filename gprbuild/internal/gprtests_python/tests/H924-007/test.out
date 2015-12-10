@@ -1,0 +1,5 @@
+gcc -c main.adb
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+gcc main.o -o main

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification idlFileName="phaSensorDepthData.idl">
+<include file="timeType.idl"/>
+<include file="com_saabgroup_enterprisebus.idl"/>
+<module name="com">
+<module name="saabgroup">
+<module name="cms">
+<module name="pha">
+<module name="sensor">
+<module name="depth">
+<const value="&quot;2.1.0&quot;" name="IDL_VERSION" type="string"/>
+<const value="&quot;com.saabgroup.cms.pha.sensor.depth.t_depth_sensors&quot;" name="DEFAULT_TOPIC" type="string"/>
+<struct name="DepthType">
+<member visibility="" pointer="no" enum="no" type="com::saabgroup::enterprisebus::METER.METER" name="value"/>
+<member visibility="" pointer="no" enum="no" type="com::saabgroup::enterprisebus::METER.METER" name="error"/>
+</struct>
+<directive kind="top-level">false</directive>
+<struct name="Depth">
+<member visibility="" pointer="no" enum="no" type="com::saabgroup::enterprisebus::generalservices::time::TimeType.TimeType" name="senseTime"/>
+<member visibility="" pointer="no" enum="no" type="short" name="sensor"/>
+<directive kind="key"/>
+<member visibility="" pointer="no" enum="no" type="com::saabgroup::enterprisebus::VALID.VALID" name="isValid"/>
+<member visibility="" pointer="no" enum="no" type="com::saabgroup::cms::pha::sensor::depth::DepthType.DepthType" name="depth"/>
+</struct>
+<directive kind="top-level">true</directive>
+</module>
+</module>
+</module>
+</module>
+</module>
+</module>
+</specification>

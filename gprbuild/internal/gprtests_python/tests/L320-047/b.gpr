@@ -1,0 +1,5 @@
+with "a.gpr";
+project B is
+   for Source_Files use ("b.ads", "b.adb");
+end B;
+

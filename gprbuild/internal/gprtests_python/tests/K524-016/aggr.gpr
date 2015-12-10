@@ -1,0 +1,10 @@
+aggregate project Aggr is
+  for Project_Path use (".");
+  for Project_Files use (
+    "p1.gpr",
+    "p2.gpr",
+    "p3.gpr"
+    );
+
+end Aggr;
+    

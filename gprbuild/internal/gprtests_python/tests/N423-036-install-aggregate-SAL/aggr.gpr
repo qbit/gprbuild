@@ -1,0 +1,7 @@
+aggregate library project Aggr is
+   for Project_Files use ("a.gpr");
+   for Library_Name use "aggr";
+   for Library_Dir  use "lib";
+   for Library_Interface use ("pkg");
+end Aggr;
+

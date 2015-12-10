@@ -1,0 +1,9 @@
+-- default src_dirs = "."
+-- default object_dir = "."
+-- default exec_dir = "."
+project basic1 is
+   for Languages    use ("Ada");
+   for Main         use ("main.adb");
+end basic1;
+-- expected output files: ./main.o ./main${exe}
+-- expected output: "hello basic1"

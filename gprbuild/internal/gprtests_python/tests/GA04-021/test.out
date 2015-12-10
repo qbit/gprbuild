@@ -1,0 +1,4 @@
+b.gpr undefined attribute "source_file"
+gprbuild: "b.gpr" processing failed
+b.gpr undefined attribute "source_file"
+gprclean: "b.gpr" processing failed

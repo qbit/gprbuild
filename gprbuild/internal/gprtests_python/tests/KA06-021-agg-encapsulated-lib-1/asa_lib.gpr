@@ -1,0 +1,8 @@
+aggregate library project asa_lib is
+   for Project_Files use ("sa_lib.gpr");
+   for library_name use "asa";
+   for library_dir use ".";
+   for library_kind use "dynamic";
+   for library_interface use ("ada_lib");
+   for library_standalone use "encapsulated";
+end asa_lib;

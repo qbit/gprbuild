@@ -1,0 +1,2 @@
+#include <stdio.h>
+void mine_2 (void) { printf ("mine_2\n"); }

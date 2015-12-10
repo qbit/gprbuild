@@ -1,0 +1,6 @@
+with "thelib.gpr";
+project Prj is
+   for Languages use ("Ada", "C");
+   for Main use ("main.c");
+end Prj;
+

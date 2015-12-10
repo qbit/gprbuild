@@ -1,0 +1,37 @@
+project Stans_Tac is
+
+   for Languages use ("Ada", "C");
+   for Source_Dirs use (".", "../src//**", "../../common/src");
+   for Object_Dir use "../obj";
+   for Exec_Dir use "../img";
+   for Main use ("stans_tactical.adb");
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("-aL", "-A1", "-A2", "-A3", "-A4");
+   end Pretty_Printer;
+
+   package Linker is
+      for Default_Switches ("c") use ("-g");
+   end Linker;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-g");
+      for Default_Switches ("c") use ("-g");
+   end Compiler;
+
+   package Naming is
+      for Specification_Suffix ("c") use ".h";
+      for Implementation_Suffix ("c") use ".c";
+   end Naming;
+
+   package Builder is
+      for Executable ("stans_tactical.adb") use "";
+      for Global_Configuration_Pragmas use "gps.adc";
+   end Builder;
+
+end Stans_Tac;
+

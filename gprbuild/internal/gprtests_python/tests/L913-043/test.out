@@ -1,0 +1,5 @@
+object directory "./gnatprove" created for project test
+gcc -c -gnat12 a1.adb
+gcc -c -gnat12 b.adb
+gcc -c -gnat12 c.adb
+gcc -c -gnat12 b.adb

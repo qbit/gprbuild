@@ -1,0 +1,21 @@
+=== bad1.gpr
+bad1.gpr:5:11: Default_Switches forbidden in presence of Global_Compilation_Switches. Use Switches instead.
+gprbuild: *** illegal combination of Builder attributes
+=== bad2.gpr
+bad2.gpr:5:46: "-toto" is not a builder switch. Consider moving it to Global_Compilation_Switches.
+gprbuild: *** illegal switch "-toto"
+=== bad3.gpr
+bad3.gpr:5:39: "-toto" is not a builder switch. Consider moving it to Global_Compilation_Switches.
+gprbuild: *** illegal switch "-toto"
+=== good1.gpr
+gcc -c -O2 filter.adb
+gprbind filter.bexch
+gnatbind filter.ali
+gcc -c b__filter.adb
+gcc filter.o -o filter
+=== good1.gpr
+gcc -c -O2 filter.adb
+gprbind filter.bexch
+gnatbind filter.ali
+gcc -c b__filter.adb
+gcc filter.o -o filter

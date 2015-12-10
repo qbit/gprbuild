@@ -1,0 +1,4 @@
+package body A is
+begin
+   X := 3;
+end A;

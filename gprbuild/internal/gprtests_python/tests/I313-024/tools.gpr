@@ -1,0 +1,3 @@
+project Tools is
+   for Main use ("windres.adb", "dlltool.adb");
+end Tools;

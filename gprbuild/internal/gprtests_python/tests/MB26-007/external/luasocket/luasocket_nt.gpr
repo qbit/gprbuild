@@ -1,0 +1,7 @@
+library project LuaSocket extends "./luasocket_base.gpr" is
+    -- linux socket file
+    for Source_Files use ( "wsocket.c" );
+    for Object_Dir  use "obj"; 
+    for Library_Dir use "lib";
+    
+end LuaSocket;

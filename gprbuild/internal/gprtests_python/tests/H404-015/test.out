@@ -1,0 +1,3 @@
+prj.gpr:1:09: warning: there are no Ada sources in this project
+no_c_cpp.gpr:1:09: warning: there are no C++ sources in this project
+no_c_cpp.gpr:1:09: warning: there are no C sources in this project

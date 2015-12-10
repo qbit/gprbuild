@@ -1,0 +1,7 @@
+project Prj is
+   for Object_Dir use ".obj";
+   for Exec_Dir use ".";
+   for Languages use ("Ada");
+   for Main use ("make_sources.adb");
+
+end Prj;

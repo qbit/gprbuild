@@ -1,0 +1,3 @@
+Ada,C REQUIRED
+ZFP DEAD
+vxworksae XFAIL "build warnings polluting the output"

@@ -1,0 +1,13 @@
+project Prj is
+   for Main use (
+     "main_1.adb",
+     "main_2.adb",
+     "main_3.adb",
+     "main_4.adb",
+     "main_5.adb",
+     "main_6.adb",
+     "main_7.adb",
+     "main_8.adb",
+     "main_9.adb",
+     "main_10.adb");
+end Prj;

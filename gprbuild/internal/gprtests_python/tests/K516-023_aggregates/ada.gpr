@@ -1,0 +1,5 @@
+with "c.gpr";
+project Ada is
+   for Main use ("main.adb");
+end Ada;
+

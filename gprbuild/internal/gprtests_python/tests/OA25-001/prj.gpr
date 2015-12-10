@@ -1,0 +1,8 @@
+with "ada.gpr";
+project Prj is
+   for Languages use ("C");
+   for Main use ("main.c");
+   
+   for Roots ("main.c") use ();
+end Prj;
+

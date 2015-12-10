@@ -1,0 +1,16 @@
+Install project Lib
+Project inst1/share/gpr/lib.gpr installed
+cp a/pcka.ads inst1/include/lib/pcka.ads
+cp lib/api.ali inst1/lib/lib/api.ali
+cp lib/liba.a inst1/lib/lib/liba.a
+cp lib/pcka.ali inst1/lib/lib/pcka.ali
+cp src/api.ads inst1/include/lib/api.ads
+Install project Lib
+Project inst2/share/gpr/lib.gpr installed
+cp a/pcka.adb inst2/include/lib/pcka.adb
+cp a/pcka.ads inst2/include/lib/pcka.ads
+cp lib/api.ali inst2/lib/lib/api.ali
+cp lib/liba.a inst2/lib/lib/liba.a
+cp lib/pcka.ali inst2/lib/lib/pcka.ali
+cp src/api.adb inst2/include/lib/api.adb
+cp src/api.ads inst2/include/lib/api.ads

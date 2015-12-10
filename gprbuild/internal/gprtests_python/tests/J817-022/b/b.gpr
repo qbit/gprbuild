@@ -1,0 +1,2 @@
+project B extends "../a/a"  is
+end B;

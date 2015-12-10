@@ -1,0 +1,5 @@
+with "b/b";
+
+project Main is
+   for Main use ("test_main.adb");
+end Main;

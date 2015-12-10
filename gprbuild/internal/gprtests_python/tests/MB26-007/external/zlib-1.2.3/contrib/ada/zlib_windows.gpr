@@ -1,0 +1,24 @@
+project Zlib_Windows is
+
+   for Languages use ("Ada");
+   for Source_Dirs use (".");
+   for Main use ("mtest.adb", "read.adb");
+   for Object_Dir use "../../../tests/builds";
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnatwcfilopru", "-gnatVcdfimorst", "-gnatyabcefhiklmnoprst");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("ada") use ("-lz");
+   end Linker;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-gnat05");
+   end Builder;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-static","-aO../../../builds//i686-pc-mingw32/lib/"); 
+   end Binder;
+
+end Zlib_Windows;

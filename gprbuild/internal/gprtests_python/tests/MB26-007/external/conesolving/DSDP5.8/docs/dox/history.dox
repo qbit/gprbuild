@@ -1,0 +1,35 @@
+/*!
+\page History A Brief History
+
+DSDP began as a specialized solver for combinatorial optimization problems.  Over the years, improvements
+in efficiency and design have enabled its use in many applications.  
+Below is a brief history of DSDP.
+
+
+- [1997] At the University of Iowa the authors release the initial 
+version of DSDP.  It
+solved the semidefinite relaxations of the maximum cut, minimum bisection, 
+s-t cut, and bound constrained quadratic problems.
+- [1999] DSDP version 2 increased functionality to address semidefinite cones 
+with rank-one constraint matrices and LP constraints.  It was used specifically for combinatorial problems such as graph coloring, 
+stable sets, and satisfiability problems.
+- [2000] DSDP version 3 was a preliminary implementation of a general purpose SDP solver 
+that addressed applications from
+the Seventh DIMACS Implementation Challenge on 
+Semidefinite and Related Optimization Problems. 
+DSDP 3 also featured 
+the initial release of PDSDP, the first parallel solver for semidefinite programming.
+- [2002] DSDP version 4 added new sparse data structures and linked to 
+BLAS and LAPACK 
+to improve efficiency and precision.   A Lanczos based line search and 
+efficient iterative solver were added.   It solved all problems in the SDPLIB collection 
+that includes examples from control theory, truss topology design,
+and relaxations of combinatorial problems.  
+- [2004] DSDP version 5 features a new efficient interface for semidefinite constraints, 
+and extensibility to structured applications in conic programming.  Existence of the
+central path was ensured by bounding the variables.  New applications from 
+in computational chemistry, global optimization, and sensor network location motivated the
+improvements in efficiency in robustness.
+
+*/
+

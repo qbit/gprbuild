@@ -1,0 +1,8 @@
+project Prj is
+   for Main use ("main.adb");
+
+   package IDE is
+      for Gnat use "gnat";
+   end IDE;
+end Prj;
+

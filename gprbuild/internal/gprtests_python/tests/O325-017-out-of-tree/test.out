@@ -1,0 +1,25 @@
+<<<
+pck1
+gprinstall
+>>>
+OK: inst present
+--- build
+build/auto.cgpr present
+build/main.o present
+build/prj/obj1/pck1.o present
+build/prj/lib1/libLone.a present
+build/prj/obj2/pck2.o present
+build/prj/lib2/libLtwo.a present
+--- install
+inst/share/gpr/main.gpr present
+inst/share/gpr/lib1.gpr present
+inst/share/gpr/lib2.gpr present
+inst/lib/lib1/pck1.ali present
+inst/lib/lib2/pck2.ali present
+inst/lib/lib1/libLone.a present
+inst/lib/lib2/libLtwo.a present
+--- clean
+build/auto.cgpr not found
+build/main.o not found
+build/prj/obj1/pck1.o not found
+build/prj/obj2/pck2.o not found

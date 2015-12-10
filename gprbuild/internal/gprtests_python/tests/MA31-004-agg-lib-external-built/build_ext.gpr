@@ -1,0 +1,5 @@
+library project Build_Ext is
+   for Library_Name use "ext";
+   for Source_Dirs use ("ext_src");
+   for Library_Dir use "ext_lib";
+end Build_Ext;

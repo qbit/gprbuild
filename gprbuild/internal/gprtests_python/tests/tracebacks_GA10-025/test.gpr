@@ -1,0 +1,11 @@
+project Test is
+   for Source_Files use ("backtraces.adb");
+   for Object_Dir use "obj";
+   for Main use ("backtraces.adb");
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+   end Compiler;
+   package Binder is
+      for Switches ("Ada") use ("-E");
+   end Binder;
+end Test;

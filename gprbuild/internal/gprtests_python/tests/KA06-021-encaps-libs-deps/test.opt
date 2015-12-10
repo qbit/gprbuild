@@ -1,0 +1,7 @@
+Ada,SHARED required
+NT OUT test_s.out
+sparc-solaris OUT test_s.out
+x86-Linux OUT test_s.out
+Darwin OUT test_s.out
+x86-solaris OUT test_s.out
+gnat-5.01a1 DEAD

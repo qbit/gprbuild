@@ -1,0 +1,5 @@
+project B is
+   for Main use ("b");
+   for Exec_Dir use "..";
+end B;
+

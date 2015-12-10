@@ -1,0 +1,4 @@
+limited with "root-lib.gpr";
+project root is
+   for Main use ("a.adb");
+end root;

@@ -1,0 +1,10 @@
+project Prj is
+   for Main use ("main1.adb", "main2.adb");
+
+   GNATBIND_PATH :=
+      external ("GNATBIND_PATH", "gnatbind");
+   package Binder is
+      for Switches ("Ada") use ("--gnatbind_path=" & GNATBIND_PATH);
+   end Binder;
+end Prj;
+

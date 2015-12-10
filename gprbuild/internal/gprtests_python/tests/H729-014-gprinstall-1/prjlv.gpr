@@ -1,0 +1,7 @@
+project Prjlv is
+   for Source_Dirs use ("src");
+   for Library_Name use "xyz";
+   for Library_Dir use "lib";
+   for Library_Kind use "relocatable";
+   for Library_Version use "libxyz.so.1";
+end Prjlv;

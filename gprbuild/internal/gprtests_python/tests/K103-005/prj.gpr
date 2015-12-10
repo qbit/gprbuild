@@ -1,0 +1,16 @@
+project Prj is
+   for Languages use ("Ada", "python");
+
+   for Main use ("main.adb");
+
+   for Source_Dirs use ("./**");
+
+   package Compiler is
+      for Driver ("python") use "";
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix ("python") use ".py";
+   end Naming;
+end Prj;
+

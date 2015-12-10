@@ -1,0 +1,249 @@
+Project Gnat_Default is
+   type Build_Type is ("release", "debug",  "normal");
+   type Warning_Level_Type is ("Minimal", "Default", "Elaboration", "Full");
+   type Library_Kind_Type is ("None", "static", "dynamic");
+   type Boolean is ("False", "True");
+   type Architecture_Type is ("i386",
+                              "pentium",
+                              "pentium2",
+                              "pentium3",
+                              "pentium4",
+                              "athlon",
+                              "athlon-mp",
+                              "athlon-fx");
+
+   Architecture  : Architecture_Type  := External ("Architecture", "pentium3");
+   Library_Kind  : Library_Kind_Type := External ("Library_Kind", "None");
+
+   Enable_Gcov   : Boolean := External ("Enable_Gcov", "False");
+   Enable_Gprof  : Boolean := External ("Enable_Gprof", "False");
+
+   Warning_Level : Warning_Level_Type := External ("Warning_Level", "Default");
+   Build         : Build_Type := External ("Build", "debug");
+
+   Dynamic_Lib_Sufix := "_dyn";
+   Static_Lib_Sufix := "";
+
+   Release_Lib_Sufix := "";
+   Debug_Lib_Sufix := "d";
+   Normal_Lib_Sufix := "n";
+
+   for Languages use ();
+   -- ========================================================================
+   -- Directories
+   -- ========================================================================
+   for Source_Dirs use ();
+   for Object_Dir use "lib-obj/" & Build;
+   for Exec_Dir use External ("EXEC_DIR", ".");
+
+   case Enable_Gcov is
+      when "True" =>
+         for Object_Dir use Project'Object_Dir & "-Gcov";
+      when "False" =>
+         null;
+   end case;
+
+   case Enable_Gprof is
+      when "True" =>
+         for Object_Dir use Project'Object_Dir & "-Gprof";
+      when "False" =>
+         null;
+   end case;
+
+   -- ========================================================================
+   -- Library
+   -- ========================================================================
+   case Library_Kind is
+      when "static" | "dynamic" =>
+         for Library_Dir use Project'Object_Dir & "/lib";
+         for Library_Src_Dir use Project'Object_Dir & "/src";
+         for Object_Dir use Project'Object_Dir & "-" & Library_Kind;
+         for Library_Kind use Library_Kind;
+         for Library_Auto_Init use "True";
+      when "None" =>
+         null;
+   end case;
+
+   -- ========================================================================
+   -- BUILDER
+   -- ========================================================================
+   package Builder is
+      for Default_Switches ("ada") use
+        ("-C", -- Cache source mappings
+         "-k", -- Keep going after compilation errors
+         "-s", -- Recompile if compiler switches have changed
+         "-j" &  External ("NUMBER_OF_PROCESSORS", "1")
+        );
+   end Builder;
+
+   -- ========================================================================
+   -- COMPILER
+   -- ========================================================================
+   package Compiler is
+      for Default_Switches ("ada") use
+        ("-gnatf",  -- Full source path in brief error messages
+         "-gnatq",  -- Don't quit, try semantics, even if parse errors
+         "-gnatQ",  -- Don't quit, write ali/tree file even if compile errors
+         "-gnat05", -- Full Ada05
+         "-gnatyM256",
+         "-gnato",  -- Overflow checking enabled.
+         "-fcallgraph-info=su",  -- Output callgraph information
+         "-fstack-usage", -- Output stack usage information
+         "-fstack-check"  -- Since we are running multiple threads.
+        );
+
+      for Default_Switches ("c") use ();
+      for Default_Switches ("c++") use ();
+      case Build is
+
+         when "normal" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada")  &
+            ("-Wuninitialized", -- Use backend to find uninitialized
+             "-gnatwe",         -- Treat Warnings as errors
+             "-O1");            --Optimisation level 1
+
+            for Default_Switches ("C") use
+              Compiler'Default_Switches ("C")  & ("-O1");
+
+            for Default_Switches ("C++") use
+              Compiler'Default_Switches ("C++") & ("-O1");
+
+         when "release" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada")  &
+            ("-O2",             -- Full optimisation.
+             "-Wuninitialized", -- Use backend to find uninitialized
+             "-gnatwe",         -- Treat Warnings as errors
+             "-gnatn");         -- Inlining of subprograms.
+            for Default_Switches ("C") use
+              Compiler'Default_Switches ("C") & ("-O2");
+            for Default_Switches ("C++") use
+              Compiler'Default_Switches ("C++") & ("-O2");
+
+         when "debug" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada") &
+            ("-g",
+             "-gnatVa", -- Turn on all validity checking options
+             "-O0",     -- Optimisation level 0 (-Wuninitialized inefective)
+             "-gnato",  -- Enable overflow checking (off by default)
+             "-gnata"); -- Enable assertions.
+
+            for Default_Switches ("C") use
+              Compiler'Default_Switches ("C") & ("-g");
+            for Default_Switches ("C++") use
+              Compiler'Default_Switches ("C++") & ("-g");
+      end case;
+
+      case Enable_Gcov is
+         when "True" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada") &
+            ("-ftest-coverage",
+             "-fprofile-arcs");
+            for Default_Switches ("C") use
+              Compiler'Default_Switches ("C") &
+            ("-ftest-coverage",
+             "-fprofile-arcs");
+            for Default_Switches ("C++") use
+              Compiler'Default_Switches ("C++") &
+            ("-ftest-coverage",
+             "-fprofile-arcs");
+         when "False" =>
+            null;
+      end case;
+
+      case Enable_Gprof is
+         when "True" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada") & ("-pg");
+            for Default_Switches ("C") use
+              Compiler'Default_Switches ("C") & ("-pg");
+            for Default_Switches ("C++") use
+              Compiler'Default_Switches ("C++") & ("-pg");
+         when "False" =>
+            null;
+      end case;
+
+
+      case Warning_Level is
+         when "Elaboration" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada") & ("-gnatwl");
+            -- Warn for possible elaboration problem.
+         when "Full" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada") & ("-gnatwabdhl");
+            -- Warn for every thing.
+         when  "Default" =>
+            for Default_Switches ("Ada") use
+              Compiler'Default_Switches ("Ada") & "-gnatwa";
+         when "Minimal" =>
+            null;
+      end case;
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+   package Linker is
+      case Build is
+         when "normal" =>
+            null;
+         when "release" =>
+            null;
+         when "debug" =>
+            for Default_Switches ("Ada") use
+              Linker'Default_Switches ("Ada") & ("-g");
+            for Default_Switches ("C") use
+              Linker'Default_Switches ("C") & ("-g");
+            for Default_Switches ("C++") use
+              Linker'Default_Switches ("C++") & ("-g");
+      end case;
+
+      case Enable_Gprof is
+         when "True" =>
+            for Default_Switches ("Ada") use
+              Linker'Default_Switches ("Ada") &
+            ("-pg");
+            for Default_Switches ("C") use
+              Linker'Default_Switches ("C") &
+            ("-pg");
+            for Default_Switches ("C++") use
+              Linker'Default_Switches ("C++") &
+            ("-pg");
+         when "False" =>
+            null;
+      end case;
+
+      case Enable_Gcov is
+         when "True" =>
+            for Default_Switches ("Ada") use
+              Linker'Default_Switches ("Ada") &
+            ("-fprofile-generate");
+            for Default_Switches ("C") use
+              Linker'Default_Switches ("C") &
+            ("-fprofile-generate");
+            for Default_Switches ("C++") use
+              Linker'Default_Switches ("C++") &
+            ("-fprofile-generate");
+         when "False" =>
+            null;
+      end case;
+   end Linker;
+
+   package Gnatls is
+      for Switches use ("-v");
+   end Gnatls;
+
+   package Gnatstub is
+      for Default_Switches ("ada") use ("-gnat05", "-t");
+   end Gnatstub;
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("-M128", "-c3", "-c4", "-A1", "-A2", "-A3", "-A4", "-e");
+   end Pretty_Printer;
+
+end Gnat_Default;

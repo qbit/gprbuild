@@ -1,0 +1,4 @@
+Invalid command line switch: ---targets=all
+try "gprconfig --help" for more information.
+Missing parameter for switch: --target
+try "gprconfig --help" for more information.

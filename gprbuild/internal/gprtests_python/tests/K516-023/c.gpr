@@ -1,0 +1,27 @@
+abstract project C is
+
+   for Source_Dirs use ();
+   for Languages use ("C");
+
+   package Naming is
+      for Casing use "lowercase";
+      for Dot_Replacement use ".";
+      for Specification_Suffix ("C") use ".h";
+      for Implementation_Suffix ("C") use ".c";
+   end Naming;
+
+    package Builder is
+       for Default_Switches ("C") use ("");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("C") use ("-Wall");
+   end Compiler;
+
+   package Binder is
+   end Binder;
+
+   package Linker is
+   end Linker;
+
+end C;

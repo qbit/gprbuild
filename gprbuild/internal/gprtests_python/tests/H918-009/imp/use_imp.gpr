@@ -1,0 +1,6 @@
+project Use_Imp is
+   for Library_Dir  use "lib";
+   for Library_Name use "imp";
+   for Externally_Built use "True";
+end Use_Imp;
+

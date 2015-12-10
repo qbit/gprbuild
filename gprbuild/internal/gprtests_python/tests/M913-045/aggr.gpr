@@ -1,0 +1,16 @@
+aggregate project Aggr is
+   for Project_Files use ("prj.gpr");
+
+   for Library_Name use "aggr";
+   for Library_Dir  use "lib";
+   for Main use ("main.adb");
+   for Roots ("main.adb") use ("toto.adb");
+   for Externally_Built use "False";
+
+   package Builder is
+      for Executable ("main.adb") use "Main";
+      for Executable_Suffix use ".exe";
+      for Default_Switches ("Ada") use ("-g");
+   end Builder;
+end Aggr;
+

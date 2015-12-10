@@ -1,0 +1,6 @@
+library project lib1 is
+   for source_dirs use ("src1");
+   for library_name use "l1";
+   for object_dir use "o1";
+   for library_dir use "l1";
+end lib1;

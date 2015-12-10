@@ -1,0 +1,2 @@
+Ada,Fortran,SHARED REQUIRED
+gnat-5.03a1 XFAIL Wrong results

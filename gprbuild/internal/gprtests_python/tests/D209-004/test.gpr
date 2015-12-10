@@ -1,0 +1,33 @@
+project test is
+
+for source_files use
+     ("test_cpp.cpp",
+      "test.ada",
+      "test1_spec.ada",
+      "test1.ada");
+
+for Object_Dir use "objects";
+
+for Languages use ( "Ada","C++" );
+
+package Compiler is
+   for Default_Switches ("C++") use
+      ("-g", "-w", "-Wno-deprecated",
+       "-traditional", "-fpermissive");
+   for Default_Switches ("Ada") use
+      ("-g","-gnatE");
+end Compiler;
+
+package Naming is
+   for Specification_Suffix ("C++") use ".h";
+   for Implementation_Suffix ("C++") use ".cpp";
+   for Body ("TEST")
+      use "test.ada";
+   for Spec ("TEST1")
+      use "test1_spec.ada";
+   for Body ("TEST1")
+      use "test1.ada";
+end Naming;
+
+for Main use ("test.ada");
+end test;

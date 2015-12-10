@@ -1,0 +1,7 @@
+gcc -c lib.c
+ar cr libc_main.a ...
+gcc c_main.o -o c_main
+<<<
+Done in Ada
+Doing something in C 
+>>>

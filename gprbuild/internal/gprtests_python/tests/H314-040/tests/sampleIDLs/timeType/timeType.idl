@@ -1,0 +1,36 @@
+//=============================================================================
+// Copyright (C)  2007 SaabSystems, SWEDEN
+//=============================================================================
+//
+// Description : Declaration of the TimeType. To be used by other that need the
+//					time type to be declares.
+//
+// External dependencies:
+//
+//===========================================================================
+
+#include "com_saabgroup_enterprisebus.idl"
+
+module com{
+  module saabgroup{
+    module enterprisebus{
+      module generalservices {
+	module time{
+	  // ------------------------------------------------------
+	  // The version of this IDL file
+	  //
+	  const string IDL_VERSION = "4.0.0";
+
+	  typedef unsigned long qualityType;  //actuall use of this is ToBeDefined
+
+	  // ------------------------------------------------------
+	  struct TimeType{
+	    unsigned long timeSeconds;
+	    unsigned long timeFractions;
+	    qualityType quality;
+	  }; //@top-level false
+	};
+      };
+    };
+  };
+};

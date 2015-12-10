@@ -1,0 +1,12 @@
+Aggregate library project AWS
+  aggregates two library projects:
+    ssl.gpr that withs nothing
+    src.gpr that withs ssl.gpr
+
+Root_Tree:
+   default
+   ssl
+   src
+   ssl
+   aws
+

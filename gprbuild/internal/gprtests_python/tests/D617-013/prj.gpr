@@ -1,0 +1,7 @@
+project Prj is
+
+   for Languages use ("Ada", "C");
+   for Object_Dir use "obj";
+   for Main use ("main.c");
+
+end Prj;

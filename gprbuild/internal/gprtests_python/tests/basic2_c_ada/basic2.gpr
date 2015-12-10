@@ -1,0 +1,10 @@
+project basic2 is
+   for Languages    use ("Ada", "C");
+   for Main         use ("c_main.c");
+   for Source_Files use
+     ("c_main.c"
+      , "ada_lib.ads"
+      , "ada_lib.adb"
+     );
+
+end basic2;

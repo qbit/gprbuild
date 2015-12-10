@@ -1,0 +1,7 @@
+aggregate project Aggr is
+   for Project_Files use ("prj.gpr");
+
+   package IDE is
+   end IDE;
+end Aggr;
+

@@ -1,0 +1,21 @@
+project Simple is
+
+   for Languages use ("Ada", "C++");
+   for Main use ("cpp_main.cc");
+   for Source_Files use
+      ("simple_cpp_interface.ads", "simple_cpp_interface.adb",
+       "cpp_main.cc", "ex7.cc");
+
+   package Naming is
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".C";
+      for Implementation_Suffix ("c++") use ".cc";
+   end Naming;
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+      for Default_Switches ("C++") use ("-g");
+   end Compiler;
+
+end Simple;
+

@@ -1,0 +1,4 @@
+project a is
+   for Languages use ("Ada");
+   for Main use ("ada_test.adb");
+end a;

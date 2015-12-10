@@ -1,0 +1,2 @@
+prj.gpr:3:04: package "install" is forbidden in aggregate projects
+gprbuild: "prj.gpr" processing failed

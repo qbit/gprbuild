@@ -1,0 +1,6 @@
+with "prj.gpr";
+project Main is
+   for Source_Files use ("main.adb");
+   for Main use ("main.adb");
+end Main;
+

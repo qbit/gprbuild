@@ -1,0 +1,341 @@
+
+project Options_Compiler is
+
+   type Platform_Type is ("native-zfp", "qemu-zfp", "xcov-zfp", "powerpc-zfp", "native-full", "gprof-zfp", "gprof-full", "gcov-zfp", "stack-zfp");
+   Platform : Platform_Type := external ("PLATFORM", "native-zfp");
+
+   for Languages use ("Ada", "C");
+   for Source_Files use (); -- no sources (and no warning)
+
+   -----------------------------------------------------------------------------------------------
+   package Pretty_Printer is
+      for Default_Switches ("ada") use
+        (
+         "-nM",     -- Names are in mixed case
+         -- "-A0",  -- Set all alignments to OFF
+         "-M100"    -- Maximum line length, from 32..256
+        );
+   end Pretty_Printer;
+
+   package Ide is
+
+      case Platform is
+
+         when "native-zfp" | "gprof-zfp" | "gcov-zfp" =>
+            for Gnatlist use "gnatls --RTS=zfp";
+
+         when "native-full" | "gprof-full" =>
+            for Gnatlist use "gnatls --RTS=sjlj";
+
+         when "qemu-zfp" | "xcov-zfp" | "powerpc-zfp" | "stack-zfp" =>
+            for Compiler_Command ("ada") use "powerpc-elf-gnatmake";
+            for Compiler_Command ("C")   use "powerpc-elf-gcc";
+            for Gnat                     use "powerpc-elf-gnat";
+            for Debugger_Command         use "powerpc-elf-gdb";
+            for Gnatlist                 use "powerpc-elf-gnatls --RTS=zfp";
+            -- for Pretty_Printer_Command ("ada") use "powerpc-elf-gnatpp";
+
+      end case;
+   end Ide;
+
+   -----------------------------------------------------------------------------------------------
+   package Builder is
+
+      for Default_Switches ("ada") use
+        (
+-- comment         "-v",	                                      -- verbose
+					"-j" & external("NUMBER_OF_PROCESSORS", "1") -- use n processes to do compilation (1 by default)
+        );
+
+
+      case Platform is
+
+         when "powerpc-zfp" | "stack-zfp" =>
+--            for Global_Configuration_Pragmas use "restrictions_powerpc-zfp.adc";
+            for Default_Switches("ada") use Builder'Default_Switches("ada") & "--RTS=zfp"; -- runtime zfp
+            for Executable_Suffix use ".a";
+
+         when "xcov-zfp" =>
+--            for Global_Configuration_Pragmas use "restrictions_powerpc-zfp.adc";
+            for Default_Switches("ada") use Builder'Default_Switches("ada") & "--RTS=zfp"; -- runtime zfp
+            for Executable_Suffix use ".elf";
+
+         when  "qemu-zfp" =>
+--            for Global_Configuration_Pragmas use "restrictions_native-zfp.adc";
+            for Default_Switches("ada") use Builder'Default_Switches("ada") & "--RTS=zfp"; -- runtime zfp
+            for Executable_Suffix use ".elf";
+
+         when  "native-zfp" | "gcov-zfp" =>
+--            for Global_Configuration_Pragmas use "restrictions_native-zfp.adc";
+            for Default_Switches("ada") use Builder'Default_Switches("ada") & "--RTS=zfp"; -- runtime zfp
+
+         when "native-full" | "gprof-full" =>
+            -- no restrictions in native full
+            for Default_Switches("ada") use Builder'Default_Switches("ada") & "--RTS=sjlj"; -- runtime setjmp / longjmp
+
+         when "gprof-zfp" =>
+--            for Global_Configuration_Pragmas use "restrictions_powerpc-zfp.adc";
+           for Default_Switches("ada") use Builder'Default_Switches("ada") & "--RTS=zfp"; -- runtime zfp
+
+      end case;
+
+   end Builder;
+
+   -----------------------------------------------------------------------------------------------
+   package Compiler is
+
+      case Platform is
+         when "powerpc-zfp" | "qemu-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                     -- Generate debugging information
+               "-O1",                    -- Normal optimization
+               "-c",                     -- Compile (always)
+               "--RTS=zfp",              -- Specifies the default location of the runtime library
+               -- "-S",                  -- generate assembler source
+               -- "-fverbose-asm",       -- assembly code file is annotated with variable names (in conjunction with `-S')
+               "-gnat05",                -- Allow full Ada 2005 features
+               "-gnatf",                 -- Display full source path name in error messages
+               "-gnatwa",                -- Activate all optional errors from GCC front end
+               "-gnatw.X",               -- Disable warnings for No_Exception_Propagation mode (principaly to compile Aunit)
+               "-gnata",                 -- Assertions enabled
+               "-gnatQ",                 -- Don't quit
+               -- "-gnatn",              -- Activate back-end inlining (done at gpr component level)
+               -- "-gnatN",              -- Activate front end inlining (not advised by Robert Dewar)
+               "-gnatU",                 -- Tag error messages with string "error:"
+               "-gnatE",                 -- Full dynamic elaboration checks
+               "-gnatp",                 -- Suppress all checks ada
+               "-gnatwt",                -- Activate warnings for tracking of deleted conditional code
+
+               -- style Ada
+               "-gnatye",                -- Check end/exit labels
+               "-gnatyk",                -- All keywords must be in lower case
+               "-gnatyO",                -- Check that overriding subprograms are explicitly marked
+
+               -- Warn by GCC
+               -- "-Wall",               -- enables all warnings from GCC back end.
+               -- "-Wextra",             -- This enables some extra warning from GCC
+               -- "-Wunreachable-code",	 -- Warn if code will never be executed
+               -- "-Winline",            -- Warn if a function declared as inline can not be inlined by back end
+
+               -- code generator GCC
+               "-mcpu=750",              -- This specifies the name of the target processor
+               "-mbig-endian",           -- code for processor in big endian mode
+
+               "-meabi",                 -- means that the stack is aligned to an 8 byte boundary, a function __eabi is called to from main
+               "-msdata=none",           -- put initialized data in the `.data' section, and uninitialized data in the `.bss'
+               "-memb",                  -- set the PPC_EMB bit in the ELF flags header to indicate that `eabi' extended relocations are used
+
+               -- not called code elimination
+               "-fdata-sections",        -- place each data in a separate section
+			   "-ffunction-sections",    -- place each function in a separate section
+               "-fpreserve-control-flow" -- for qemu and xcov analyse
+              );
+
+            for Default_Switches ("c") use
+              (
+               "-g",                     -- Generate debugging information
+               "-O1",                    -- Normal optimization
+               "-Wall",                  -- enable all warning
+               "-D _BIG_ENDIAN",         -- set environment variable
+               "-fpreserve-control-flow" -- for qemu and xcov analyse
+               -- "-ansi"                -- C ansi verification
+              );
+
+		when "xcov-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                     -- Generate debugging information
+               "-O0",                    -- No optimization
+               "-c",                     -- Compile (always)
+               "--RTS=zfp",              -- Specifies the default location of the runtime library
+               "-gnat05",                -- Allow full Ada 2005 features
+               "-gnatp",                 -- Suppress all checks ada
+			   "-mcpu=750",              -- This specifies the name of the target processor
+               "-mbig-endian",           -- code for processor in big endian mode
+               "-meabi",                 -- means that the stack is aligned to an 8 byte boundary, a function __eabi is called to from main
+               "-msdata=none",           -- put initialized data in the `.data' section, and uninitialized data in the `.bss'
+               "-memb",                  -- set the PPC_EMB bit in the ELF flags header to indicate that `eabi' extended relocations are used
+               "-fdata-sections",        -- place each data in a separate section
+			   "-ffunction-sections",    -- place each function in a separate section
+			   "-gnateS",			     -- Generate SCO information in the ALI file (for xcov)
+               "-fpreserve-control-flow" -- for qemu and xcov analyse
+              );
+
+            for Default_Switches ("c") use
+              (
+               "-g",                     -- Generate debugging information
+               "-O0",                    -- No optimization
+               "-Wall",                  -- enable all warning
+               "-D _BIG_ENDIAN",         -- set environment variable
+               "-fpreserve-control-flow" -- for qemu and xcov analyse
+              );
+
+         when "native-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                 -- Generate debugging information
+               "-O1",                -- Normal optimization
+               "-gnat05",            -- Allow full Ada 2005 features
+               "-gnatwa",            -- Activate all optional errors from GCC front end
+               "-gnatf",             -- Display full source path name in error messages
+               "-gnatw.X",           -- Disable warnings for No_Exception_Propagation mode
+               "-gnata",             -- Assertions enabled
+               "-gnatQ",             -- Don't quit
+               "-gnatyO",            -- Check that overriding subprograms are explicitly marked
+               "--RTS=zfp",          -- Specifies the default location of the runtime library
+               "-fno-inline"         -- Suppresses all back-end inlining
+              );
+
+            for Default_Switches ("c") use
+              (
+               "-g",                 -- Generate debugging information
+               "-O1",                -- Normal optimization
+               "-Wall",              -- warning all
+               "-D CHECK_LEVEL=3",   -- assertion verification level in reused C code (traceC)
+               "-D _LITTLE_ENDIAN"   -- math lib C in little endian
+               -- "-ansi"
+              );
+
+         when "native-full" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",
+               "-gnat05",
+               "-O1",
+               "-gnatf",
+               "-gnatwal",
+               "-gnata",
+               "-gnatQ",
+               "-gnatyO",
+               "--RTS=sjlj" -- exception management with setjmp / longjmp
+              );
+
+            for Default_Switches ("c") use ("-g", "-v", "-O1", "-Wall", "-D _LITTLE_ENDIAN");
+
+         when "gprof-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",					-- Generate debugging information
+               "-pg",					-- generate the necessary profiling information
+               "-O1",					-- Normal optimization
+               "-gnat05",				-- Allow full Ada 2005 features
+               "-gnata",				-- Assertions enabled
+               "-gnatn",				-- Activate back-end inlining
+               "-gnatp",				-- Suppress all checks ada
+               -- in comment		"-fstack-usage",			-- generate an extra file that specifies the maximum amount of stack used,
+               -- in comment		"-fcallgraph-info=su,da",	-- Makes the compiler output callgraph information for the program
+               -- in comment		"-fprofile-arcs"			-- Add code so that program flow arcs are instrumented
+               "--RTS=zfp"				-- Specifies the default location of the runtime library
+              );
+
+            for Default_Switches ("c") use
+              (
+               "-g",					-- Generate debugging information
+               "-pg",					-- generate the necessary profiling information
+               "-D _LITTLE_ENDIAN"		-- set environment variable
+              );
+
+         when "gprof-full" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",
+               "-pg",
+               "-gnat05",
+               "-O1",
+               "-gnatf",
+               "-gnatwal",
+               "-gnata",
+               "-gnatQ",
+               "-gnatyO",
+               "--RTS=sjlj");
+
+            for Default_Switches ("c") use
+              (
+               "-g",
+               "-pg",
+               "-O1",
+               "-Wall",
+               "-D _LITTLE_ENDIAN");
+
+         when "gcov-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",					-- Generate debugging information
+               "-O1",					-- Normal optimization
+               "-gnat05",				-- Allow full Ada 2005 features
+               "-gnata",				-- Assertions enabled
+               "-ftest-coverage",		-- Produce a notes file that the gcov code-coverage utility
+               "-fprofile-arcs",		-- Add code so that program flow arcs are instrumented
+               "--RTS=zfp"				-- Specifies the default location of the runtime library
+              );
+
+            for Default_Switches ("c") use
+              (
+               "-g",					-- Generate debugging information
+               "-D _LITTLE_ENDIAN"		-- set environment variable
+              );
+
+		when "stack-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               "-g",                     -- Generate debugging information
+               "-O1",                    -- No optimization
+               "-c",                     -- Compile (always)
+               "--RTS=zfp",              -- Specifies the default location of the runtime library
+               "-gnat05",                -- Allow full Ada 2005 features
+               "-gnatp",                 -- Suppress all checks ada
+			   "-mcpu=750",              -- This specifies the name of the target processor
+               "-mbig-endian",           -- code for processor in big endian mode
+               "-meabi",                 -- means that the stack is aligned to an 8 byte boundary, a function __eabi is called to from main
+               "-msdata=none",           -- put initialized data in the `.data' section, and uninitialized data in the `.bss'
+               "-memb",                  -- set the PPC_EMB bit in the ELF flags header to indicate that `eabi' extended relocations are used
+               "-fdata-sections",        -- place each data in a separate section
+			   "-ffunction-sections",    -- place each function in a separate section
+               "-fcallgraph-info=su"	 -- for qemu and xcov analyse,
+              );
+
+            for Default_Switches ("c") use
+              (
+               "-g",                     -- Generate debugging information
+               "-O0",                    -- No optimization
+               "-Wall",                  -- enable all warning
+               "-D _BIG_ENDIAN",         -- set environment variable
+               "-fpreserve-control-flow" -- for qemu and xcov analyse
+              );
+
+      end case;
+
+   end Compiler;
+
+   -----------------------------------------------------------------------------------------------
+   package Binder is
+
+      case Platform is
+         when "powerpc-zfp" | "qemu-zfp" | "xcov-zfp" | "native-zfp" | "gprof-zfp" | "gcov-zfp" | "stack-zfp" =>
+
+            for Default_Switches ("ada") use
+              (
+               --"-s",		-- Require all source files to be present
+               "--RTS=zfp"--,	-- runtime zfp
+               --"-n"			-- No main program
+              );
+
+         when "native-full" | "gprof-full" =>
+
+            for Default_Switches ("ada") use ("--RTS=sjlj");
+
+      end case;
+
+   end Binder;
+
+end Options_Compiler;
+

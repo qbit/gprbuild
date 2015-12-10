@@ -1,0 +1,9 @@
+project Static is
+
+   for Languages use ("C");
+
+   for Library_Dir  use "lib";
+   for Library_Name use "toto";
+
+end Static;
+

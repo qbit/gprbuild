@@ -1,0 +1,8 @@
+project Prj is
+   for Main use ("main.adb");
+
+   package Builder is
+      for Switches ("toto.adb") use ("--RTS:Ada=sjlj");
+   end Builder;
+end Prj;
+

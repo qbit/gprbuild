@@ -1,0 +1,6 @@
+project P1 is
+   for Library_Name use "p1";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+end P1;
+

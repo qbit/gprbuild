@@ -1,0 +1,25 @@
+library project lib is
+   for source_dirs use ("lib");
+   for library_name use "lnm";
+   for library_dir use "ldir";
+
+   package linker is
+      for linker_options use
+        ("-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789",
+         "-L/azerty/azerty/azerty/azerty/azerty/azerty/0123456789/0123456789");
+   end linker;
+
+end lib;

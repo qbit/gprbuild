@@ -1,0 +1,58 @@
+
+#include <iomanip>
+#include <ostream>
+#include "test2_cpp_model.h"
+///////////////////////////////////////////////////////////////////////////////
+extern "C"
+{
+   Test2_Cpp_model* create2_cpp_model()
+   {
+      std::cout << "CPP::test2_create_cpp_model()" << std::endl;
+      return new Test2_Cpp_model();
+   }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+Test2_Cpp_model::Test2_Cpp_model()
+{
+}
+/////////////////////////////////////////////////////////////////////////////
+Test2_Cpp_model::~Test2_Cpp_model()
+{
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void Test2_Cpp_model::do_initialize()
+{
+   std::cout <<"CPP:Test2_Cpp_model::do_initialize()" << std::endl;
+}
+
+////////////////////////////////////////////////////////////////////////////
+void Test2_Cpp_model::do_stabilize()
+{
+   std::cout <<"CPP:Test2_Cpp_model::do_stabilize()" << std::endl;
+}
+
+///////////////////////////////////////////////////////////////////////////
+void Test2_Cpp_model::do_freeze()
+{
+   std::cout <<"CPP:Test2_Cpp_model::do_freeze()" << std::endl;
+}
+
+///////////////////////////////////////////////////////////////////////////
+void Test2_Cpp_model::do_run()
+{
+   std::cout <<"CPP:Test2_Cpp_model::do_run()" << std::endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Test2_Cpp_model::do_end_of_exercise()
+{
+   std::cout <<"CPP:Test2_Cpp_model::do_end_of_exercise()" << std::endl;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Test2_Cpp_model::do_shutdown()
+{
+   std::cout <<"CPP:Test2_Cpp_model::do_shutdown()" << std::endl;
+}

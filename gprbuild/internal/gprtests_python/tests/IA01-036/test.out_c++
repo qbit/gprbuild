@@ -1,0 +1,14 @@
+should relink main
+g++ main.o -o main
+should not relink main
+gprbuild: "main" up to date
+should not relink main
+gprbuild: "main" up to date
+<<<
+Y.Execute 1
+>>>
+should not relink main
+gprbuild: "main" up to date
+<<<
+Y.Execute 2
+>>>

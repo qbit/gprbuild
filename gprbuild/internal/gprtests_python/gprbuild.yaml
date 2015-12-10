@@ -1,0 +1,11 @@
+linker :
+    default_switches:
+        ada:
+            - ("-msim") if %(target)s == "visium-elf"
+            - ("-Wl,-u,_start") if %(target)s == "powerpc-elf"
+compiler :
+    default_switches:
+        ada:
+            - ("-mmcu=avr6") if %(target)s == "avr"
+            - ("-D_VSB_CONFIG_FILE=<../lib/h/config/vsbConfig.h>")
+                if "x86-vx6" in %(platform)s

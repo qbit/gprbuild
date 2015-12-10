@@ -1,0 +1,34 @@
+with "switches";
+--with "win32ada";
+with "cma";
+
+
+project Common is
+
+   for Source_Dirs use ();
+
+   Optimised_Switches := Switches.Optimised_Switches & Switches.Compiler_Switches;
+
+   package Builder is
+      for Default_Switches ("ada") use Switches.Build_Switches;
+      for Global_Configuration_Pragmas use Cma.Builder'Global_Configuration_Pragmas;
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use Switches.Compiler_Switches;
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use Switches.Bind_Switches;
+   end Binder;
+
+   package Linker is
+      for Default_Switches ("ada") use Switches.Link_Switches;
+   end Linker;
+
+   package Pretty_Printer is
+      for Default_Switches ("ada") use ("-M100", "-A1", "-A2", "-A3", "-A4", "-e");
+   end Pretty_Printer;
+
+end Common;
+

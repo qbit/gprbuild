@@ -1,0 +1,4 @@
+Ada required
+vxworks DEAD "executable named main with entry point p1"
+vxworks6 DEAD "executable named main with entry point p1"
+vxworksae DEAD "executable named main with entry point p1"

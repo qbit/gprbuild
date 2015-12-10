@@ -1,0 +1,4 @@
+Environment variable "TOTO" = "titi"
+Add external (TOTO) is "titi"
+Not overriding existing environment variable "TOTO", value is "toto"
+Add external (TOTO) is "titi"

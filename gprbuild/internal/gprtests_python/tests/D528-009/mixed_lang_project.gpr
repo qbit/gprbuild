@@ -1,0 +1,44 @@
+project Mixed_Lang_Project is
+
+   for Languages use ("Ada", "C", "C++");
+   for Source_Dirs use (".");
+   for Exec_Dir use ".";
+   for Object_Dir use "objects";
+   for Main use ("cpp_main.cpp");
+
+   for Source_Files use (
+      "dummy.c",
+      "cpp_main.cpp",
+      "cpp_classes.h",
+      "CPP_classes.cpp",
+      "simple_cpp_interface.ads",
+      "simple_cpp_interface.adb",
+      "proc.adb"
+      );
+   package Compiler is
+      for Default_Switches ("c") use ("-g","-w");
+      for Default_Switches ("c++") use ("-g","-w");
+   end Compiler;
+
+   package Builder is
+      for Default_Switches ("ada") use ("-q", "-cargs", "-g", "-gnatQ");
+      for Default_Switches ("c++") use ("-cargs", "-g","-w");
+      for Executable ("cpp_main.cpp") use "cpp_main";
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("Ada") use
+         ("objects/dummy.o");
+   end Linker;
+
+   package Naming is
+      for Specification_Suffix ("ada") use ".ads";
+      for Implementation_Suffix ("ada") use ".adb";
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".cpp";
+      for Implementation_Suffix ("c") use ".c";
+   end Naming;
+
+end Mixed_Lang_Project;
+
+

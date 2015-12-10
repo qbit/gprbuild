@@ -1,0 +1,6 @@
+project B is
+   package Naming is
+      for Spec ("pkg2") use "pkg2_spec.ads";
+   end Naming;
+end B;
+

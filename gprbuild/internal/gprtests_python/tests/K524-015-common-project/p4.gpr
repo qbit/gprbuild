@@ -1,0 +1,4 @@
+project P4 is
+   for Source_Dirs use ("src4");
+end P4;
+

@@ -1,0 +1,4 @@
+with "root.gpr";
+project root.lib is
+  for source_files use ();
+end root.lib;

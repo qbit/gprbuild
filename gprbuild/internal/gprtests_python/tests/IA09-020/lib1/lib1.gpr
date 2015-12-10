@@ -1,0 +1,7 @@
+with "../lib2/lib2.gpr";
+project Lib1 is
+   for Library_Name use "lib1";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+end Lib1;
+

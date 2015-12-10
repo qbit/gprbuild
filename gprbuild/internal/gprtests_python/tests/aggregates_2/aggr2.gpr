@@ -1,0 +1,7 @@
+aggregate project Aggr2 is
+   for Project_Files use ("default.gpr");
+
+   package Naming is
+      --  Invalind package
+   end Naming;
+end Aggr2;

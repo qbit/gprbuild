@@ -1,0 +1,4 @@
+project Prj extends "empty.gpr" is
+   for Languages use ("Ada");
+   for Main use ("main.adb");
+end Prj;

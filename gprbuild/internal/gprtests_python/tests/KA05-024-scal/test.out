@@ -1,0 +1,9 @@
+shared.gpr:3:09: encapsulated library project "shared" cannot import shared library project "lib"
+gprbuild: "shared/shared.gpr" processing failed
+shared.gpr:3:09: encapsulated library project "shared" cannot import shared library project "lib"
+gprclean: "shared/shared.gpr" processing failed
+gprbuild: encapsulated library projects not supported on this platform
+gprbuild: encapsulated library projects not supported on this platform
+<<<
+run: executable main not found
+>>>

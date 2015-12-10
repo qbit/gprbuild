@@ -1,0 +1,5 @@
+Ada,C,native required
+AIX OUT test.out_no_ranlib
+ia64-hpux OUT test.out_no_ranlib
+Darwin OUT test.out_darwin
+gnat-3.16a1 DEAD

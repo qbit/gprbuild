@@ -1,0 +1,2 @@
+ada,c++,autocgpr,native required
+sparc64-solaris DEAD "No sjlj runtime"

@@ -1,0 +1,17 @@
+library project ConeSolving is
+    for Languages   use ("C");
+    for Source_Dirs use (".");
+    for Source_Files use ("conesolving.c");
+    for Library_Name use "conesolving";
+
+    for Object_Dir use "obj";
+    for Library_Dir use "lib";
+
+    package Compiler is 
+        for Default_Switches("C") use (
+                                      "-std=c99",
+                                      "-Wall", "-Wextra", "-Wshadow", 
+                                      "-g");
+    end Compiler;
+
+end ConeSolving;

@@ -1,0 +1,6 @@
+pkg.ads:1:15: missing "end Pkg;"
+pkg.ads:1:15: missing "end Pkg;"
+pkg.ads:1:15: missing "end Pkg;"
+pkg.ads:1:15: missing "end Pkg;"
+compilation of pkg.ads failed
+gprbuild: *** compilation phase failed

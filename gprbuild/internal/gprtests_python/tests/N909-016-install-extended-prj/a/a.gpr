@@ -1,0 +1,5 @@
+library project A is
+   for source_dirs  use (".");
+   for library_name use "a";
+   for library_dir use "lib";
+end A;

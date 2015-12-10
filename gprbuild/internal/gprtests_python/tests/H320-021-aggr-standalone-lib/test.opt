@@ -1,0 +1,4 @@
+!native DEAD
+AIX     DEAD
+sjlj    DEAD test uses shared lib and we don't have a shared sjlj RTS
+gcc-sjlj DEAD test uses shared lib and we don't have a shared gcc-sjlj RTS

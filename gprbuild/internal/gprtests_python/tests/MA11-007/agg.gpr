@@ -1,0 +1,4 @@
+aggregate project Agg is
+   for Project_Files use ("dira/a.gpr", "dirb/b.gpr");
+end Agg;
+

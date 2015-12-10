@@ -1,0 +1,5 @@
+with "lib";
+project Prj is
+   for Source_Dirs use ("src");
+   for Main use ("main.adb");
+end Prj;

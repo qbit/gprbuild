@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification idlFileName="timeType.idl">
+<include file="com_saabgroup_enterprisebus.idl"/>
+<module name="com">
+<module name="saabgroup">
+<module name="enterprisebus">
+<module name="generalservices">
+<module name="time">
+<const value="&quot;4.0.0&quot;" name="IDL_VERSION" type="string"/>
+<typedef name="qualityType">
+<member pointer="no" enum="no" type="unsignedlong"/>
+</typedef>
+<struct name="TimeType">
+<member visibility="" pointer="no" enum="no" type="unsignedlong" name="timeSeconds"/>
+<member visibility="" pointer="no" enum="no" type="unsignedlong" name="timeFractions"/>
+<member visibility="" pointer="no" enum="no" type="com::saabgroup::enterprisebus::generalservices::time::qualityType.qualityType" name="quality"/>
+</struct>
+<directive kind="top-level">false</directive>
+</module>
+</module>
+</module>
+</module>
+</module>
+</specification>

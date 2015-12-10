@@ -1,0 +1,19 @@
+[]
+['This is a javascript file./n']
+['Another one./n']
+['content/n']
+['<user_guide>/n']
+['<index>/n']
+['content/n']
+css/js.css
+css/web.css
+doc/README
+doc/userguide.html
+doc/userguide_index.html
+include/prj/pck.ads
+lib/prj/libname.a
+lib/prj/pck.ali
+share/example/README
+share/examples/ex1/file1
+share/examples/ex2/file2
+share/gpr/prj.gpr

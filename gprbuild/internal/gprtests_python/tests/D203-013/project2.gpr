@@ -1,0 +1,18 @@
+with "project1/project1";
+project Project2 is
+
+   for Languages use ("C", "Ada");
+
+   for Main use ("My_Main_C_file.c");
+
+   for Source_Files use ("My_Main_C_file.c",
+                         "Top_Ada_body.ada",
+                         "Top_Ada_spec.ada");
+
+   package Naming is
+      for Body ("top_ada") use "Top_Ada_body.ada";
+      for Spec ("top_ada") use "Top_Ada_spec.ada";
+   end Naming;
+
+end Project2;
+

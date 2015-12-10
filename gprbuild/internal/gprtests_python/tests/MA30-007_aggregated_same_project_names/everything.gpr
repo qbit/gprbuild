@@ -1,0 +1,4 @@
+aggregate project Everything is
+   for Project_Files use ("path1/build.gpr", "path2/build.gpr");
+end Everything;
+

@@ -1,0 +1,4 @@
+Ada,C,Fortran REQUIRED
+gnat-5.04a1 DEAD Ada.Numerics.Real_Arrays is not a predefined library unit
+gcc-sjlj DEAD gcc-sjlj incompatible with link driver not aware of -fsjlj (gfortran)
+64bits DEAD "gnalasup is not supported on 64bits"

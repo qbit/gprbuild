@@ -1,0 +1,52 @@
+with "lib2";
+project lib1 is
+   for Library_Dir use "lib1_dir";
+   for Library_Name use "lib1";
+   for Source_Files use ("lib1.ads", "lib1.adb");
+end lib1;
+project lib2 is
+   for Library_Dir use "lib2_dir";
+   for Library_Name use "lib2";
+   for Source_Files use ("lib2.ads", "lib2.adb");
+   for Library_Interface use ("lib2");
+end lib2;
+with "lib1";
+project main is
+   for Main use ("main.adb");
+   for source_files use ("main.adb");
+end main;
+package Lib1 is
+   procedure P;
+end Lib1;
+package Lib2 is
+   procedure Q;
+end Lib2;
+with lib2;
+package body Lib1 is
+   procedure P is
+   begin
+      Lib2.Q;
+  end P;
+
+   procedure lib2init;
+   pragma Import (C, lib2init, "lib2init");
+
+begin
+  Lib2init;
+end Lib1;
+package body Lib2 is
+
+   X : integer;
+
+   procedure Q is
+   begin
+      X := X + 1;
+   end Q;
+begin
+   X := 15;
+end Lib2;
+with lib1;
+procedure main is
+begin
+   Lib1.P;
+end;

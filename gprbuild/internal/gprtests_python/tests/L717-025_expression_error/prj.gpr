@@ -1,0 +1,4 @@
+project Prj is
+   for Main use ("gcc.adb");
+end Prj;
+

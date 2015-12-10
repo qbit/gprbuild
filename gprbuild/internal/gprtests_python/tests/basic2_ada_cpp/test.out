@@ -1,0 +1,20 @@
+<<<
+In Call_CPP
+in Ada: raise ...  and catch!
+ In cpp_routine
+ Calling recurse_then_raise
+   caught an exception: 1
+ returning from cpp_routine.
+Back in Call_CPP
+in Ada: raise ...  and catch!
+>>>
+<<<
+In Call_CPP
+in Ada: raise ...  and catch!
+ In cpp_routine
+ Calling recurse_then_raise
+   caught an exception: 1
+ returning from cpp_routine.
+Back in Call_CPP
+in Ada: raise ...  and catch!
+>>>

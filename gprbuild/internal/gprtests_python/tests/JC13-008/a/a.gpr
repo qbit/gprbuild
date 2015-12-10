@@ -1,0 +1,6 @@
+project A is
+   package Naming is
+      for Body ("pkg2") use "pkg2.ada";
+      for Spec ("pkg2") use "pkg2_.ada";
+   end Naming;
+end A;

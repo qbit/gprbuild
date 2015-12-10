@@ -1,0 +1,22 @@
+with "ada.gpr";
+with "cpp.gpr";
+
+project main is
+
+   for Languages use ("Ada", "C++");
+   for Main use ("cpp_main.cc");
+   for Source_Dirs use ("ada_main", "cpp_main");
+   for Object_Dir use "obj";
+   for Exec_Dir   use ".";
+
+   package Builder is
+      for Default_Switches ("ada") use ("-gnat05");
+      for Executable ("cpp_main.cc") use "main_cpp";
+   end Builder;
+
+   package Naming is
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".cc";
+   end Naming;
+
+end main;

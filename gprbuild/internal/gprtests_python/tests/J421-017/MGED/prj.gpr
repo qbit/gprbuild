@@ -1,0 +1,6 @@
+with "LIB/lib.gpr";
+project Prj is
+   for Object_Dir use "GNAT/obj";
+   for Main use ("main.adb");
+end Prj;
+

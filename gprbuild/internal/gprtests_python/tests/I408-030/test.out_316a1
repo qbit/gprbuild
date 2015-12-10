@@ -1,0 +1,2 @@
+pragma Source_File_Name   (Spec_File_Name  => "*.1.ada",   Casing          => lowercase,   Dot_Replacement => "-");
+pragma Source_File_Name   (Body_File_Name  => "*.2.ada",   Casing          => lowercase,   Dot_Replacement => "-");

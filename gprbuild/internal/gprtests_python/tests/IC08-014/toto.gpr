@@ -1,0 +1,8 @@
+project Toto is
+   for Source_Files use ();
+
+   package Linker is
+      for Linker_Options use ("-Wl,toto.o");
+   end Linker;
+end Toto;
+

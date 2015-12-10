@@ -1,0 +1,4 @@
+gcc -c pkg.ads
+gprlib prj.lexch
+ar cr lib/libprj.a pkg.o
+ranlib libprj.a

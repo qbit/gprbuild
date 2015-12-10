@@ -1,0 +1,6 @@
+project Reproducer is
+
+   for Languages use ("C", "Asm_Cpp");
+   for Main use ("init.S");
+
+end Reproducer;

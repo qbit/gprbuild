@@ -1,0 +1,7 @@
+standard
+shared.gpr:8:31: Library_Standalone valid only if library has Ada interfaces
+gprbuild: "shared.gpr" processing failed
+full
+shared.gpr:8:31: Library_Standalone valid only if library has Ada interfaces
+gprbuild: "shared.gpr" processing failed
+no

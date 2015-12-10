@@ -1,0 +1,3 @@
+Ada,C required
+ZFP DEAD
+ravenscar-cert XFAIL Ada.Text_IO

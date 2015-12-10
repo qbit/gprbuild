@@ -1,0 +1,6 @@
+prj.gpr:4:07: "pkg.ads" is found in several source directories
+prj.gpr:5:07: source file "pkg.adb" not found
+prj.gpr:6:07: source file "pkg2.ads" not found
+gprbuild: "prj.gpr" processing failed
+prj2.gpr:2:29: source file "source.ads" not found
+gprbuild: "prj2.gpr" processing failed

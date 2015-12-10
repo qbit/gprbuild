@@ -1,0 +1,2 @@
+void toto(void){}
+

@@ -1,0 +1,9 @@
+aggregate library project Aggr is
+   type Library_Kind is ("relocatable", "static");
+   Library_Type : Library_Kind := external ("LIBRARY_TYPE", "static");
+
+   for Project_Files use ("a1.gpr", "a2.gpr");
+   for Library_Name use "aggr";
+   for Library_Dir use "laggr";
+   for library_kind use Library_Type;
+end Aggr;

@@ -1,0 +1,4 @@
+with "cat.gpr";
+project Prj is
+end Prj;
+

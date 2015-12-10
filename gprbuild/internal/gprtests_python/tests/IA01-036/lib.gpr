@@ -1,0 +1,8 @@
+project lib is
+   for Object_Dir use "obj";
+   for Library_Dir use "lib";
+   for Library_Name use "lib";
+   for Library_interface use ("int", "x");
+   for Library_Kind use "dynamic";
+   for Source_Files use ("int.ads", "int.adb", "x.ads", "x.adb", "y.ads", "z.ads", "y.adb");
+end Lib;

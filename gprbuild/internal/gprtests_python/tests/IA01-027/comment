@@ -1,0 +1,528 @@
+From dietrich.teves@eurocopter.com  Thu Oct  1 12:10:47 2009
+MIME-Version: 1.0
+Content-Type: text/plain
+Subject: [IA01-027] - ACT#1313 : GNAT PRO problems with shared library projects importing static library projects using switch --unchecked-shared-lib-imports
+Date: Thu, 1 Oct 2009 18:08:58 +0200
+Message-ID: <232BD111E9D4AC4C9F36D37E0C6053B502E066A4@sma2906.cr.eurocopter.corp>
+From: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+To: <report@adacore.com>
+X-Act-Attachment: /reportd/gnatbugs/IA/IA01-027/file_1.bin (multipart/related)
+X-Act-Attachment: /reportd/gnatbugs/IA/IA01-027/GNAT_Fwrk.tar.gz (application/x-gzip)
+X-Act-Attachment: /reportd/gnatbugs/IA/IA01-027/file_3.bin (message/rfc822)
+
+From report@adacore.com Thu Oct 01 12:10:48 2009 -0400
+From: report@adacore.com
+Date: Thu, 01 Oct 2009 12:10:48 -0400
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared library projects importing static library projects using switch --unchecked-shared-lib-imports
+Content-Type: text/plain; charset="us-ascii"
+To: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+CC: <report@adacore.com>
+In-Reply-To: <232BD111E9D4AC4C9F36D37E0C6053B502E066A4@sma2906.cr.eurocopter.corp>
+References: <232BD111E9D4AC4C9F36D37E0C6053B502E066A4@sma2906.cr.eurocopter.corp>
+
+[Automatic message from GNAT report ticket mechanism]
+
+Dear customer,
+
+Your report has been automatically assigned ticket number [IA01-027].
+Please be sure to put this number in the subject line of any
+subsequent followup message. Messages from us on this report will
+quote this ticket number.
+
+Thank you for using GNAT.
+
+-- The GNAT support team
+
+From celier@adacore.com  Thu Oct  1 13:11:48 2009
+Message-ID: <4AC4E2D7.9060908@adacore.com>
+Date: Thu, 01 Oct 2009 10:11:51 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+CC:  report@adacore.com
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared library projects importing static library projects using switch --unchecked-shared-lib-imports
+References: <232BD111E9D4AC4C9F36D37E0C6053B502E066A4@sma2906.cr.eurocopter.corp>
+In-Reply-To: <232BD111E9D4AC4C9F36D37E0C6053B502E066A4@sma2906.cr.eurocopter.corp>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+
+
+> In our project we need to import static libraries into dynamic libraries.
+>
+> This is forbidden by GNAT PRO unless a gprbuild switch 
+> --unchecked-shared-lib-imports is used as proposed in the attached 
+> mail “Re:[HC19-013]”.
+>
+> For this reason I included the lines below in project file common 
+> switches.gpr :
+>
+> package Builder is
+>
+> case Target is
+>
+> when "test" =>
+>
+> for Default_Switches ("ada") use ("--unchecked-shared-lib-imports", 
+> "-s", "-k", "-g");
+>
+> when "release" =>
+>
+> for Default_Switches ("ada") use ("--unchecked-shared-lib-imports", 
+> "-O2" );
+>
+> end case;
+>
+> end Builder;
+>
+> Unfortunately this obviously did not work.
+>
+
+Indeed, this cannot work. --unchecked-shared-lib-imports is only 
+recognized as a command line switch. It would be too late to take into 
+account this switch in the Builder switches of the main project file, as 
+the check about importing library projects is done before checking the 
+Builder switches.
+
+So, what you have to do is to call gprbuild with this switch on the 
+command line.
+
+-- Vincent Celier
+
+From report@adacore.com  Thu Oct  1 13:11:48 2009
+From: report@adacore.com
+To: file@gnat.com
+Subject: [bugtool:IA01-027] Assigned to celier
+Message-ID: <bugtool.IA01-027.2556.20091001171148.1@rock>
+Date: Thu,  1 Oct 2009 13:11:48 -0400 (EDT)
+
+
+From celier@adacore.com  Thu Oct  1 13:12:19 2009
+From: celier@adacore.com
+To: file@gnat.com
+Subject: [bugtool:IA01-027] GNAT PRO problems with shared library projects importing - moved to dead
+Message-ID: <bugtool.IA01-027.10204.20091001171218.1@nile>
+Date: Thu,  1 Oct 2009 13:12:18 -0400 (EDT)
+
+Moved from: open to: dead
+
+From celier@adacore.com  Thu Oct  1 13:13:15 2009
+From: celier@adacore.com
+To: file@gnat.com
+Subject: [bugtool:IA01-027] gprbuild switch --unchecked-shared-lib-imports - descr changed
+Message-ID: <bugtool.IA01-027.16034.20091001171314.1@nile>
+Date: Thu,  1 Oct 2009 13:13:14 -0400 (EDT)
+
+Description changed from: GNAT PRO problems with shared library projects importing
+  to: gprbuild switch --unchecked-shared-lib-imports
+
+From comar@adacore.com  Thu Oct  1 13:14:46 2009
+Message-ID: <4AC4E380.1070001@adacore.com>
+Date: Thu, 01 Oct 2009 19:14:40 +0200
+From: Cyrille Comar <comar@adacore.com>
+MIME-Version: 1.0
+To: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+CC: report@adacore.com
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared library projects importing static library projects using switch --unchecked-shared-lib-imports
+References: <232BD111E9D4AC4C9F36D37E0C6053B502E066A4@sma2906.cr.eurocopter.corp>
+In-Reply-To: <232BD111E9D4AC4C9F36D37E0C6053B502E066A4@sma2906.cr.eurocopter.corp>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+
+Teves, Dietrich a écrit :
+
+> *Dear Sirs,*
+> 
+> In our project we need to import static libraries into dynamic libraries.
+> 
+> This is forbidden by GNAT PRO unless a gprbuild switch 
+> --unchecked-shared-lib-imports is used as proposed in the attached mail 
+> “Re:[HC19-013]”.
+> 
+>  
+> 
+> For this reason I included the lines below in project file common 
+> switches.gpr :
+> 
+>    package Builder is
+> 
+>       case Target is
+> 
+>             when "test" =>
+> 
+>                   for Default_Switches ("ada") use 
+> ("--unchecked-shared-lib-imports", "-s", "-k", "-g");
+> 
+>             when "release" =>
+> 
+>                   for Default_Switches ("ada") use 
+> ("--unchecked-shared-lib-imports", "-O2" );
+> 
+>       end case;
+> 
+>    end Builder;
+> 
+>  
+> 
+> Unfortunately this obviously did not work.
+> 
+> GPS prints the error messages:
+> 
+> gprbuild -d 
+> -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr 
+> -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+
+At this stage, this switch is only recognized on the command line. So 
+you have to alter the command line generated by GPS and make sure that 
+the gprbuild command above contains --unchecked-shared-lib-imports.
+
+The simplest way to achieve this in GPS is probably to user the menu
+Build --> Settings --> Targets
+
+and for each of the menu item you use, on the left part of the window, 
+(for instance click on "Build Main")  change the build command that 
+appear in the box at the bottom by adding --unchecked-shared-lib-imports 
+right after "%gprbuild"
+
+From dietrich.teves@eurocopter.com  Fri Oct  2 03:12:32 2009
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared library projects importing static library projects using switch --unchecked-shared-lib-imports
+Date: Fri, 2 Oct 2009 09:11:44 +0200
+Message-ID: <232BD111E9D4AC4C9F36D37E0C6053B507FB42B7@sma2906.cr.eurocopter.corp>
+In-Reply-To: <4AC4E380.1070001@adacore.com>
+From: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+To: "Cyrille Comar" <comar@adacore.com>
+CC: <report@adacore.com>, "Vincent Celier" <celier@adacore.com>
+
+Dear Mr. Comar,
+I have modified the settings 
+Build --> Settings --> Targets for gprbuild to:
+%gprbuild --unchecked-shared-lib-imports -q -c -gnats -u %eL -P%PP %X %fp
+
+GPS created the command:
+gprbuild -d -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+
+It obviously does not contain the --unchecked-shared-lib-imports option.
+
+Question: Did I something wrong?
+
+Best regards
+D. Teves
+
+EUROCOPTER DEUTSCHLAND GmbH
+ETZST - Training Simulation Development
+ 
+Dipl.-Ing.
+Dietrich Teves
+Tel: +49 (0)89 6000 3305
+Fax: +49 (0)89 6000 6152
+Dietrich.Teves@eurocopter.com 
+-----Ursprüngliche Nachricht-----
+Von: Cyrille Comar [mailto:comar@adacore.com] 
+Gesendet: Donnerstag, 1. Oktober 2009 19:15
+An: Teves, Dietrich
+Cc: report@adacore.com
+Betreff: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared library projects importing static library projects using switch --unchecked-shared-lib-imports
+
+Teves, Dietrich a écrit :
+
+> *Dear Sirs,*
+> 
+> In our project we need to import static libraries into dynamic libraries.
+> 
+> This is forbidden by GNAT PRO unless a gprbuild switch 
+> --unchecked-shared-lib-imports is used as proposed in the attached mail 
+> "Re:[HC19-013]".
+> 
+>  
+> 
+> For this reason I included the lines below in project file common 
+> switches.gpr :
+> 
+>    package Builder is
+> 
+>       case Target is
+> 
+>             when "test" =>
+> 
+>                   for Default_Switches ("ada") use 
+> ("--unchecked-shared-lib-imports", "-s", "-k", "-g");
+> 
+>             when "release" =>
+> 
+>                   for Default_Switches ("ada") use 
+> ("--unchecked-shared-lib-imports", "-O2" );
+> 
+>       end case;
+> 
+>    end Builder;
+> 
+>  
+> 
+> Unfortunately this obviously did not work.
+> 
+> GPS prints the error messages:
+> 
+> gprbuild -d 
+> -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr 
+> -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+
+At this stage, this switch is only recognized on the command line. So 
+you have to alter the command line generated by GPS and make sure that 
+the gprbuild command above contains --unchecked-shared-lib-imports.
+
+The simplest way to achieve this in GPS is probably to user the menu
+Build --> Settings --> Targets
+
+and for each of the menu item you use, on the left part of the window, 
+(for instance click on "Build Main")  change the build command that 
+appear in the box at the bottom by adding --unchecked-shared-lib-imports 
+right after "%gprbuild"
+
+From charlet@eu.adacore.com  Fri Oct  2 03:28:44 2009
+Date: Fri, 2 Oct 2009 09:28:39 +0200
+From: Arnaud Charlet <charlet@adacore.com>
+To: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+CC: Cyrille Comar <comar@adacore.com>, report@adacore.com, Vincent Celier <celier@adacore.com>
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared library projects importing static library projects using switch --unchecked-shared-lib-imports
+Message-ID: <20091002072839.GA68477@adacore.com>
+References: <4AC4E380.1070001@adacore.com> <232BD111E9D4AC4C9F36D37E0C6053B507FB42B7@sma2906.cr.eurocopter.corp>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <232BD111E9D4AC4C9F36D37E0C6053B507FB42B7@sma2906.cr.eurocopter.corp>
+
+> Dear Mr. Comar,
+> I have modified the settings 
+> Build --> Settings --> Targets for gprbuild to:
+> %gprbuild --unchecked-shared-lib-imports -q -c -gnats -u %eL -P%PP %X %fp
+
+You only modified the 'Check Semantic' target, you also need to modify
+other build targets
+
+> gprbuild -d -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+
+This command corresponds to the 'Build Main' target as far as I can guess
+(can you confirm which menu you used), so this is the build target you
+need to modify.
+
+As suggeste3d by Cyrille already:
+
+> and for each of the menu item you use, on the left part of the window, 
+> (for instance click on "Build Main")  change the build command that 
+
+You should modify all 'build' targets, not just the first one.
+
+Regards,
+
+Arno
+
+From dietrich.teves@eurocopter.com  Fri Oct  2 03:57:32 2009
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared libraryprojects importing static library projects using switch--unchecked-shared-lib-imports
+Date: Fri, 2 Oct 2009 09:56:44 +0200
+Message-ID: <232BD111E9D4AC4C9F36D37E0C6053B507FB42B8@sma2906.cr.eurocopter.corp>
+In-Reply-To: <20091002072839.GA68477@adacore.com>
+From: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+To: <report@adacore.com>
+CC: <charlet@adacore.com>
+
+Dear Mr. Arnaud,
+I have now set the %gprbuild --unchecked-shared-lib-imports options in the targets listed below:
+
+File
+	Check Syntax
+	Check Semantic
+Project
+	Build Main
+	Build All
+	Compile All Sources
+	Build <current file>
+
+With these new settings I got the error messages:
+gprbuild --unchecked-shared-lib-imports -d -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+creating auto.cgpr
+lib_cmc_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+lib_dku_services_extended.gpr:7:09: warning: Linker switches not taken into account in library projects
+blocking_scheduler_cpp.gpr:13:09: warning: Linker switches not taken into account in library projects
+lib_gupi.gpr:3:09: warning: Linker switches not taken into account in library projects
+lib_gupi_ext.gpr:9:09: warning: Linker switches not taken into account in library projects
+lib_ami.gpr:3:09: warning: Linker switches not taken into account in library projects
+lib_ami_ext.gpr:7:09: warning: Linker switches not taken into account in library projects
+lib_dku_services.gpr:7:09: warning: Linker switches not taken into account in library projects
+lib_dku_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+lib_mtc_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+[2009-10-02 09:39:10] Cannot open file '/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/lib_cmc_tables.gpr'
+gcc -c --unchecked-shared-lib-imports -O2 -O2 dku_main_v31_gnat.2.ada
+gnat1: error: unrecognized command line option "-funchecked-shared-lib-imports"
+gprbuild: *** compilation phase failed
+
+Obviously the option has been passed to gcc where it is rejected.
+
+EUROCOPTER DEUTSCHLAND GmbH
+ETZST - Training Simulation Development
+ 
+Dipl.-Ing.
+Dietrich Teves
+Tel: +49 (0)89 6000 3305
+Fax: +49 (0)89 6000 6152
+Dietrich.Teves@eurocopter.com 
+
+-----Ursprüngliche Nachricht-----
+Von: Arnaud Charlet [mailto:charlet@adacore.com] 
+Gesendet: Freitag, 2. Oktober 2009 09:29
+An: Teves, Dietrich
+Cc: Cyrille Comar; report@adacore.com; Vincent Celier
+Betreff: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared libraryprojects importing static library projects using switch--unchecked-shared-lib-imports
+
+> Dear Mr. Comar,
+> I have modified the settings 
+> Build --> Settings --> Targets for gprbuild to:
+> %gprbuild --unchecked-shared-lib-imports -q -c -gnats -u %eL -P%PP %X %fp
+
+You only modified the 'Check Semantic' target, you also need to modify
+other build targets
+
+> gprbuild -d -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+
+This command corresponds to the 'Build Main' target as far as I can guess
+(can you confirm which menu you used), so this is the build target you
+need to modify.
+
+As suggeste3d by Cyrille already:
+
+> and for each of the menu item you use, on the left part of the window, 
+> (for instance click on "Build Main")  change the build command that 
+
+You should modify all 'build' targets, not just the first one.
+
+Regards,
+
+Arno
+
+From comar@adacore.com  Fri Oct  2 04:35:36 2009
+Message-ID: <4AC5BB51.1010904@adacore.com>
+Date: Fri, 02 Oct 2009 10:35:29 +0200
+From: Cyrille Comar <comar@adacore.com>
+MIME-Version: 1.0
+To: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+CC: report@adacore.com, charlet@adacore.com
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared libraryprojects importing static library projects using switch--unchecked-shared-lib-imports
+References: <232BD111E9D4AC4C9F36D37E0C6053B507FB42B8@sma2906.cr.eurocopter.corp>
+In-Reply-To: <232BD111E9D4AC4C9F36D37E0C6053B507FB42B8@sma2906.cr.eurocopter.corp>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+
+Teves, Dietrich a écrit :
+
+> With these new settings I got the error messages:
+> gprbuild --unchecked-shared-lib-imports -d -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+> creating auto.cgpr
+
+ok, so this part is good!
+
+> lib_cmc_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+> lib_dku_services_extended.gpr:7:09: warning: Linker switches not taken into account in library projects
+> blocking_scheduler_cpp.gpr:13:09: warning: Linker switches not taken into account in library projects
+> lib_gupi.gpr:3:09: warning: Linker switches not taken into account in library projects
+> lib_gupi_ext.gpr:9:09: warning: Linker switches not taken into account in library projects
+> lib_ami.gpr:3:09: warning: Linker switches not taken into account in library projects
+> lib_ami_ext.gpr:7:09: warning: Linker switches not taken into account in library projects
+> lib_dku_services.gpr:7:09: warning: Linker switches not taken into account in library projects
+> lib_dku_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+> lib_mtc_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+> [2009-10-02 09:39:10] Cannot open file '/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/lib_cmc_tables.gpr'
+> gcc -c --unchecked-shared-lib-imports -O2 -O2 dku_main_v31_gnat.2.ada
+> gnat1: error: unrecognized command line option "-funchecked-shared-lib-imports"
+> gprbuild: *** compilation phase failed
+> 
+> Obviously the option has been passed to gcc where it is rejected.
+
+and this is very unexpected. Which version of gprbuild is installed on 
+your machine? (gprbuild --version)
+You need at least version 1.3.0 for this option to be effective.
+
+From dietrich.teves@eurocopter.com  Fri Oct  2 09:59:19 2009
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+Subject: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared libraryprojects importing static library projects using switch--unchecked-shared-lib-imports
+Date: Fri, 2 Oct 2009 15:58:48 +0200
+Message-ID: <232BD111E9D4AC4C9F36D37E0C6053B507FB42B9@sma2906.cr.eurocopter.corp>
+In-Reply-To: <4AC5BB51.1010904@adacore.com>
+From: "Teves, Dietrich" <Dietrich.Teves@eurocopter.com>
+To: "Cyrille Comar" <comar@adacore.com>
+CC: <report@adacore.com>
+
+Dear Mr. Comar,
+The gprbuild version was obviously correct:
+	$ ./gprbuild --version
+	GPRBUILD Pro 1.3.0 (20090421) (i686-pc-linux-gnu)
+The reason for the previous error messages was, that the
+--unchecked-shared-lib-imports option was still present in the project file.
+
+After correcting this, I had problems with "duplicate source" error messages related to folders containing c++ header files. The normal C++ compiler seems to tolerate this, if the include statements include a folder name.
+I fixed this problem by creating archives from the C++ code by using make-files.
+
+Last not least there are currently still problems left as can be seen in the log-output below:
+----------------------------------------------------------------------------
+gprbuild --unchecked-shared-lib-imports -d -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+creating auto.cgpr
+gprbind dku_main_v31_gnat.2.bexch
+gnatbind dku_main_v31_gnat.2.ali
+error: "cbit_handler.2.ali" not found, "cbit_handler.2.ada" must be compiled
+error: "dku_acyclic_task_ctrl.2.ali" not found, "dku_acyclic_task_ctrl.2.ada" must be compiled
+gprbind: invocation of gnatbind failed
+gprbuild: unable to bind dku_main_v31_gnat.2.ada
+
+[2009-10-02 15:37:50] process exited with status 4 (elapsed time: 01.22s)
+----------------------------------------------------------------------------
+I tried to re-compile the units cbit_handler.2.ada and dku_acyclic_task_ctrl.2.ada.
+I got the message that the compilation has been successful.
+
+Question: Can you please help me solving this problem.
+
+Best regards
+D. Teves
+
+EUROCOPTER DEUTSCHLAND GmbH
+ETZST - Training Simulation Development
+ 
+Dipl.-Ing.
+Dietrich Teves
+Tel: +49 (0)89 6000 3305
+Fax: +49 (0)89 6000 6152
+Dietrich.Teves@eurocopter.com 
+
+-----Ursprüngliche Nachricht-----
+Von: Cyrille Comar [mailto:comar@adacore.com] 
+Gesendet: Freitag, 2. Oktober 2009 10:35
+An: Teves, Dietrich
+Cc: report@adacore.com; charlet@adacore.com
+Betreff: Re: [IA01-027] - ACT#1313 : GNAT PRO problems with shared libraryprojects importing static library projects using switch--unchecked-shared-lib-imports
+
+Teves, Dietrich a écrit :
+
+> With these new settings I got the error messages:
+> gprbuild --unchecked-shared-lib-imports -d -P/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/exec_dku_main_extended.gpr -XTarget=release -XVariant=ATP dku_main_v31_gnat.2.ada
+> creating auto.cgpr
+
+ok, so this part is good!
+
+> lib_cmc_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+> lib_dku_services_extended.gpr:7:09: warning: Linker switches not taken into account in library projects
+> blocking_scheduler_cpp.gpr:13:09: warning: Linker switches not taken into account in library projects
+> lib_gupi.gpr:3:09: warning: Linker switches not taken into account in library projects
+> lib_gupi_ext.gpr:9:09: warning: Linker switches not taken into account in library projects
+> lib_ami.gpr:3:09: warning: Linker switches not taken into account in library projects
+> lib_ami_ext.gpr:7:09: warning: Linker switches not taken into account in library projects
+> lib_dku_services.gpr:7:09: warning: Linker switches not taken into account in library projects
+> lib_dku_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+> lib_mtc_tables.gpr:4:09: warning: Linker switches not taken into account in library projects
+> [2009-10-02 09:39:10] Cannot open file '/home/dteves/Projects/DKUS_V3_B_4/subsystems/system_controller/main.ss/dku_tm/NH90TM_rel31_B_Linux.wrk/New_Compiler/GNAT_Fwrk/Exec_DKU_Main/lib_cmc_tables.gpr'
+> gcc -c --unchecked-shared-lib-imports -O2 -O2 dku_main_v31_gnat.2.ada
+> gnat1: error: unrecognized command line option "-funchecked-shared-lib-imports"
+> gprbuild: *** compilation phase failed
+> 
+> Obviously the option has been passed to gcc where it is rejected.
+
+and this is very unexpected. Which version of gprbuild is installed on 
+your machine? (gprbuild --version)
+You need at least version 1.3.0 for this option to be effective.
+

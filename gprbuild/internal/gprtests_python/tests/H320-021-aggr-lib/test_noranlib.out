@@ -1,0 +1,56 @@
+=================== RUN1
+gcc -c -O1 api.adb
+gcc -c -O2 cst.adb
+gprlib aggr.lexch
+ar cr laggr/libaggr.a o2lib/cst.o o1lib/api.o
+"laggr/api.ali" has been deleted
+"laggr/cst.ali" has been deleted
+"laggr/libaggr.a" has been deleted
+"o1lib/api.ali" has been deleted
+"o1lib/api.o" has been deleted
+"o2lib/aggr.lexch" has been deleted
+"o2lib/auto.cgpr" has been deleted
+"o2lib/cst.ali" has been deleted
+"o2lib/cst.o" has been deleted
+after clean
+=================== RUN2
+after compilation
+./laggr/api.ali
+./laggr/cst.ali
+./laggr/libaggr.so
+./o1lib/api.ali
+./o1lib/api.o
+./o2lib/cst.ali
+./o2lib/cst.o
+after clean
+=================== RUN3
+gcc -c main.adb
+gcc -c -O2 cst.adb
+gcc -c -O1 api.adb
+gprlib aggr.lexch
+ar cr laggr/libaggr.a o2lib/cst.o o1lib/api.o
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+gcc main.o -o main
+<<<
+Call 12
+kill
+>>>
+"auto.cgpr" has been deleted
+"b__main.adb" has been deleted
+"b__main.ads" has been deleted
+"b__main.ali" has been deleted
+"b__main.o" has been deleted
+"laggr/api.ali" has been deleted
+"laggr/cst.ali" has been deleted
+"laggr/libaggr.a" has been deleted
+"main" has been deleted
+"main.ali" has been deleted
+"main.bexch" has been deleted
+"main.o" has been deleted
+"o1lib/api.ali" has been deleted
+"o1lib/api.o" has been deleted
+"o2lib/aggr.lexch" has been deleted
+"o2lib/cst.ali" has been deleted
+"o2lib/cst.o" has been deleted

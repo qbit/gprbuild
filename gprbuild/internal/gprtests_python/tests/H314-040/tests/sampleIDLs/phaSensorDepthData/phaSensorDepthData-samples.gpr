@@ -1,0 +1,42 @@
+
+with "phaSensorDepthData.gpr";
+with "../../../gnat_default.gpr";
+Project PhaSensorDepthData.Samples is
+   for Languages use ("Ada");
+   for Source_Dirs use ("../../../samples");
+   for Main use ("com-saabgroup-cms-pha-sensor-depth-depth_publisher.adb",
+                 "com-saabgroup-cms-pha-sensor-depth-depth_subscriber.adb");
+
+   for Object_Dir use "generated/samples/" & PhaSensorDepthData'Object_Dir;
+   for Exec_Dir use ".";
+
+
+   package Binder is
+      for Default_Switches ("ada") use
+        PhaSensorDepthData.Binder'Default_Switches ("ada");
+   end Binder;
+
+   package Compiler is
+      for Default_Switches ("ada") use
+        PhaSensorDepthData.Compiler'Default_Switches ("ada");
+      for Default_Switches ("C") use
+        PhaSensorDepthData.Compiler'Default_Switches ("C");
+   end Compiler;
+
+   package Builder is
+      for Default_Switches ("ada") use
+        PhaSensorDepthData.Builder'Default_Switches ("ada");
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("ada") use
+        PhaSensorDepthData.Linker'Default_Switches ("ada");
+   end Linker;
+
+   package Gnatstub renames PhaSensorDepthData.Gnatstub;
+
+   package Pretty_Printer renames PhaSensorDepthData.Pretty_Printer;
+
+
+end PhaSensorDepthData.Samples;
+

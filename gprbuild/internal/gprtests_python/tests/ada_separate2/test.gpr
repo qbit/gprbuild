@@ -1,0 +1,36 @@
+project Test is
+
+   type OS_Type is ("unix", "alpha_vms", "itanium_vms");
+   OS : OS_Type := External ("OS", "unix");
+
+   for Languages use ("Ada");
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Main use ("main.adb");
+
+   case OS is
+      when "alpha_vms" =>
+         for Locally_Removed_Files use ("mlib-tgt-vms-ia64.adb");
+      when "itanium_vms" =>
+         for Locally_Removed_Files use ("mlib-tgt-vms-alpha.adb");
+      when "unix" =>
+         for Locally_Removed_Files use
+           ("mlib-tgt-vms.ads",
+            "mlib-tgt-vms.adb",
+            "mlib-tgt-vms-alpha.adb",
+            "mlib-tgt-vms-ia64.adb");
+   end case;
+
+   package Naming is
+      case OS is
+         when "unix" =>
+            for Body ("main.do_it") use "main-do_it-unix.adb";
+         when "alpha_vms" =>
+            for Body ("main.do_it") use "main-do_it-vms.adb";
+            for Body ("mlib.tgt.specific") use "mlib-tgt-vms-alpha.adb";
+         when "itanium_vms" =>
+            for Body ("main.do_it") use "main-do_it-vms.adb";
+            for Body ("mlib.tgt.specific") use "mlib-tgt-vms-ia64.adb";
+      end case;
+   end Naming;
+end Test;

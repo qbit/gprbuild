@@ -1,0 +1,15 @@
+
+--  Wrong Included_Artifiact_ Patterns so we get a link error
+
+project Bmain is
+   for Languages   use ("Ada", "C");
+   for Main        use ("main.adb");
+   for Source_Dirs use ("src");
+   for Object_Dir  use "obj";
+   for Exec_Dir    use ".";
+
+   package Remote is
+      for Included_Patterns use ("*.ad*", "*.c");
+      for Included_Artifact_Patterns use ("*.x"); -- not including *.o
+   end Remote;
+end Bmain;

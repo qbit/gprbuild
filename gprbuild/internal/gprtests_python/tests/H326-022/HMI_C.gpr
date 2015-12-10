@@ -1,0 +1,68 @@
+-------------------------------------------------------------------------------
+--  Project: S.P1330 iFACTS FWP/FMS/MetSim Implementation
+--
+--  File: hmi_c.gpr
+--  $Id: HMI_C.gpr 81226 2008-03-10 16:26:35Z lilian.bruyere $
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+--  HMI_C
+--
+--  Description:
+--     GNAT project file for the C library used in the HMI application within
+--     the FWP CSCI.
+--
+--     This project file adds library-specific switches to the switches defined
+--     in the underlying application-specifc project file.
+-------------------------------------------------------------------------------
+
+with "hmi_app";
+project HMI_C is
+
+   ----------------------------------------------------------------------------
+   --  Set up paths to input files and output files.
+   ----------------------------------------------------------------------------
+
+   for Languages use ("C");
+
+   for Source_Dirs use ("./Common/C_Headers",
+                        "./Display_IO/Common",
+                        "./Display_IO/Separation_Monitor",
+                        "./Display_IO/Display_Manager",
+                        "./Display_IO/Tactical_Bay",
+                        "./Display_IO/Clearance_Entry",
+                        "./Display_IO/Level_Assessment_Display",
+                        "./Display_IO/Popups_Menus",
+                        "./Framework/",
+                        "../../Bindings/",
+                        "../../Common/AIX_System_Interface",
+                        "../../Common/Shutdown_Processing");
+
+   for Library_Name use "hmi_c";
+   for Library_Dir  use "Libs";
+   for Object_Dir   use "C_Objects";
+
+   ----------------------------------------------------------------------------
+   --  Set up variables that control flow via command line arguments.
+   ----------------------------------------------------------------------------
+
+   --  We have 4 types of build: "standard", "coverage" and "profile" are
+   --  pretty self-explanatory. "style" is a pseudo-build that runs the
+   --  compiler only with appropriate style-checking switches.
+
+   type Build_Type is ("standard",
+                       "coverage",
+                       "profile",
+                       "style");
+
+   --  Default to 'standard' build type
+   Build : Build_Type := External ("BUILD", "standard");
+
+
+   ----------------------------------------------------------------------------
+   --  Compiler options.
+   ----------------------------------------------------------------------------
+
+   package Compiler renames HMI_App.Compiler;
+
+end HMI_C;

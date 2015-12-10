@@ -1,0 +1,7 @@
+project Prj is
+   for Main use ("main.adb");
+   package Binder is
+   --   for Switches ("Ada") use ("-v");
+   end Binder;
+end Prj;
+

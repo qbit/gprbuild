@@ -1,0 +1,9 @@
+project basic1 is
+   Var := External ("DOES_NOT_EXIST", "");
+   for Languages    use ("Ada");
+   for Main         use ("main.adb");
+   package Compiler is
+       for Default_Switches ("Ada") use ("-O", Var, "-g");
+   end Compiler;
+
+end basic1;

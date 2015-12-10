@@ -1,0 +1,17 @@
+project Test3_Ada_Main is
+
+   for Languages use ("Ada", "C++");
+   --  for Object_Dir use "obj";
+   for Main use ("test3_ada_main.adb");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnat05");
+   end Compiler;
+
+   package Naming is
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".cpp";
+   end Naming;
+
+   for Exec_Dir use ".";
+end Test3_Ada_Main;

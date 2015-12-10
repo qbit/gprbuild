@@ -1,0 +1,8 @@
+project Sql is
+   for Languages use ("C");
+   for Source_Dirs use ();
+   for Library_Name use "SQL";
+   for Library_Dir use "lib";
+   for Library_Kind use "dynamic";
+end Sql;
+

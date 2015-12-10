@@ -1,0 +1,6 @@
+project Ext extends "base.gpr" is
+   for Main use ("main.adb");
+   for Source_Dirs use ("ext");
+   for Object_Dir use "ext_obj";
+end Ext;
+

@@ -1,0 +1,16 @@
+project Prj is
+   for Main use ("main.adb");
+
+   for Object_Dir use "obj";
+
+   for Exec_Dir   use "bin";
+
+   package Clean is
+      for Artifacts_In_Object_Dir use
+         ("toto.txt", "toto1.*", "t?t?.def", "titi.txt", "tutu[1-4].txt",
+          "dummy*.txt", "foo*.txt", "bar*.txt");
+      for Artifacts_In_Exec_Dir use
+         ("tata.txt", "tete.txt");
+   end Clean;
+end Prj;
+

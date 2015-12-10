@@ -1,0 +1,7 @@
+with "../xml/xml";
+library project src is
+   for source_dirs use ("src");
+   for library_name use "src";
+   for library_dir use "lib";
+   for object_dir use "obj";
+end src;

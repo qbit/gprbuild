@@ -1,0 +1,4 @@
+project Root is
+   for Source_Files use ();
+end Root;
+

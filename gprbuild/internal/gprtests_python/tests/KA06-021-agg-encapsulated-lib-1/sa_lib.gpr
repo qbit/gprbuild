@@ -1,0 +1,10 @@
+project Sa_Lib is
+   for Languages    use ("Ada");
+   for Source_Dirs use ("lib_src");
+   for object_dir use "obj";
+   for Library_Dir  use "lib";
+   for Library_Kind use "dynamic";
+   for Library_Interface use ("ada_lib");
+   for Library_Name use "sa";
+   for Library_Standalone use "standard";
+end Sa_Lib;

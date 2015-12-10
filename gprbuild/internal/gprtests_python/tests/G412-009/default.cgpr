@@ -1,0 +1,31 @@
+project Default is
+   package Compiler is
+      for Driver          ("C") use "gcc";
+      for Switches ("C") use ("-c", "-x", "c");
+      for Dependency_Switches        ("C") use ("-Wp,-MD,");
+      for Include_Path             ("C") use "CPATH";
+      for PIC_Option      ("C") use ("-fPIC");
+   end Compiler;
+
+   package Binder is
+      for Driver            ("C") use "cbnd";
+      for Prefix            ("C") use "c__";
+   end Binder;
+
+   package Linker is
+      for Driver   use "gcc";
+   end Linker;
+
+   for Archive_Builder  use ("ar", "cr");
+   for Archive_Indexer  use ("ranlib");
+   for Archive_Suffix   use ".a";
+   for Shared_Library_Prefix use "lib";
+   for Shared_Library_Suffix use ".so";
+   for Run_Path_Option  use ("-Wl,-rpath,");
+   for Library_Partial_Linker use ("gcc", "-nostdlib", "-Wl,-r", "-o");
+
+   package Naming is
+      for Spec_Suffix ("C") use ".h";
+      for Body_Suffix ("C") use ".c";
+   end Naming;
+end Default;

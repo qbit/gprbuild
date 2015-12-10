@@ -1,0 +1,11 @@
+with "../imp/imp";
+project Imp2 is
+
+   for Languages use ("C");
+
+   package Linker is
+      for Linker_Options use ("c_code/tata.o");
+   end Linker;
+
+end Imp2;
+

@@ -1,0 +1,13 @@
+export TARGET=${MAKELEVEL}_${MARKER}_${MAKELEVEL}
+
+all:
+ifeq (${MAKELEVEL},${DEPTH})
+	echo "done"
+else
+	${BASE}/make_sources -C=${C_COUNT} -A=${ADA_COUNT} -P=${PROJECT_COUNT}
+	@gprbuild -j0 -p -q
+	@mkdir ${TARGET}
+	@cp ${BASE}/Makefile.wrk ${TARGET}/
+	@${MAKE} -C ${TARGET}  ${@} -f Makefile.wrk
+endif
+

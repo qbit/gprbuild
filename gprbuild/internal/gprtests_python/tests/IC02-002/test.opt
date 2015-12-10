@@ -1,0 +1,3 @@
+Ada,SHARED required
+Windows OUT test.out_win
+darwin  OUT test.out_darwin

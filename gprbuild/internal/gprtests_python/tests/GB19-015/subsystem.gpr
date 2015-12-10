@@ -1,0 +1,20 @@
+project Subsystem is
+   type Lib_Kind is ("none", "static", "dynamic");
+   Lib : Lib_Kind := external ("LIB", "none");
+
+   for Languages    use ("Ada", "C");
+   for Source_Dirs  use ("subsystem_src");
+   for Object_Dir   use  "subsystem_obj";
+   case Lib is
+      when "none" =>
+         null;
+      when "static" =>
+         for Library_Name use "subsystem";
+         for Library_Kind use "static";
+         for Library_Dir  use "slib";
+      when "dynamic" =>
+         for Library_Name use "subsystem";
+         for Library_Kind use "dynamic";
+         for Library_Dir  use "dlib";
+   end case;
+end Subsystem;

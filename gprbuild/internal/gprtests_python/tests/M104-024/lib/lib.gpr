@@ -1,0 +1,7 @@
+project Lib is
+   for Languages use ("Ada", "C");
+   for Library_Name use "lib";
+   for Library_Dir  use "lib";
+   for Externally_Built use "True";
+end Lib;
+

@@ -1,0 +1,5 @@
+abstract project Runtime is
+   for Source_Files use ();
+   for Target use "toto";
+end Runtime;
+

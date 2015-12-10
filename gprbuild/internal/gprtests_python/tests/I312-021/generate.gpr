@@ -1,0 +1,9 @@
+Project generate extends "idl.gpr" is
+   for Source_Files use ();
+--   for Object_Dir use "idl_src";
+   package Compiler is
+      for Default_Switches("Idl") use
+        ("-language", "Ada");
+   end Compiler;
+end generate;
+

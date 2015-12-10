@@ -1,0 +1,8 @@
+project Prj extends "base/base.gpr" is
+   for Main use ("main.adb");
+
+   package Naming is
+      for Body ("pkg.execute") use "pkg-execute.bdy";
+   end Naming;
+end Prj;
+

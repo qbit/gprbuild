@@ -1,0 +1,6 @@
+no -o
+bin/main.dll
+-o main.axe
+bin/main.axe
+-o main
+bin/main.dll

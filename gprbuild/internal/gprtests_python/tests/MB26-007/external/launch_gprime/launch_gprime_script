@@ -1,0 +1,2059 @@
+#!/bin/bash
+# $Id: launch_gprime_script,v 1.62 2013/11/22 15:04:33 gscoutheeten Exp $
+# compatible SD et fork 2.1 et CPS
+
+: << CLUSTER_SPEC
+CLUSTER_SPEC
+
+set -e
+
+usage() {
+	cat 1>&2 << END_HELP
+Options for relaunching the servers
+ Usage: `basename "$0"` ( -k | -v <gprime version> ) [ -n <server name> ] [-f]
+    -f                    kill existing server without confirmation
+ Usage: `basename "$0"` ( -khp | -v <gprime version> ) [ -n <server name> ] [-f]
+    -f                    kill existing high priority server without confirmation
+
+Options for new versions deployment
+ Usage: `basename "$0"` -v <gprime version> --precopy
+ Usage: `basename "$0"` -v <gprime version> -n <server name> [-f] --use-precopy
+ Usage: `basename "$0"` -n <server name> --check
+ Usage: `basename "$0"` --infuse-prog launch_gprime_dest
+ Usage: `basename "$0"` -v <gprime version> -n <server name> --copy-on-slave <copy version>
+
+    --check               only check gprime versions for the server name given
+    --no-fork             prevent slaves from using 'fork' (old mode or windows)
+    --list-all-options    list all options
+    --help                display this help
+    --print-spec          prints the cluster specification
+    --print-head          same as --print-spec with the shebang and first comments
+    --print-prog          prints the program contents (everything but the cluster specification)
+    --infuse-prog         merge the spec from the specified file with the code from this script
+    --infuse-spec         merge the spec from this script with the code from the specified file
+    --deploy-me           log on every host known and use --infuse-prog on prod/launch_gprime
+END_HELP
+}
+
+# Fun starts now!
+#DEBUG=1
+TIME_TAG=`date '+%Y%m%d_%H%M%S'`
+DISPATCHER_LOG=""
+MASTER_PREP_LOG=""
+BROKER_GPU_LOG=""
+SERVER_GPU_LOG=""
+
+SSH_OPTIONS="-x -c arcfour -o Compression=no -o StrictHostKeyChecking=no -o LogLevel=QUIET"
+
+log_echo() {
+	echo "Launch> ["`date +'%Y%m%d %H:%M:%S'`"] "$@
+}
+
+print_head() {
+	# This can parse this very script if inputed in stdin to extract the CLUSTER_SPEC part
+	sed -n '1,/^CLUSTER_SPEC$/p'
+}
+
+print_spec() {
+	sed -n '/^:/{s#:#cat#}; 1,/^CLUSTER_SPEC$/p' | bash
+}
+
+print_after_spec() {
+	# same as print_head but after the CLUSTER_SPEC
+	sed '1,/^CLUSTER_SPEC$/d'
+}
+
+eval_cluster_spec() {
+	DIC=''
+	queue_seen_twice=0
+	slaves_seen_twice=0
+	disable_noglob_later=true
+	[ -z "${-##*f*}" ] && disable_noglob_later=false
+	set -f
+	eval "$CLUSTER_SPEC"
+	if "${disable_noglob_later}"; then
+		set +f
+	fi
+}
+
+#DIC=''
+
+set_dic() {
+	if [[ -n "$DEBUG" ]]; then
+		echo "set_dic $@" 1>&2
+	fi
+	DIC=`echo "$@"; echo "$DIC"`
+	if [[ -n "$DEBUG" ]]; then
+		echo "DIC='$DIC'" 1>&2
+	fi
+}
+
+get_dic() {
+	res=`echo "$DIC" | grep -m 1 -F "$1 " | cut -d ' ' -f 2`
+	if [[ -n "$DEBUG" ]]; then
+		echo "get_dic $@ => ${res}" 1>&2
+	fi
+	echo "$res"
+}
+
+procs_per_host_overide() {
+	set_dic "procs_per_host_$1" "$2"
+}
+
+procs_per_host() {
+	_host=$1
+	if [[ -n "$DEBUG" ]]; then
+		echo "calculating for $_host" 1>&2
+	fi
+	if [[ -n `get_dic "procs_per_host_$1"` ]]; then
+		if [[ -n "$DEBUG" ]]; then
+			echo "$1 has an overide => see result of get_dic" 1>&2
+		fi
+		get_dic "procs_per_host_$1"
+		return
+	fi
+	if [[ ${_host:0:2} == "cg" ]]; then
+		if [[ ${_host} < "cg51" ]]; then
+			if [[ -n "$DEBUG" ]]; then
+				echo "$_host => 4 procs" 1>&2
+			fi
+			echo 4
+			return
+		fi
+	fi
+	if [[ ${_host:0:8} == "eqds3pcg" ]]; then
+		if [[ -n "$DEBUG" ]]; then
+			echo "$_host => 4 procs" 1>&2
+		fi
+		echo 4
+		return
+	fi
+	if [[ -n "$DEBUG" ]]; then
+		echo "$_host => 8 procs" 1>&2
+	fi
+	echo 8
+}
+
+html_report() {
+	cluster() {
+		echo "<a href=\"http://$2:$3\">$1</a><br/>"
+	}
+	broker()          { cluster  "$@"; }
+	broker_and_pde()  { cluster  "$@"; }
+	pde()             { cluster  "$@"; }
+	dispatcher()      { cluster  "$@"; }
+	eval_cluster_spec
+}
+
+print_compact_spec() {
+	# define all functions as { echo "fun_name" "$@"; }
+	eval "`echo \"${CLUSTER_SPEC}\" | awk '/^[a-zA-Z]/{printf \"%s() { echo \\"%s\\" \\"$@\\";}\n\",$1,$1}' | uniq -u`"
+	eval_cluster_spec
+}
+
+print_strange_clusters() {
+	QUEUE_LIST=""
+	cluster() {
+		QUEUE_LIST="$QUEUE_LIST $1"
+	}
+	eval_cluster_spec
+	for QUEUE_NAME in ${QUEUE_LIST}; do
+		define_classical_functions
+		slave_fun() {
+			slave_lst="$slave_lst $1"
+		}
+		eval_cluster_spec
+		slave_lst=""
+		slaves_iteration slave_fun
+		slaves_with_count=`echo "$slave_lst" | tr ' ' '\n' | sed '/^\s*$/d' | sort --ignore-leading-blanks | uniq -c`
+		strange_slaves=`echo "$slaves_with_count" | awk '{if ($1 != 8){printf "%s ",$2}} END {printf "\n"}'`
+		if [[ `echo "$strange_slaves" | sed 's:\s*::g'` != "" ]]; then
+			echo "$QUEUE_NAME => $strange_slaves"
+		fi;
+	done
+}
+
+print_clusters_cpu_qty() {
+	QUEUE_LIST=""
+	cluster() {
+		QUEUE_LIST="$QUEUE_LIST cluster,$1"
+	}
+	broker_and_pde() {
+		QUEUE_LIST="$QUEUE_LIST broker,$1"
+	}
+	broker_and_pde_cps() {
+		QUEUE_LIST="$QUEUE_LIST broker,$1"
+	}
+	dispatcher() {
+		QUEUE_LIST="$QUEUE_LIST dispatcher,$1"
+	}
+	eval_cluster_spec
+	for NAME in ${QUEUE_LIST}; do
+		QUEUE_NAME=`echo "$NAME" | cut -d ',' -f 2`
+		define_classical_functions
+		cpu_qty=0
+		slave_fun() {
+			let cpu_qty=cpu_qty+1
+		}
+		eval_cluster_spec
+		slaves_iteration slave_fun
+		echo "$NAME,$cpu_qty"
+	done
+}
+
+spec_for_gprime_nightly_gnp_server_status() {
+	echo '['
+	cluster() {
+		echo "    [\"$2\", $3, \"$1\"],"
+	}
+	eval_cluster_spec
+	echo ']'
+}
+
+print_prm_spec() {
+	cluster() {
+		echo "cluster( \"$1\", \"$2\" ),"
+	}
+	broker_and_pde() {
+		echo "broker( \"$1\", \"$2\" ),"
+	}
+	dispatcher() {
+		echo "dispatcher( \"$1\", \"$2\" ),"
+	}
+	eval_cluster_spec | sort -t '"' -k2 | sort -t '"' -s -k 4 | column -t
+}
+
+deploy_me() {
+	echo -n "dos2unix on this file: "
+	dos2unix "$0"
+	last_host=''
+	cluster() {
+		host=$2
+		set_variables "$1" "$2"
+		if [[ "$last_host" != "$host" ]]; then
+			last_host=$host
+			echo -n "Deploying on $host ... "
+			rsync --partial -aL --rsh="ssh ${SSH_OPTIONS}" ${SSH_OPTIONS} -q "$0" $host:${HOST_DIR}/launch_gprime_tmp
+			ssh ${SSH_OPTIONS} $host "cp ${HOST_DIR}/launch_gprime ${HOST_DIR}/old_launch_gprime_${TIME_TAG} && ${HOST_DIR}/launch_gprime_tmp --infuse-prog ${HOST_DIR}/launch_gprime && rm ${HOST_DIR}/launch_gprime_tmp"
+			echo "done"
+		fi;
+	}
+	broker()          { cluster  "$@"; }
+	broker_and_pde()  { cluster  "$@"; }
+	pde()             { cluster  "$@"; }
+	dispatcher()      { cluster  "$@"; }
+	eval_cluster_spec
+}
+
+#list_clusters() {
+#	cluster() {
+#		echo "cluster: $@"
+#	}
+#	broker() {
+#		echo "broker: $@"
+#	}
+#	pde() {
+#		echo "pde: $@"
+#	}
+#	broker_and_pde() {
+#		echo "broker and pde: $@"
+#	}
+#	dispatcher() {
+#		echo "dispatcher: $@"
+#	}
+#	slaves() {
+#		master=$1
+#		shift 1
+#		echo "${master}'s slaves: "
+#		for sla in "$@"; do
+#			echo "$sla x `procs_per_host ${sla}` "
+#		done
+#	}
+#	eval_cluster_spec
+#}
+
+target() {
+	echo "linux"
+}
+
+ssh_if_needed() {
+	ssh_host=$1
+	if [[ -n "$DEBUG" ]]; then
+		echo "ssh_if_needed $@" 1>&2
+	fi
+	shift 1
+	if [[ ${ssh_host} != ${HOSTNAME} ]]; then
+		ssh ${SSH_OPTIONS} $ssh_host "$@"
+	else
+		eval "$@"
+	fi
+}
+
+scp_if_distant() {
+	last_arg="${!#}" # last argument
+	scp_dest="${last_arg%:*}" # remove what's after ":"
+	if [[ -n "$DEBUG" ]]; then
+		echo "detected distination on ${scp_dest}" 1>&2
+	fi
+	if [[ `host "${scp_dest}"` == `host "${HOSTNAME}"` ]]; then
+		return
+	fi
+
+	file_dest="${last_arg##*:}" # remove what's before ":"
+	if [[ -z "${file_dest}" ]]; then
+		file_dest="."
+	fi
+
+	#log_echo "Copying : rsync --partial -aL --rsh=\"ssh ${SSH_OPTIONS}\" $@"
+	log_echo "Copying : rsync --partial -aL $@" # less verbose
+	rsync --partial -aL --rsh="ssh ${SSH_OPTIONS}" "$@"
+}
+
+NB_PREP=""
+NB_HARD_GPU=""
+
+set_variables() {
+	QUEUE_NAME=$2
+
+	HOST_N_SLAVES_ON_HEAD=0
+	HOST_DIR=~/prod/
+	HOST_TARGET=linux
+
+
+	GPRIME_PROD_BASE=gprime-${QUEUE_NAME}
+
+	GPRIME_PROD=${HOST_DIR}/${GPRIME_PROD_BASE}
+	GPRIME_TMP_COPY=${HOST_DIR}/gprime-tmp
+	GPRIME_VERSION=${HOST_DIR}/gprime-${PARAM_VERSION}-${HOST_TARGET}
+	MASTER_LOG=${HOST_DIR}/${TYPE}-${QUEUE_NAME}.log
+
+	if [[ ${TYPE} = 'M8Fitter'	]] ; then
+		M8_PROD_BASE=Model8_Fitter-${QUEUE_NAME}
+		M8_PROD=${HOST_DIR}/${M8_PROD_BASE}
+		M8_TMP_COPY=${HOST_DIR}/Model8_Fitter-tmp
+		M8_VERSION=${HOST_DIR}/Model8_Fitter-${M8FITTER_VERSION}-${HOST_TARGET}
+		M8_LOG=${HOST_DIR}/${TYPE}-${QUEUE_NAME}
+
+		DISPATCHER_LOG=${HOST_DIR}/Dispatcher_${TYPE}-${QUEUE_NAME}
+		MASTER_PREP_LOG=${HOST_DIR}/master_prep_${TYPE}-${QUEUE_NAME}
+		BROKER_GPU_LOG=${HOST_DIR}/broker_gpu_${TYPE}-${QUEUE_NAME}
+		SERVER_GPU_LOG=${HOST_DIR}/server_gpu_${TYPE}-${QUEUE_NAME}
+	fi
+}
+
+define_classical_functions() {
+	SLAVES=''
+	queue_seen_twice=0
+	cluster_skeleton() {
+		DBG_step "define_classical_functions : arg : $@ : QUEUE_NAME : ${QUEUE_NAME}"
+		if (($# < 4 )); then
+			echo "argc=$#"
+			echo "Queue '${2}' definition is wrong (must have at least 3 arguments)"
+			exit 1
+		fi
+		if [[ $2 == ${QUEUE_NAME} ]]; then
+			if [[ "$queue_seen_twice" != 0 ]]; then
+				echo "Queue '${QUEUE_NAME}' defined at least two times"
+				exit 1
+			fi
+			queue_seen_twice=1
+			MASTER=$3
+			PORT=$4
+			TYPE=$1
+			shift 4
+			if [[ "$TYPE" == 'cps_server' || "$TYPE" == 'pde_cps' || "$TYPE" == 'dispatcher_cps' || "$TYPE" == 'broker_and_pde_cps' ]]; then
+				PARAM_SET=$1
+				shift 1
+			fi
+			if [[ "$TYPE" == 'master' || "$TYPE" == 'pde' || "$TYPE" == 'broker_and_pde' \
+				|| "$TYPE" == 'cps_server' || "$TYPE" == 'pde_cps' || "$TYPE" == 'broker_and_pde_cps' ]]; then
+				FORK_22="1"
+				TRANSPARENT_RESTART="1"
+			fi
+			if [[ "$TYPE" != 'master' && $# -ge 1 ]]; then
+				if [[ "$TYPE" != 'pde' && "$TYPE" != 'pde_cps' && "$TYPE" != 'cps_server' \
+					&& "$TYPE" != 'broker_and_pde' && "$TYPE" != 'broker_and_pde_cps' ]]; then
+					echo "Queue '${QUEUE_NAME}' definition is wrong (must have 3 arguments)"
+					exit 1
+				fi
+			fi
+			if [[ "$TYPE" == 'master' || "$TYPE" == 'pde' || "$TYPE" == 'pde_cps' || \
+				"$TYPE" == 'cps_server' || "$TYPE" == 'broker_and_pde' || "$TYPE" == 'broker_and_pde_cps' ]]; then
+				while [ $# -ne 0 ]; do
+					case "$1" in
+						"-captive")
+							if (($# < 3)); then
+								echo "Captive mode needs two arguments after -captive (Queue '${QUEUE_NAME}')"
+							fi
+							CAPTIVE="1"
+							echo "### CAPTIVE MODE ###"
+							STACKER_HOST="$2"
+							STACKER_PORT="$3"
+							FORK_21="1"
+							unset FORK_22
+							unset TRANSPARENT_RESTART
+							shift 3
+							;;
+						"-fork21")
+							FORK_21="1"
+							unset FORK_22
+							unset TRANSPARENT_RESTART
+							shift 1
+							;;
+						"-fork22")
+							FORK_22="1"
+							shift 1
+							;;
+						"-no-fork22")
+							unset FORK_22
+							;;
+						"-sd")
+							if (($# < 3)); then
+								echo "Smart dispatcher mode needs two arguments after -sd (Queue '${QUEUE_NAME}')"
+							fi
+							SD_HOST="$2"
+							SD_PORT="$3"
+							shift 3
+							;;
+						"-transparent-restart")
+							TRANSPARENT_RESTART="1"
+							shift 1
+							;;
+						"-no-transparent-restart")
+							unset TRANSPARENT_RESTART
+							;;
+						"-add")
+							if (($# < 2)); then
+								echo "-add needs one argument after -add (Queue '${QUEUE_NAME}')"
+							fi
+							STACKER_ADDITION="$2"
+							shift 2
+							;;
+						"-multi-version")
+							MULTI_VERSION="1"
+							shift 1
+							;;
+						"-hp-queue")
+							HP_FLAG="1"
+							shift 1
+							;;
+						"-sd-only")
+							SD_ONLY="1"
+							shift 1
+							;;
+						"-pde-memory-safe")
+							PDE_MEMORY_SAFE="1"
+							shift 1
+							;;
+						*)
+							echo "Unkown option : $1 (for Queue '${QUEUE_NAME}')"
+							exit 1
+							;;
+					esac
+				done
+			fi
+		fi
+	}
+
+	cluster()        { cluster_skeleton 'master'         "$@"; }
+	dispatcher()     { cluster_skeleton 'dispatcher'     "$@"; }
+	broker()         { cluster_skeleton 'broker'         "$@"; }
+	pde()            { cluster_skeleton 'pde'            "$@"; }
+	broker_and_pde() { cluster_skeleton 'broker_and_pde' "$@"; }
+	broker_and_pde_cps() { cluster_skeleton 'broker_and_pde_cps' "$@"; }
+	cps_server()     { cluster_skeleton 'cps_server'     "$@"; }
+	pde_cps()        { cluster_skeleton 'pde_cps'        "$@"; }
+	dispatcher_cps() { cluster_skeleton 'dispatcher_cps'     "$@"; }
+	M8Fitter()       { cluster_skeleton 'M8Fitter' "$@"; DBG_step "I m in define_classical_functions "; }
+	slaves_seen_twice=0
+	slaves() {
+		if [[ $1 == ${QUEUE_NAME} ]]; then
+			if [[ "$slaves_seen_twice" != 0 ]]; then
+				echo "Slaves of '${QUEUE_NAME}' defined at least two times"
+				exit 1
+			fi
+			slaves_seen_twice=1
+			shift 1
+			#SLAVES="$@"
+			SLAVES=""
+			for i in $@; do
+				if echo "$i" | egrep -q '\[[0-9][0-9]*\]$'; then
+					proc_qty=`echo "$i" | sed 's:^.*\[::; s:\]$::'`
+					#echo "proc_qty $proc_qty"
+					host="`echo \"$i\" | sed 's:\[[^\]*$::'`"
+					procs_per_host_overide "$host" "$proc_qty"
+					SLAVES="$SLAVES $host"
+				else
+					SLAVES="$SLAVES $i"
+				fi
+			done
+			SLAVES_LIST_TYPE='normal'
+		fi
+	}
+	slaves_n_ports() {
+		if [[ $1 == ${QUEUE_NAME} ]]; then
+			if [[ "$slaves_seen_twice" != 0 ]]; then
+				echo "Slaves of '${QUEUE_NAME}' defined at least two times"
+				exit 1
+			fi
+			slaves_seen_twice=1
+			args=($@)
+			pos=0
+			first=1
+			slaves_list=""
+			ports=""
+			for i in ${args[@]}; do
+				if [[ "$first" == 0 ]]; then
+					if [[ "`expr $pos '%' 2`" == 0 ]]; then
+						if echo "${args[$pos]}" | egrep -q '^[0-9]+$'; then
+							ports="${ports} ${i}"
+						else
+							echo "Number expected in declaration of ${QUEUE_NAME}'s slaves, at word position $pos (starting from 0)"
+							echo "Found ${args[$pos]} instead"
+							exit 1
+						fi
+					else
+						slaves_list="${slaves_list} ${i}"
+					fi
+				else
+					first=0
+				fi
+				pos=$((pos+1))
+			done
+			if [[ `expr "${#args[@]}" '%' 2` != 1 ]]; then
+				echo "Wrong number of argument in the declaration of ${QUEUE_NAME}'s slaves"
+				exit 1
+			fi
+			SLAVES="$slaves_list"
+			SLAVES_PORT="$ports"
+			SLAVES_LIST_TYPE='with_ports'
+		fi
+	}
+	cps_pdl_params() {
+		SET_NAME=$1
+		eval "pdl_header_${SET_NAME}=\"\`cat\`\""
+	}
+	stacker_addition() {
+		SET_NAME=$1
+		eval "pdl_stacker_addition_${SET_NAME}=\"\`cat\`\""
+	}
+	version_history() {
+		eval "pdl_version_history=\"\`cat\`\""
+	}
+}
+
+check_cluster() {
+	define_classical_functions
+	eval_cluster_spec
+	set_variables "${MASTER}" "${QUEUE_NAME}"
+	for host in ${MASTER} ${SLAVES}; do
+		echo -n "${host}: "
+		ssh_if_needed ${host} "${GPRIME_PROD} -check"
+	done
+}
+
+# lock management
+check_and_write_lock() {
+	# how to do an atomic lock with bash: you use mkdir.
+	# this technique was found in http://bash-hackers.org/wiki/doku.php?id=howto:mutex
+	if mkdir "${LOCK_DIR}" &>/dev/null; then
+		touch "${LOCK_DIR}/$$"
+		#echo "Global lock written"
+	else
+		log_echo "ERROR : a launch_gprime for this server name has already been launched."
+		echo -n "Its pid is "
+		ls ${LOCK_DIR}
+		echo "Please check if this process exists, or if you want to manually remove the lock, delete the lock with"
+		echo "rm -rf ${LOCK_DIR}"
+		echo "(The lock is in fact the existence of this directory)"
+		echo "I'm exiting launch_gprime now, and neither killing nor starting anything."
+		exit 1
+	fi
+}
+
+cleanup_before_exit() {
+	kill_ssh_childs
+	delete_lock
+}
+
+# call delete_lock when the script exits
+# works at script normal end, all exit calls and also when interrupted by CTRL+C
+trap cleanup_before_exit EXIT
+#trap exit ERR
+
+lock_if_not_locked_yet() {
+	if [[ -z "${LOCK_ACTIVATED}" ]]; then
+		LOCK_DIR=/tmp/launch_gprime_lock_$1
+		LOCK_ACTIVATED=1
+		check_and_write_lock
+	fi
+}
+
+delete_lock() {
+	if [ -e "${LOCK_DIR}/$$" ]; then
+		rm -f "${LOCK_DIR}/$$"
+		rmdir "${LOCK_DIR}"
+	fi
+	#echo "Removed global lock"
+}
+
+KILLING_NOW=0
+
+kill_ssh_childs() {
+	if [[ $KILLING_NOW != 0 ]]; then
+		if pkill -9 -P $$; then
+			log_echo "Killed all launch_gprime childs"
+		fi
+	fi
+}
+
+kill_M8Fitter(){
+	lock_if_not_locked_yet $GPRIME_PROD_BASE
+	for NODE in ${SLAVES}; do
+		echo Killing $GPRIME_PROD_BASE
+		ssh_if_needed ${NODE} "killall -w -9 $GPRIME_PROD_BASE || true"
+		echo Killing $M8_PROD_BASE
+		ssh_if_needed ${NODE} "killall -w -q -9 $M8_PROD_BASE || true"
+		DBG_step "kill_M8Fitter OK"
+	done
+
+}
+
+
+signal_master() {
+	lock_if_not_locked_yet $GPRIME_PROD_BASE
+	log_echo "Killing master $GPRIME_PROD_BASE ($SIGNAL)"
+	killall -g -q -$SIGNAL $GPRIME_PROD_BASE -r "$GPRIME_PROD_BASE-captive.*" || true
+
+}
+
+signal_slaves() {
+	log_echo "Killing slaves ($SIGNAL) "
+	lock_if_not_locked_yet $GPRIME_PROD_BASE
+
+	ALL_GPRIME_CAPTIVES=''
+	if [[ "$TYPE" == "pde" || "$TYPE" == "pde_cps" || "$TYPE" == "broker_and_pde" || "$TYPE" == "broker_and_pde_cps" ]]; then
+		slave_fun() {
+			NODE=$1
+			port=$2
+			slave_number=$((slave_number+1))
+			letter=`num_to_letter $slave_number`
+			ALL_GPRIME_CAPTIVES="${ALL_GPRIME_CAPTIVES} -r \"${GPRIME_PROD_BASE}-${letter}-captive.*\""
+		}
+		broker_slaves_iteration slave_fun
+	else
+		ALL_GPRIME_CAPTIVES=" -r \"${GPRIME_PROD_BASE}-captive.*\""
+	fi;
+	log_echo "Gprime captives to kill: $GPRIME_PROD_BASE ${ALL_GPRIME_CAPTIVES}"
+
+	print_status() {
+		me=$1
+		#echo '##############################'
+		#ps faux
+		#echo '##############################'
+		brother_pids=`ps --ppid $$ -o 'pid='| tr "\n" ',' | sed 's:\s\+::g;s:,\+$::'`
+		res=' unknown ... you should check for any ssh killing process on this machine!'
+		if [[ "$brother_pids" != '' ]]; then
+			#echo $brother_pids
+			res=`ps --ppid $brother_pids -o cmd= | sort | awk -v SSH_OPTIONS="${SSH_OPTIONS}" '/ssh/{if (!/awk/) {sub(SSH_OPTIONS,"",$0); printf " '%s'",$2}}'`
+		fi
+		if [[ "$res" != '' ]]; then
+			res="remaining${res}"
+		else
+			res="finished"
+		fi
+		log_echo `printf "done %8s - %s\n" "$me" "$res"`
+	}
+
+	KILLING_NOW=1
+	for NODE in ${SLAVES}; do
+		#echo Killing on ${HOST_PREFIX}${NODE}
+		(ssh_if_needed ${NODE} "echo $GPRIME_PROD_BASE ${ALL_GPRIME_CAPTIVES} | xargs -n 32 killall -g -q -$SIGNAL || :" || echo "Problem with ${NODE}"; print_status "${NODE}") &
+	done
+	print_status 'none'
+	wait
+	KILLING_NOW=0
+}
+
+check_multi_version() {
+	if [[ -n "$FORK_22" ]]; then
+		if [[ -n "$MULTI_VERSION" ]]; then
+			if ! ${GPRIME_VERSION} -gprime-versions <(eval "echo \"\$pdl_version_history\";") ${PARAM_VERSION} > /dev/null; then
+				echo "Error : invalid version_history pdl section or version required isn't last!"
+				eval "echo \"\$pdl_version_history\";"
+				exit 3
+			fi
+		fi
+	fi
+}
+
+copy_everywhere_if_needed() {
+	gprime_dest=$1
+
+	mkdir -p `dirname ${gprime_dest}`
+	if [[ -n "$FORK_22" ]]; then
+		if [[ -n "$MULTI_VERSION" ]]; then
+			GPRIME_VERSION_LIST=$(${GPRIME_VERSION} -gprime-versions <(eval "echo \"\$pdl_version_history\";") ${PARAM_VERSION})
+		fi
+		if [[ -z "$GPRIME_VERSION_LIST" ]]; then
+			GPRIME_VERSION_LIST="${PARAM_VERSION}"
+		fi
+		slave_fun () {
+			NODE=$1
+			if [[ "${NODE%%.*}" == "${HOSTNAME}" || "${NODE}" == "localhost" ]]; then
+				return
+			fi
+			for VERSION_TAG in ${GPRIME_VERSION_LIST}; do
+				scp_if_distant ${HOST_DIR}/gprime-${VERSION_TAG}-${HOST_TARGET} ${USER}@${NODE}:${HOST_DIR}/gprime-${VERSION_TAG}-${HOST_TARGET} 
+			done
+		}
+		host_parallel slave_fun
+	fi
+	if ! [[ "$TYPE" == "master" && -n "$FORK_22" ]]; then
+		slave_fun () {
+			NODE=$1
+			ssh_if_needed ${NODE} "mkdir -p `dirname ${gprime_dest}`"
+			if ! [[ "${NODE%%.*}" == "${HOSTNAME}" || "${NODE}" == "localhost" ]]; then
+				scp_if_distant ${GPRIME_VERSION} ${USER}@${NODE}:${GPRIME_VERSION}
+			fi
+			ssh_if_needed ${NODE} "rm -f ${gprime_dest} && ln ${GPRIME_VERSION} ${gprime_dest}"
+		}
+		host_parallel slave_fun
+	fi
+	rm -f ${gprime_dest} && ln ${GPRIME_VERSION} ${gprime_dest}
+
+
+## DDU add for M8fitter
+	if [ "${TYPE}" = "M8Fitter" ]; then
+		m8_dest=$2
+		mkdir -p `dirname ${m8_dest}`
+		cp ${M8_VERSION} ${m8_dest}
+		for NODE in ${SLAVES}; do
+			echo "ssh_if_needed ${NODE} \"mkdir -p `dirname ${m8_dest}`\""
+			ssh_if_needed ${NODE} "mkdir -p `dirname ${m8_dest}`"
+			echo "scp_if_distant ${m8_dest} ${NODE}:${m8_dest}"
+			scp_if_distant ${m8_dest} ${NODE}:${m8_dest}
+			scp_if_distant ${gprime_dest} ${NODE}:${gprime_dest}
+
+
+		done
+	fi
+
+}
+
+sum_of_procs() {
+	res=0
+	for NODE in "$@"; do
+		if [[ -n "$DEBUG" ]]; then
+			echo "NODE=$NODE" 1>&2
+		fi
+		to_add=`procs_per_host ${NODE}`
+		res=$((${res}+${to_add}))
+	done
+	echo "$res"
+}
+
+host_iteration() {
+	fun="$1"
+	shift 1
+	for _NODE in ${SLAVES}; do
+		cmd="${fun} ${_NODE} $@"
+		if [[ -n "$DEBUG" ]]; then
+			echo "host_iteration: ${cmd}" 1>&2
+		fi
+		eval "${cmd}"
+	done
+}
+
+gpu_iteration()
+{
+	broker_fun="$1"
+	shift 1
+	if [[ "${SLAVES_LIST_TYPE}" == "with_ports" ]]; then
+		port_array=(${SLAVES_PORT})
+		slave_list="$SLAVES"
+	else
+		#slave_qty=`sum_of_procs $MASTER $SLAVES`
+		slave_qty=`sum_of_procs $SLAVES`
+		port_array=(`seq $(($PORT+201)) $(($PORT+ 200 + $slave_qty))`)
+		#echo "${port_array[@]}"
+		slave_list="`slave_fun() { echo $1; } ; slaves_iteration slave_fun`"
+	fi
+	for _NODE in $slave_list; do
+		port="${port_array[0]}"
+		port_array=(${port_array[@]:1})
+		cmd="${broker_fun} ${_NODE} ${port} $@"
+		if [[ -n "$DEBUG" ]]; then
+			echo "broker_slaves_iteration: ${cmd}" 1>&2
+		fi
+		eval "$cmd"
+	done
+}
+
+slaves_iteration() {
+	fun="$1"
+	shift 1
+	#for _NODE in ${MASTER} ${SLAVES}; do
+	for _NODE in ${SLAVES}; do
+		procs_on_node=`procs_per_host ${_NODE}`
+		for ((i=0;i<procs_on_node;i++)); do
+			if [[ -n "$DEBUG" ]]; then
+				echo "slaves_iteration: ${fun} ${_NODE} $@" 1>&2
+			fi
+			eval "${fun} ${_NODE} $@"
+		done
+	done
+}
+
+host_parallel() {
+	fun="$1"
+	shift 1
+	PROC_NUM=4
+	WAIT_TIME=0.1
+	for _NODE in ${SLAVES}; do
+		while [ `jobs -r | wc -l` -ge $PROC_NUM ]; do
+			sleep $WAIT_TIME
+		done
+		cmd="${fun} ${_NODE} $@"
+		if [[ -n "$DEBUG" ]]; then
+			echo "host_iteration: ${cmd}" 1>&2
+		fi
+		eval "${cmd}" &
+	done
+	wait
+	#while [ `jobs -r | wc -l` -gt 0 ]; do
+	#	sleep $WAIT_TIME
+	#done
+}
+
+
+broker_slaves_iteration() {
+	broker_fun="$1"
+	shift 1
+	if [[ "${SLAVES_LIST_TYPE}" == "with_ports" ]]; then
+		port_array=(${SLAVES_PORT})
+		slave_list="$SLAVES"
+	else
+		#slave_qty=`sum_of_procs $MASTER $SLAVES`
+		slave_qty=`sum_of_procs $SLAVES`
+		port_array=(`seq $(($PORT+1)) $(($PORT+$slave_qty))`)
+		#echo "${port_array[@]}"
+		slave_list="`slave_fun() { echo $1; } ; slaves_iteration slave_fun`"
+	fi
+	for _NODE in $slave_list; do
+		port="${port_array[0]}"
+		port_array=(${port_array[@]:1})
+		cmd="${broker_fun} ${_NODE} ${port} $@"
+		if [[ -n "$DEBUG" ]]; then
+			echo "broker_slaves_iteration: ${cmd}" 1>&2
+		fi
+		eval "$cmd"
+	done
+}
+
+DBG_step()
+{
+#    echo -en "Print debug : \t\n$@\n"
+#    echo -en "Continue : (y/n) | "
+#    read ans
+#    if [ "$ans" = "n" ]; then
+#	exit $#
+#    fi
+#    echo -en " Go !\n"
+i=0
+}
+
+get_nb_gpu_device()
+{
+	## Search number of device in dev directory
+	## i.e /dev/nvidia0 or /dev/nvidia1
+	if [ -z $NB_HARD_GPU ]; then
+	for NODE in ${SLAVES}; do
+		nb=`ssh_if_needed $NODE "ls /dev/nvidia[0-9] | wc -l"`
+	done
+	else
+	nb=$NB_HARD_GPU
+	fi
+	echo $nb
+}
+
+get_master_prepare_letters()
+{
+	ID_LETTER=$1
+
+	LETTERS="a b c d e f g h i j k l m n o p q r s t u v w x y z"
+	count=0
+	for i in $LETTERS; do
+	count=$(($count + 1))
+	if [ $count -eq $ID_LETTER ]; then
+		echo "$i"
+		break
+	fi
+	done
+}
+
+pdl_add_prefix() {
+	awk -v obj="$1" '{
+		if (/^\./) {
+			printf "%s%s\n",obj,$0
+		} else {
+			print
+		}
+	}'
+}
+
+func_not_yet()
+{
+	echo -en "\033[1mNot Yet Implemented\033[0m"
+}
+
+save_log_m8fitter()
+{
+	for NODE in ${SLAVES}; do
+		ssh_if_needed $NODE "mkdir -p ${HOST_DIR}/log/"
+		l=`ssh_if_needed " ${NODE} " "ls ${MASTER_PREP_LOG}*.log" || true`
+		for i in `echo $l`; do
+			ssh_if_needed " ${NODE} " "mv -f ${i} ${i}_${TIME_TAG} || true"
+			ssh_if_needed " ${NODE} " "mv -f ${i}_${TIME_TAG} ${HOST_DIR}/log/ || true"
+		done
+
+		l=`ssh_if_needed " ${NODE} "	"ls ${SERVER_GPU_LOG}*.log" || true`
+		for i in `echo $l`; do
+			ssh_if_needed " ${NODE} " "mv -f ${i} ${i}_${TIME_TAG} || true"
+			ssh_if_needed " ${NODE} " "mv -f ${i}_${TIME_TAG} ${HOST_DIR}/log/ || true"
+		done
+		l=`ssh_if_needed " ${NODE} " "ls ${BROKER_GPU_LOG}*.log"  || true`
+		for i in `echo $l`; do
+			ssh_if_needed " ${NODE} " "mv -f ${i} ${i}_${TIME_TAG} || true"
+			ssh_if_needed " ${NODE} " "mv -f ${i}_${TIME_TAG} ${HOST_DIR}/log/ || true"
+		done
+		l=`ssh_if_needed " ${NODE} " "ls ${BROKER_LOG}" || true`
+		for i in `echo $l`; do
+			ssh_if_needed " ${NODE} " "mv -f ${i} ${i}_${TIME_TAG} || true"
+			ssh_if_needed " ${NODE} " "mv -f ${i}_${TIME_TAG} ${HOST_DIR}/log/ || true"
+		done
+	done
+}
+
+build_broker_gpu_pdl()
+{
+	N_BROKER_GPU=$1
+	N_MASTER_GPU=$2
+	N_SERVER_GPU=$3
+
+	no_other_server=0;
+	FILENAME_PATTERN="Broker_gpu_cfg"
+	EXTENSION_PDL="pdl"
+
+	slave_qty=`sum_of_procs $SLAVES`
+	list_slave=""
+
+	get_list_host()
+	{
+		node=$1
+		list_slave=`echo $list_slave $node`
+
+	}
+	gpu_iteration get_list_host
+
+	count=1
+	## Loop on all config broker device
+	while [ $count -ne $(($N_BROKER_GPU + 1)) ]; do
+	## Build the file name for broker gpu config
+	BROKER_CFG=${HOST_DIR}/${FILENAME_PATTERN}-${QUEUE_NAME}-${count}.${EXTENSION_PDL}
+	MASTER_GPU_PORT=`seq $(($PORT+1)) $(($PORT + $slave_qty))`
+	if [ $N_MASTER_GPU -le 1 ]; then
+		no_other_server=1;
+	fi
+
+	# Clean the file before the loop
+	echo "-- Auto genrate broker gpu configuration  DATE  $TIME_TAG" > ${BROKER_CFG}
+
+	#Write Master prepare configuration
+	c=1
+	while [ $c -ne $(($N_MASTER_GPU + 1)) ]; do
+		for NODE in ${SLAVES}; do
+			target=$NODE
+
+			MASTER_GPU_PORT=$(($PORT + $c))
+			echo "master_$c.entity_kind := \"server\";" >> ${BROKER_CFG}
+			echo "master_$c.host := \"$target\";" >> ${BROKER_CFG}
+			echo "master_$c.port := $MASTER_GPU_PORT;" >> ${BROKER_CFG}
+		done
+		c=$(($c + 1))
+	done
+	echo "local_master_1.entity_kind := \"server\";" >> ${BROKER_CFG}
+	echo "local_master_1.host := \"localhost\";" >> ${BROKER_CFG}
+	echo "local_master_1.port := 9999;" >> ${BROKER_CFG}
+
+	#write server GPU
+	c=0
+	for NODE in ${SLAVES}; do
+		while [ $c -ne ${N_SERVER_GPU} ]; do
+			c=$(($c + 1))
+
+			target=$NODE
+			SERVER_GPU_PORT=$(($PORT + $c + 100))
+			echo "master_gpu_$c.entity_kind := \"server\";" >> ${BROKER_CFG}
+			echo "master_gpu_$c.host := \"$target\";" >> ${BROKER_CFG}
+			echo "master_gpu_$c.port := $SERVER_GPU_PORT;" >> ${BROKER_CFG}
+		done
+	done
+	echo "broker.entity_kind := \"gpu_broker_config\";" >> ${BROKER_CFG}
+	echo "broker.thread_count := 1;" >> ${BROKER_CFG}
+	echo "broker.m7_servers := (  \"local_master_1\" );" >> ${BROKER_CFG}
+
+
+	if [ ${slave_qty} -gt ${N_GPU_SERVER} ]; then
+		master_gpu_id=$(( (($(($count - 1)) * $N_GPU_SERVER) / $slave_qty ) + 1))
+		#echo one $master_gpu_id $count $N_GPU_SERVER
+
+		##if the share is an impair number
+		#if [ $(($count % $N_GPU_SERVER)) -eq 0 ]; then
+		#echo "OK recale gpu sharing $master_gpu_id $count $N_GPU_SERVER"
+		#master_gpu_id=$(($master_gpu_id - 1))
+		#elif [ $master_gpu_id -eq $(($N_GPU_SERVER + 1)) ]; then
+		#master_gpu_id=$(($master_gpu_id - 1))
+		#fi
+		#echo two $master_gpu_id $count $N_GPU_SERVER
+		master_gpu_pdl_list="\"master_gpu_${master_gpu_id}\""
+	else
+
+		master_gpu_pdl_list="\"master_gpu_${count}\""
+	fi
+
+
+
+	if [ ${slave_qty} -gt ${N_MASTER_GPU} ]; then
+		if [ $N_MASTER_GPU -gt 1 ]; then
+
+		master_id=$(( (($(($count - 1)) * $(($N_MASTER_GPU - 1))) / $slave_qty ) + 1))
+		if [ $master_id -eq $N_MASTER_GPU ]; then
+			master_id=$(($master_id - 1))
+		fi
+		else
+		master_id=$(( ((${count} * $N_MASTER_GPU) / $slave_qty ) + 1))
+		fi
+		prep_pdl_list="\"master_${master_id}\""
+	else
+		prep_pdl_list="\"master_${count}\""
+	fi
+
+	echo "broker.prepare_servers := ( $prep_pdl_list );"  >> ${BROKER_CFG}
+
+	if [ $N_MASTER_GPU -gt 1 ]; then
+		echo "broker.other_servers := ( \"master_$N_MASTER_GPU\" );"  >> ${BROKER_CFG}
+	fi
+
+	echo "broker.gpu_servers := ( $master_gpu_pdl_list );" >> ${BROKER_CFG}
+	for NODE in ${SLAVES}; do
+		echo "scp_if_distant ${BROKER_CFG} ${NODE}:${BROKER_CFG}"
+		scp_if_distant ${BROKER_CFG} ${NODE}:${BROKER_CFG}
+	done
+
+	count=$((count + 1))
+	done
+
+
+
+}
+
+
+
+start_M8Fitter() {
+	# start M8Fitter
+	echo 'M8Fitter'
+	slave_qty=`sum_of_procs $SLAVES`
+
+	N_GPU_DEVICE=`get_nb_gpu_device`
+
+	echo "Get number of GPU CARD on $N_GPU_DEVICE"
+
+	if [ -z $NB_PREP ]; then
+		N_MASTER_GPRIME=$(($N_GPU_DEVICE + 1))		# +1 for the other server
+	else
+		N_MASTER_GPRIME=$(($NB_PREP + 1))		# +1 for the other server
+	fi
+
+	N_GPU_SERVER=$N_GPU_DEVICE
+	N_GPU_BROKER=$slave_qty
+
+	FILENAME_PATTERN="Broker_gpu_cfg"
+	EXTENSION_PDL="pdl"
+
+	BROKER_IN=$HOST_DIR/gprime-dispatcher-${QUEUE_NAME}.pdl
+	BROKER_OUT=$HOST_DIR/gprime-dispatcher-${QUEUE_NAME}-out.pdl
+	BROKER_STATUS=$HOST_DIR/gprime-dispatcher-${QUEUE_NAME}.status
+	BROKER_LOG=$HOST_DIR/gprime-dispatcher-${QUEUE_NAME}.log
+
+	DBG_step "slave_qty : $slave_qty : ${MASTER_LOG}"
+
+	#mv -f ${MASTER_LOG} ${MASTER_LOG}_${TIME_TAG} || true
+	save_log_m8fitter
+	echo `ls *.log`
+	## Run Prepare Server
+	count=0
+	while [ $count -ne $N_MASTER_GPRIME ]; do
+		count=$(($count + 1))
+		MASTER_GPU_PORT=$(($PORT + $count))
+		for NODE in ${SLAVES}; do
+			ssh_if_needed ${NODE} "setsid nohup ${GPRIME_PROD} -network-master ${MASTER_GPU_PORT} 0 ${QUEUE_NAME}-`get_master_prepare_letters $count` > ${MASTER_PREP_LOG}.$count.log 2>&1 &"
+		done
+		DBG_step "Ive started the masters perpare $count"
+	done
+
+	count=0
+	gpu_device=0
+	while [ $count -ne $N_GPU_SERVER ]; do
+		count=$(($count + 1))
+		SERVER_GPU_PORT=$(($PORT + 100 + $count))
+		for NODE in ${SLAVES}; do
+			ssh_if_needed ${NODE} "${M8_PROD} -mode server -port ${SERVER_GPU_PORT} -device $gpu_device  -kind model_8_local_vol_adjustment_grid_fitter > ${SERVER_GPU_LOG}.$count.log 2>&1 &"
+			echo ${NODE} "${M8_PROD} -mode server -port ${SERVER_GPU_PORT} -device $gpu_device	-kind model_8_local_vol_adjustment_grid_fitter > ${SERVER_GPU_LOG}.$count.log 2>&1 &"
+		done
+		gpu_device=$(($gpu_device + 1))
+	DBG_step "Ive started the servers GPU $count"
+	done
+	DBG_step "Ive started the servers GPU"
+
+	echo 'Building pdl ...'
+
+	echo "net_broker.entity_kind := network_brokerage;" > ${BROKER_IN}
+	echo "net_broker.server_host_list := (" >> ${BROKER_IN}
+	first=1
+	target_fun() {
+		NODE=$1
+		if [[ -n "$DEBUG" ]]; then
+			echo "NODE = ${NODE}" 1>&2
+		fi
+		if [ $first -eq 1 ]; then
+			printf '  "%s"\n' ${NODE} >> ${BROKER_IN}
+			first=0
+		else
+			printf ', "%s"\n' ${NODE} >> ${BROKER_IN}
+		fi
+	}
+	gpu_iteration target_fun
+	echo " ); " >> ${BROKER_IN}
+	echo "net_broker.server_port_list := (" >> ${BROKER_IN}
+
+
+	first=1
+	port_fun() {
+		broker_port=$2
+		if [ $first -eq 1 ]; then
+			printf '  %s\n' $broker_port >> ${BROKER_IN}
+			first=0
+		else
+			printf ', %s\n' $broker_port >> ${BROKER_IN}
+		fi
+	}
+	gpu_iteration port_fun
+	echo " ); " >> ${BROKER_IN}
+
+	printf 'net_broker.broker_port := %s;\n' ${PORT}  >> ${BROKER_IN}
+	printf 'net_broker.broker_name := "%s";\n' ${QUEUE_NAME} >> ${BROKER_IN}
+
+	echo "Broker on port ${PORT}"
+
+	for NODE in ${SLAVES}; do
+		echo "scp_if_distant  BROKER_IN ${BROKER_IN} ${NODE}:${BROKER_IN}"
+		scp_if_distant "${BROKER_IN}" "${NODE}:${BROKER_IN}"
+	done
+
+	sleep 3
+
+	build_broker_gpu_pdl $N_GPU_BROKER $N_MASTER_GPRIME $N_GPU_SERVER
+
+	slave_number=0
+	slave_fun() {
+		NODE=$1
+		broker_port=$2
+		slave_number=$((slave_number+1))
+		BROKER_CFG=${HOST_DIR}/${FILENAME_PATTERN}-${QUEUE_NAME}-${slave_number}.${EXTENSION_PDL}
+		OUT_BROKER_GPU=${HOST_DIR}/${FILENAME_PATTERN}-${QUEUE_NAME}-${slave_number}-out.${EXTENSION_PDL}
+
+		echo "Slave $slave_number on ${NODE}"
+		SLAVE_LOG="${HOST_DIR}/${TYPE}-${QUEUE_NAME}-${NODE}-`printf "%03d" ${slave_number}`.log"
+		echo " ${NODE} " "${M8_PROD} -mode broker -port ${broker_port} -i ${BROKER_CFG} -o ${OUT_BROKER_GPU} > ${BROKER_GPU_LOG}-${slave_number}.log 2>&1 &"
+		ssh_if_needed " ${NODE} " "${M8_PROD} -mode broker -port ${broker_port} -i ${BROKER_CFG} -o ${OUT_BROKER_GPU} >  ${BROKER_GPU_LOG}-${slave_number}.log 2>&1 &"
+	}
+	gpu_iteration slave_fun
+	DBG_step "Ive started the GPU BROKER"
+
+
+	#Run Dispatcher
+	for NODE in ${SLAVES}; do
+		echo "Run Gprime Dispatcher"
+		ssh_if_needed "${NODE} " "setsid nohup ${GPRIME_PROD} -pdl -i ${BROKER_IN} -o ${BROKER_OUT} -s ${BROKER_STATUS} -e net_broker > $BROKER_LOG 2>&1 &"
+		DBG_step "Ive started the GPrime Dispatcher"
+	done
+
+}
+
+
+start_cluster() {
+	# start master
+	log_echo 'Master'
+	slave_qty=`sum_of_procs $SLAVES`
+	mv -f ${MASTER_LOG} ${MASTER_LOG}_${TIME_TAG} || :
+	if [[ "$TYPE" == 'master' ]]; then
+		n_cpus=0
+		for NODE in ${SLAVES}; do
+			#echo "pipo $NODE"
+			if [[ "$n_cpus" == "0" ]]; then
+				#echo "  first"
+				n_cpus=`procs_per_host ${NODE}`
+			else
+				#echo "  second n_cpus = $n_cpus ; procs_per_host = `procs_per_host ${NODE}`"
+				if [[ "$n_cpus" != "`procs_per_host ${NODE}`" ]]; then
+					#echo "  third"
+					echo "Error: ${NODE} has a different gprime process quantity than the first slave of ${QUEUE_NAME}" 1>&2
+					echo "This is forbidden since GPrime 3.194 . Please correct the cluster specification" 1>&2
+					exit 2
+				fi
+			fi
+		done
+		fork_idx="1"
+		if [[ -n "${FORK_21}" ]]; then
+			slave_qty=`echo "$SLAVES" | wc -w`
+			fork_idx="0"
+		elif [[ "$slave_qty" == 0 || "$n_cpus" == "8" ]]; then
+			fork_idx=""
+			n_cpus=""
+		fi
+		if [[ -n "${CAPTIVE}" ]]; then
+			if [[ (( "${#PARAM_VERSION}" == "7" )) && "${PARAM_VERSION:0:2}" == "3." && "${PARAM_VERSION}" < "3.255.0" ]]; then
+				setsid nohup ${GPRIME_PROD} -network-master-fork ${PORT} $slave_qty ${QUEUE_NAME} ${STACKER_HOST} ${STACKER_PORT} ${fork_idx} ${n_cpus} &> ${MASTER_LOG} &
+			else
+				start_captive_master
+			fi
+		elif [[ -z "${SD_HOST}" ]]; then
+			setsid nohup ${GPRIME_PROD} -network-master ${PORT} $slave_qty ${QUEUE_NAME} ${fork_idx} ${n_cpus} &> ${MASTER_LOG} &
+		else
+			setsid nohup ${GPRIME_PROD} -network-smart-dispatcher ${PORT} $slave_qty ${QUEUE_NAME} ${SD_HOST} ${SD_PORT} ${fork_idx} ${n_cpus} &> ${MASTER_LOG} &
+		fi
+		SLAVE_OR_WORKER='slave'
+	else
+		setsid nohup ${GPRIME_PROD} -network-dispatcher ${PORT} ${QUEUE_NAME} &> ${MASTER_LOG} &
+		SLAVE_OR_WORKER='worker'
+	fi
+	sleep 3
+	if [[ "$TYPE" == 'dispatcher_cps' ]]; then
+		start_cps_workers
+	else
+		if [[ -n "$DISABLE_FORK" ]]; then
+			FORK_MODE=''
+		else
+			FORK_MODE='-fork'
+		fi
+		slave_number=0
+		slave_fun() {
+			NODE=$1
+			slave_number=$((slave_number+1))
+			SLAVE_LOG="${HOST_DIR}/${SLAVE_OR_WORKER}-${QUEUE_NAME}-${NODE}-`printf "%03d" ${slave_number}`.log"
+			if [[ -n "${FORK_21}" ]]; then
+				log_echo "Move logs slave $slave_number on ${NODE}"
+				( ssh_if_needed ${NODE} "mv -f ${SLAVE_LOG} ${SLAVE_LOG}_${TIME_TAG}" ) || :
+			fi
+			log_echo "Start slave $slave_number on ${NODE}"
+			ssh_if_needed ${NODE} "setsid nohup ${GPRIME_PROD} -network-${SLAVE_OR_WORKER}${FORK_MODE} ${MASTER} ${PORT} &> ${SLAVE_LOG} &"
+		}
+		if [[ -n "${FORK_21}" ]]; then
+			host_iteration slave_fun
+		else
+			slaves_iteration slave_fun
+		fi
+		##### ZIP log on slaves #####
+		slave_number=0
+		slave_fun() {
+			NODE=$1
+			slave_number=$((slave_number+1))
+			SLAVE_LOG="${HOST_DIR}/${SLAVE_OR_WORKER}-${QUEUE_NAME}-${NODE}-`printf "%03d" ${slave_number}`.log"
+			if [[ -n "${FORK_21}" ]]; then
+				log_echo "Zip logs slave $slave_number on ${NODE}"
+				( ssh_if_needed ${NODE} "setsid nohup nice -n 19 gzip -9 ${SLAVE_LOG}_${TIME_TAG} >& /dev/null" & ) || :
+			fi
+		}
+		if [[ -n "${FORK_21}" ]]; then
+			host_iteration slave_fun
+		else
+			slaves_iteration slave_fun
+		fi
+	fi
+}
+
+start_broker_master() {
+	# start broker master
+	BROKER_MASTER_LOG=${HOST_DIR}/broker-${QUEUE_NAME}.log
+	mv -f ${BROKER_MASTER_LOG} ${BROKER_MASTER_LOG}_${TIME_TAG} || :
+	log_echo 'Building pdl ...'
+
+	BROKER_IN=$HOST_DIR/broker-${QUEUE_NAME}.pdl
+	BROKER_OUT=$HOST_DIR/broker-${QUEUE_NAME}-out.pdl
+	BROKER_STATUS=$HOST_DIR/broker-${QUEUE_NAME}.status
+
+	echo "net_broker.entity_kind := network_brokerage;" > ${BROKER_IN}
+	echo "net_broker.server_host_list := (" >> ${BROKER_IN}
+	first=1
+	slave_fun() {
+		NODE=$1
+		if [[ -n "$DEBUG" ]]; then
+			echo "NODE = ${NODE}" 1>&2
+		fi
+		if [ $first -eq 1 ]; then
+			printf '  "%s"\n' ${NODE} >> ${BROKER_IN}
+			first=0
+		else
+			printf ', "%s"\n' ${NODE} >> ${BROKER_IN}
+		fi
+	}
+	broker_slaves_iteration slave_fun
+	echo " ); " >> ${BROKER_IN}
+	echo "net_broker.server_port_list := (" >> ${BROKER_IN}
+	first=1
+	slave_fun() {
+		broker_port=$2
+		if [ $first -eq 1 ]; then
+			printf '  %s\n' $broker_port >> ${BROKER_IN}
+			first=0
+		else
+			printf ', %s\n' $broker_port >> ${BROKER_IN}
+		fi
+	}
+	broker_slaves_iteration slave_fun
+	echo " ); " >> ${BROKER_IN}
+
+	printf 'net_broker.broker_port := %s;\n' ${PORT}  >> ${BROKER_IN}
+	printf 'net_broker.broker_name := "%s";\n' ${QUEUE_NAME} >> ${BROKER_IN}
+
+	if [[ -n "${STACKER_ADDITION}" ]]; then
+		echo "-- broker_addition ${STACKER_ADDITION}" >> "${BROKER_IN}"
+		eval "echo \"\$pdl_stacker_addition_${STACKER_ADDITION}\";" | \
+			pdl_add_prefix net_broker >> "${BROKER_IN}"
+	fi
+
+	log_echo "Broker on port ${PORT}"
+	setsid nohup ${GPRIME_PROD} -pdl -i ${BROKER_IN} -o ${BROKER_OUT} -s ${BROKER_STATUS} -e net_broker &> ${BROKER_MASTER_LOG} &
+}
+
+start_cluster_stacker() {
+	# start stacker master
+	STACKER_LOG=${HOST_DIR}/stacker-${QUEUE_NAME}.log
+	mv -f ${STACKER_LOG} ${STACKER_LOG}_${TIME_TAG} || :
+	log_echo 'Building pdl ...'
+
+	STACKER_IN=$HOST_DIR/stacker-${QUEUE_NAME}.pdl
+	STACKER_OUT=$HOST_DIR/stacker-${QUEUE_NAME}-out.pdl
+	STACKER_STATUS=$HOST_DIR/stacker-${QUEUE_NAME}.status
+
+	if [[ -n "${PARAM_SET}" ]]; then
+		eval "echo \"-- \${PARAM_SET}\"; echo \"\$pdl_header_${PARAM_SET}\";
+		echo \"-- end of \${PARAM_SET}\" ; echo;" > "${STACKER_IN}"
+	else
+		rm -f "${STACKER_IN}"
+	fi
+
+	echo "net_stacker.entity_kind := network_cluster;" >> ${STACKER_IN}
+	echo "net_stacker.slave_host_list := (" >> ${STACKER_IN}
+	first=1
+	n_cores=0
+
+	slave_fun() {
+		NODE=$1
+		if [[ -n "$DEBUG" ]]; then
+			echo "NODE = ${NODE}" 1>&2
+		fi
+		if [ $first -eq 1 ]; then
+			n_cores=`procs_per_host ${NODE}`
+			printf '  "%s"\n' ${NODE} >> ${STACKER_IN}
+			first=0
+		else
+			printf ', "%s"\n' ${NODE} >> ${STACKER_IN}
+		fi
+	}
+	host_iteration slave_fun
+	echo " ); " >> ${STACKER_IN}
+
+	printf 'net_stacker.slave_ncore := %s;\n' ${n_cores}  >> ${STACKER_IN}
+	printf 'net_stacker.exec_version := "%s";\n' ${PARAM_VERSION}  >> ${STACKER_IN}
+	printf 'net_stacker.cluster_name := "%s";\n' ${QUEUE_NAME} >> ${STACKER_IN}
+	printf 'net_stacker.cluster_port := %s;\n' ${PORT}  >> ${STACKER_IN}
+
+	if [[ -n "${SD_HOST}" ]]; then
+		printf 'net_stacker.smart_dispatcher_host := "%s";\n' ${SD_HOST}  >> ${STACKER_IN}
+		printf 'net_stacker.smart_dispatcher_port := %s;\n' ${SD_PORT}  >> ${STACKER_IN}
+	fi
+
+	if [[ -n "${HP_FLAG}" ]]; then
+		HP_STACKER_LOG=${HOST_DIR}/stacker-${QUEUE_NAME}-hp.log
+		printf 'net_stacker.with_high_priority_queue := "yes";\n' >> ${STACKER_IN}
+		printf 'net_stacker.high_priority_log_file := "%s";\n' ${HP_STACKER_LOG} >> ${STACKER_IN}
+		mv -f ${HP_STACKER_LOG} ${HP_STACKER_LOG}_${TIME_TAG} || :
+	fi
+
+	if [[ -n "${SD_ONLY}" ]]; then
+		printf 'net_stacker.sd_only_mode := "yes";\n' >> ${STACKER_IN}
+	fi
+
+	if [[ -n "${PARAM_SET}" ]]; then
+		printf 'net_stacker.cps_service_parameters := "cps_params";\n' >> ${STACKER_IN}
+	fi
+
+	if [[ -n "${MULTI_VERSION}" ]]; then
+		printf 'net_stacker.version_history := "gprime_version";\n' >> ${STACKER_IN}
+		eval "echo \"\$pdl_version_history\";" >> "${STACKER_IN}"
+	fi
+
+	if [[ -n "${STACKER_ADDITION}" ]]; then
+		echo "-- stacker_addition ${STACKER_ADDITION}" >> "${STACKER_IN}"
+		eval "echo \"\$pdl_stacker_addition_${STACKER_ADDITION}\";" | \
+			pdl_add_prefix net_stacker >> "${STACKER_IN}"
+	fi
+
+	log_echo "Stacker on port ${PORT}"
+	setsid nohup ${GPRIME_PROD} -pdl -i ${STACKER_IN} -o ${STACKER_OUT} -s ${STACKER_STATUS} -e net_stacker &> ${STACKER_LOG} &
+}
+
+start_captive_master () {
+	# start master master	
+	log_echo 'Building pdl ...'
+
+	MASTER_IN=$HOST_DIR/master-${QUEUE_NAME}.pdl
+	MASTER_OUT=$HOST_DIR/master-${QUEUE_NAME}-out.pdl
+	MASTER_STATUS=$HOST_DIR/master-${QUEUE_NAME}.status
+
+	rm -f "${MASTER_IN}"
+
+	echo "net_master.entity_kind := network_master;" >> ${MASTER_IN}
+	echo "net_master.slave_host_list := (" >> ${MASTER_IN}
+	first=1
+	n_cores=0
+
+	slave_fun() {
+		NODE=$1
+		if [[ -n "$DEBUG" ]]; then
+			echo "NODE = ${NODE}" 1>&2
+		fi
+		if [ $first -eq 1 ]; then
+			n_cores=`procs_per_host ${NODE}`
+			printf '  "%s"\n' ${NODE} >> ${MASTER_IN}
+			first=0
+		else
+			printf ', "%s"\n' ${NODE} >> ${MASTER_IN}
+		fi
+	}
+	host_iteration slave_fun
+	echo " ); " >> ${MASTER_IN}
+
+	printf 'net_master.slave_ncore := %s;\n' ${n_cores}  >> ${MASTER_IN}
+	printf 'net_master.exec_version := "%s";\n' ${PARAM_VERSION}  >> ${MASTER_IN}
+	printf 'net_master.cluster_name := "%s";\n' ${QUEUE_NAME} >> ${MASTER_IN}
+	printf 'net_master.cluster_port := %s;\n' ${PORT}  >> ${MASTER_IN}
+
+	printf 'net_master.fork_slave_index := 0;\n'  >> ${MASTER_IN}
+	printf 'net_master.fork := "yes";\n'  >> ${MASTER_IN}
+
+	printf 'net_master.stacker_host := "%s";\n' ${STACKER_HOST} >> ${MASTER_IN}
+	printf 'net_master.stacker_port := %s;\n' ${STACKER_PORT}  >> ${MASTER_IN}
+
+	if [[ -n "${PDE_MEMORY_SAFE}" ]]; then
+		printf 'net_master.pde_memory_safe := "yes";\n' >> ${MASTER_IN}
+	fi
+
+	log_echo "Master on port ${PORT}"
+	setsid nohup ${GPRIME_PROD} -pdl -i ${MASTER_IN} -o ${MASTER_OUT} -s ${MASTER_STATUS} -e net_master &> ${MASTER_LOG} &
+}
+
+start_cps_server() {
+	CPS_MASTER_LOG=${HOST_DIR}/cps-server-${QUEUE_NAME}.log
+	mv -f ${CPS_MASTER_LOG} ${CPS_MASTER_LOG}_${TIME_TAG} || :
+	log_echo 'Building pdl ...'
+
+	CPS_IN="${HOST_DIR}/cps-server-${QUEUE_NAME}.pdl"
+	CPS_OUT="${HOST_DIR}/cps-server-${QUEUE_NAME}-output.pdl"
+	CPS_STATUS="${HOST_DIR}/cps-server-${QUEUE_NAME}.status"
+
+	cps_active_object() {
+cat <<-PDL_END
+cps_launch.entity_kind := "cps_captive_master";
+cps_launch.cps_service_parameters := "cps_params";
+cps_launch.master_name := "${QUEUE_NAME}";
+cps_launch.master_port := ${PORT};
+cps_launch.stacker_host := "${STACKER_HOST}";
+cps_launch.stacker_port := ${STACKER_PORT};
+PDL_END
+	}
+
+	eval "echo \"-- \${PARAM_SET}\"; echo \"\$pdl_header_${PARAM_SET}\";
+	echo \"-- end of \${PARAM_SET}\" ; echo;  cps_active_object;" > "${CPS_IN}"
+
+	log_echo 'Cps server ...'
+	setsid nohup ${GPRIME_PROD} -pdl -i ${CPS_IN} -o ${CPS_OUT} -s ${CPS_STATUS} -e cps_launch &> ${CPS_MASTER_LOG} &
+}
+
+start_cps_workers() {
+	log_echo 'Building Cps servers pdl ...'
+
+	CPS_IN="${HOST_DIR}/cps-worker-${QUEUE_NAME}.pdl"
+
+	cps_active_object_list() {
+cat <<-PDL_END
+cps_launch.entity_kind := "cps_network_master";
+cps_launch.cps_service_parameters := "cps_params";
+cps_launch.dispatcher_host := "${MASTER}";
+cps_launch.dispatcher_port :=  ${PORT};
+PDL_END
+	}
+
+	eval "echo \"-- \${PARAM_SET}\"; echo \"\$pdl_header_${PARAM_SET}\";
+	echo \"-- end of \${PARAM_SET}\" ; echo;  cps_active_object_list;" > "${CPS_IN}"
+
+	echo 'Copying Cps servers pdl ...'
+	slave_fun () {
+		NODE=$1
+		log_echo "Copying ${CPS_IN} => ${NODE}:${CPS_IN}"
+		scp_if_distant "${CPS_IN}" "${NODE}:${CPS_IN}"
+	}
+	host_iteration slave_fun
+
+	log_echo 'Starting Cps servers ...'
+	slave_number=0
+	slave_fun() {
+		NODE=$1
+		slave_number=$((slave_number+1))
+		log_echo "Cps Worker $slave_number on ${NODE}"
+		cps_worker_queue_name="${QUEUE_NAME}-${NODE}-`printf "%03d" ${slave_number}`"
+		CPS_LOG="${HOST_DIR}/cps-worker-${cps_worker_queue_name}.log"
+		CPS_OUT="${HOST_DIR}/cps-worker-${cps_worker_queue_name}-output.pdl"
+		CPS_STATUS="${HOST_DIR}/cps-worker-${cps_worker_queue_name}.status"
+		ssh_if_needed ${NODE} "mv -f ${CPS_LOG} ${CPS_LOG}_${TIME_TAG} || :; setsid nohup ${GPRIME_PROD} -pdl -i ${CPS_IN} -o ${CPS_OUT} -s ${CPS_STATUS} -e cps_launch &> ${CPS_LOG} &"
+	}
+	slaves_iteration slave_fun
+}
+
+num_to_letter() {
+	alphabet='abcdefghijklmnopqrstuvwxyz'
+	n=$1
+	res=''
+	while [[ "$n" != 0 ]]; do
+		l=$(((n-1)%26+1))
+		res="`echo $alphabet | cut -b $l`${res}"
+		n=$(((n-1)/26))
+	done
+	echo "$res"
+}
+
+start_normal_pde() {
+	slave_number=0
+	slave_fun() {
+		NODE=$1
+		port=$2
+		slave_number=$((slave_number+1))
+		letter=`num_to_letter $slave_number`
+		log_echo "Master $slave_number on ${NODE} as ${QUEUE_NAME}-$letter on port $port"
+		PDE_LOG="${HOST_DIR}/pde-${QUEUE_NAME}-${NODE}-`printf "%03d" ${slave_number}`.log"
+		if [[ -z "$SD_HOST" ]]; then
+			master_opt='-network-master'
+			SD_PORT=''
+		else
+			master_opt='-network-smart-dispatcher'
+		fi
+		ssh_if_needed ${NODE} "mv -f ${PDE_LOG} ${PDE_LOG}_${TIME_TAG} || :; setsid nohup ${GPRIME_PROD} ${master_opt} ${port} 0 ${QUEUE_NAME}-${letter} ${SD_HOST} ${SD_PORT} &> ${PDE_LOG} &"
+	}
+	broker_slaves_iteration slave_fun
+}
+
+
+start_forked_pde() {
+	log_echo 'Building pde stackers pdl ...'
+
+	STACKER_IN="${HOST_DIR}/pde-stacker-${QUEUE_NAME}.pdl"
+
+	if [[ "${TYPE}" == "pde_cps" || "${TYPE}" == 'broker_and_pde_cps' ]]; then
+		eval "echo \"-- \${PARAM_SET}\"; echo \"\$pdl_header_${PARAM_SET}\";
+		echo \"-- end of \${PARAM_SET}\" ; echo;" > "${STACKER_IN}"
+	else
+		rm -f "${STACKER_IN}"
+	fi
+
+	if [[ -n "${MULTI_VERSION}" ]]; then
+		eval "echo \"\$pdl_version_history\";" >> "${STACKER_IN}"
+	fi
+
+	slave_number=0
+	stacker_pdl_fun() {
+		NODE=$1
+		port=$2
+		slave_number=$((slave_number+1))
+		padded_slave_number=`printf "%03d" ${slave_number}`
+		letter=`num_to_letter $slave_number`
+		master_port=$((port+500))
+
+cat <<-PDL_END
+-- pde ${padded_slave_number} on ${NODE}
+net_stacker_${letter}.entity_kind := network_cluster;
+net_stacker_${letter}.slave_host_list := ();
+net_stacker_${letter}.slave_ncore := 0;
+net_stacker_${letter}.exec_version := "${PARAM_VERSION}";
+net_stacker_${letter}.cluster_port := ${port};
+net_stacker_${letter}.cluster_name := "${QUEUE_NAME}-${letter}";
+net_stacker_${letter}.master_port  := ${master_port};
+PDL_END
+
+	if [[ -n "${SD_HOST}" ]]; then
+cat <<-PDL_END
+net_stacker_${letter}.smart_dispatcher_host := "${SD_HOST}";
+net_stacker_${letter}.smart_dispatcher_port := ${SD_PORT};
+PDL_END
+	fi
+
+	if [[ -n "${PARAM_SET}" ]]; then
+cat <<-PDL_END
+net_stacker_${letter}.cps_service_parameters := "cps_params";
+PDL_END
+	fi
+
+	if [[ -n "${HP_FLAG}" ]]; then
+		pde_queue_name="${QUEUE_NAME}-${NODE}-`printf "%03d" ${slave_number}`"
+		HP_STACKER_LOG="${HOST_DIR}/pde-stacker-${pde_queue_name}-hp.log"
+		printf 'net_stacker_%s.with_high_priority_queue := "yes";\n' ${letter} >> ${STACKER_IN}
+		printf 'net_stacker_%s.high_priority_log_file := "%s";\n' ${letter} ${HP_STACKER_LOG} >> ${STACKER_IN}
+		mv -f ${HP_STACKER_LOG} ${HP_STACKER_LOG}_${TIME_TAG} || :
+	fi
+
+	if [[ -n "${SD_ONLY}" ]]; then
+		printf 'net_stacker_%s.sd_only_mode := "yes";\n' ${letter} >> ${STACKER_IN}
+	fi
+
+	if [[ -n "${PDE_MEMORY_SAFE}" ]]; then
+		printf 'net_stacker_%s.pde_memory_safe := "yes";\n' ${letter} >> ${STACKER_IN}
+	fi
+
+	if [[ -n "${MULTI_VERSION}" ]]; then
+		printf "net_stacker_${letter}.version_history := \"gprime_version\";\n" >> "${STACKER_IN}"
+	fi
+
+	if [[ -n "${STACKER_ADDITION}" ]]; then
+		echo "-- stacker_addition ${STACKER_ADDITION}" >> "${STACKER_IN}"
+		eval "echo \"\$pdl_stacker_addition_${STACKER_ADDITION}\";" | \
+			pdl_add_prefix net_stacker_${letter} >> "${STACKER_IN}"
+	fi
+
+	echo
+
+	}
+
+	broker_slaves_iteration stacker_pdl_fun >> ${STACKER_IN}
+
+	log_echo 'Copying pde stackers pdl ...'
+	slave_fun () {
+		NODE=$1
+		log_echo "Copying ${STACKER_IN} => ${NODE}:${STACKER_IN}"
+		scp_if_distant "${STACKER_IN}" "${NODE}:${STACKER_IN}"
+	}
+	host_iteration slave_fun
+
+	log_echo 'Starting pde stackers servers ...'
+	slave_number=0
+	slave_fun() {
+		NODE=$1
+		port=$2
+		slave_number=$((slave_number+1))
+		padded_slave_number=`printf "%03d" ${slave_number}`
+		letter=`num_to_letter $slave_number`
+		log_echo "Stacker $slave_number on ${NODE} on port ${port}"
+		pde_queue_name="${QUEUE_NAME}-${NODE}-`printf "%03d" ${slave_number}`"
+		STACKER_LOG="${HOST_DIR}/pde-stacker-${pde_queue_name}.log"
+		STACKER_OUT="${HOST_DIR}/pde-stacker-${pde_queue_name}-output.pdl"
+		STACKER_STATUS="${HOST_DIR}/pde-stacker-${pde_queue_name}.status"
+		ssh_if_needed ${NODE} "mv -f ${STACKER_LOG} ${STACKER_LOG}_${TIME_TAG} || :; setsid nohup ${GPRIME_PROD} -pdl -i ${STACKER_IN} -o ${STACKER_OUT} -s ${STACKER_STATUS} -e net_stacker_${letter} &> ${STACKER_LOG} &"
+	}
+	broker_slaves_iteration slave_fun
+}
+
+start_pde() {
+	if [[ -n "$FORK_22" ]]; then
+		start_forked_pde
+	else
+		start_normal_pde
+	fi;
+}
+
+signal_cluster() {
+	if [[ -z "$FORCE" ]]; then
+		log_echo "Confirm KILL (yes|no) ?"
+		read answer
+		if [[ "$answer" != 'yes' ]]; then
+			log_echo "Cancelled."  1>&2
+			exit 1
+		fi
+	fi
+
+	DBG_step "signal_cluster : call function eval_cluster_spec " "MASTER : ${MASTER} QUEUE_NAME : ${QUEUE_NAME}"
+	if [[ -z "${MASTER}" ]]; then
+		log_echo "Error: queue ${QUEUE_NAME} doesn't exist"
+		exit 2
+	fi
+	# Test if ${MASTER}. is a substring of ${HOSTNAME}. or the other way round
+	if [[ "`echo \"${MASTER}.\" \"${HOSTNAME}.\" | awk '{print (index($2,$1)+index($1,$2)>0)}'`" == 0 ]]; then
+		log_echo "Error: ${QUEUE_NAME}'s master is not this host"
+		exit 2
+	fi
+	set_variables "${MASTER}" "${QUEUE_NAME}"
+	case "$TYPE" in
+		'master' | 'dispatcher' | 'broker_and_pde' | 'broker_and_pde_cps' | 'broker' | 'dispatcher_cps' | 'cps_server')
+		signal_master
+		;;
+		'M8Fitter' )
+		kill_M8Fitter
+		;;
+	esac
+	case "$TYPE" in
+		'master' | 'dispatcher' | 'broker_and_pde' | 'broker_and_pde_cps' | 'pde' | 'pde_cps' | 'dispatcher_cps')
+		signal_slaves
+		;;
+	esac
+}
+
+signal_queue(){
+	define_classical_functions
+	eval_cluster_spec
+	set_variables "${MASTER}" "${QUEUE_NAME}${HP_SUFFIX}"
+	signal_cluster
+}
+
+kill_queue(){
+	log_echo "Killing Queue"
+	SIGNAL="SIGKILL -w"
+	signal_queue
+	if [[ -n "${HP_FLAG}" ]]; then
+		HP_SUFFIX="-hp"
+		signal_queue
+	fi
+}
+
+start_queue() {
+	define_classical_functions
+	eval_cluster_spec
+	set_variables "${MASTER}" "${QUEUE_NAME}"
+	# Before killing, check that we're going to be able to restart the queue ....
+	check_multi_version
+
+	# Now eventually kill
+	if [[ -z "${TRANSPARENT_RESTART}" ]]; then
+		SIGNAL="SIGKILL -w"
+		signal_cluster
+	else
+		log_echo "not killing"
+	fi
+
+	if [[ "$TYPE" == 'M8Fitter' ]]; then
+		DBG_step "before call copy_everywhere_if_needed"
+		copy_everywhere_if_needed ${GPRIME_PROD} ${M8_PROD}
+		DBG_step "after call copy_everywhere_if_needed"
+	else
+		copy_everywhere_if_needed ${GPRIME_PROD}
+	fi
+
+	if [[ "$TYPE" == 'broker_and_pde' || "$TYPE" == 'broker_and_pde_cps' ]]; then
+		log_echo "killing broker, but not not killing slaves"
+		pkill -SIGKILL -f "$GPRIME_PROD_BASE.*broker.*" || true
+	fi
+
+	if [[ "$TYPE" == 'master' && -n "$FORK_22" ]]; then
+		start_cluster_stacker
+	elif [[ "$TYPE" == 'master' ]]; then
+		start_cluster
+	elif [[ "$TYPE" == 'dispatcher' ]]; then
+		start_cluster
+	elif [[ "$TYPE" == 'broker_and_pde' ||  "$TYPE" == 'broker_and_pde_cps' ]]; then
+		start_pde
+		sleep 3
+		start_broker_master
+	elif [[ "$TYPE" == 'broker' ]]; then
+		start_broker_master
+	elif [[ "$TYPE" == 'pde' ]]; then
+		start_pde
+	elif [[ "$TYPE" == 'pde_cps' ]]; then
+		start_pde
+	elif [[ "$TYPE" == 'M8Fitter' ]]; then
+		DBG_step "start_M8Fitter" "EEEENNND"
+		start_M8Fitter
+	elif [[ "$TYPE" == 'cps_server' ]]; then
+		if [[ -n "$FORK_22" ]]; then
+			start_cluster_stacker
+		else
+			start_cps_server
+		fi
+	elif [[ "$TYPE" == 'dispatcher_cps' ]]; then
+		start_cluster
+	fi
+	DBG_step "after start_M8Fitter" " arg type is : $TYPE"
+}
+
+precopy() {
+	log_echo "--precopy is deprecated..."
+}
+
+copy_on_slave() {
+	log_echo "--copy-on-slave is deprecated..."
+}
+
+list_all_options() {
+	tac $0 | \
+	awk -F '"' '/esac/,/case/{ if(/")[[:space:]]*$/){print $2}} /case/{exit}' | \
+	sort -u 1>&2
+}
+
+check_for_new_launch_gprime() {
+	if grep -q -m 1 ': << CLUSTER_SPEC' "$1"; then
+		: # everything OK
+	else
+		log_echo "old launch_gprime format. Can't merge with it"
+		exit 2
+	fi
+}
+
+infuse_prog() {
+	check_for_new_launch_gprime "${OTHER_LAUNCH_GPRIME}"
+	prog="`(bash \"${OTHER_LAUNCH_GPRIME}\" --print-head; bash \"$0\" --print-prog)`"
+	echo "$prog" > "$OTHER_LAUNCH_GPRIME"
+}
+
+infuse_spec() {
+	check_for_new_launch_gprime "${OTHER_LAUNCH_GPRIME}"
+	prog="`(bash \"$0\" --print-head; bash \"${OTHER_LAUNCH_GPRIME}\" --print-prog)`"
+	echo "$prog" > "$OTHER_LAUNCH_GPRIME"
+}
+
+# Parse myself and put the cluster spec in a variable
+CLUSTER_SPEC=`cat $0 | print_spec`
+
+cg_interval() {
+	seq -f "cg${1}-%03.f" $2 $3
+	#for ((i=$2;i<=$3;i++)); do
+	#	printf "cg${1}-%03d " $i
+	#done
+}
+
+set_action() {
+	if [[ -z "${ACTION}" ]]; then
+		# alias does not exist
+		ACTION="$1"
+	else
+		log_echo "Can't use two actions at the same time"
+		usage
+		exit 1
+	fi
+}
+
+#multiarch stuff
+#--------------------------------------------------------------
+
+#returns the name of the binary gprime-$version.$arch-linux, if available
+#otherwise returns nothing.
+#available archs are : AVX, SSE41, SSE3. The convention is the same as in
+#build_unix.sh, and in prime.adb.
+check_binary(){
+    local gprime_version=$1
+    local arch=$2
+
+    local cpu_arch
+    #we convert the available arch into what is available in /proc/cpuinfo
+    case "${arch}" in
+        "AVX")   cpu_arch="avx" ;;
+        "SSE41") cpu_arch="sse4_1" ;;
+        "SSE3")  cpu_arch="pni" ;;
+        *)       echo "ERROR : Unknown arch" $arch >&2 ;
+    esac
+
+    #look for arch in /proc/cpuinfo
+    if grep -q -e "\b${cpu_arch}\b" /proc/cpuinfo ; 
+    then
+        #the filename will be gprime-3.257.3.arch-linux, with arch being lowercase
+        local lowercase_arch
+        local filename
+        lowercase_arch=$(echo $arch | tr '[A-Z]' '[a-z]')
+        filename="gprime-${gprime_version}.${lowercase_arch}-linux"
+        
+        #we test for both file existence and execute bit
+        #since if it's not executable, we will fail later.
+        if [[ -x "${filename}" ]]; then
+            echo ${gprime_version}.${lowercase_arch}
+            return 0
+        fi;        
+    fi;
+}
+
+#checks whether AVX and SSE41 binaries are available. If so, returns the
+#corresponding version. Otherwise, leave the requested version unchanged.
+get_best_gprime_binary(){
+    local requested_version=$1
+
+    #we get all available binaries, sorted in decreasing order
+    binaries=" $(check_binary $requested_version "AVX") \
+               $(check_binary $requested_version "SSE41") \
+               $requested_version "
+
+    #we display them, and only keep the topmost one
+    echo $binaries | tr ' ' '\n' | head -1
+}
+
+if [ $# -eq 0 ]; then
+	usage
+	exit 1
+fi
+
+
+while [ $# -ne 0 ]; do
+	case "$1" in
+		"--help")
+			usage
+			exit 1
+			;;
+		"--list-all-options")
+			set_action 'list_all_options'
+			shift 1
+			;;
+		"--print-head")
+			set_action 'cat $0 | print_head'
+			shift 1
+			;;
+		"--print-spec")
+			set_action 'echo "${CLUSTER_SPEC}"'
+			shift 1
+			;;
+		"--print-prog")
+			set_action 'cat "$0" | print_after_spec'
+			shift 1
+			;;
+		"--take-spec-from-stdin")
+			CLUSTER_SPEC=`print_spec`
+			shift 1
+			;;
+		"--take-spec-from")
+			CLUSTER_SPEC=`cat $2 | print_spec`
+			shift 2
+			;;
+		"--html-report")
+			set_action 'html_report'
+			shift 1
+			;;
+		"--spec_for_gprime_nightly_gnp_server_status")
+			set_action 'spec_for_gprime_nightly_gnp_server_status'
+			shift 1
+			;;
+		"--deploy-me")
+			set_action 'deploy_me'
+			shift 1
+			;;
+		"-n")
+			QUEUE_NAME=$2
+			shift 2
+			;;
+		"-k")
+			set_action 'kill_queue'
+			shift 1
+			;;
+		"-signal")
+			set_action 'signal_queue'
+			SIGNAL=$2
+			shift 2
+			;;
+		"--precopy")
+			set_action 'precopy'
+			shift 1
+			;;
+		"-v")
+			RAW_PARAM_VERSION=$2
+			shift 2
+			;;
+		"-gv")
+			M8FITTER_VERSION=$2
+			shift 2
+			;;
+		"--use-precopy")
+			log_echo "--use-precopy is deprecated..."
+			shift 1
+			;;
+		"--check")
+			set_action 'check_cluster'
+			shift 1
+			;;
+		"--no-fork")
+			DISABLE_FORK=1
+			shift 1
+			;;
+		"-f")
+			FORCE=1
+			shift 1
+			;;
+		"--infuse-prog")
+			set_action 'infuse_prog'
+			OTHER_LAUNCH_GPRIME=$2
+			shift 2
+			;;
+		"--infuse-spec")
+			OTHER_LAUNCH_GPRIME=$2
+			set_action 'infuse_spec'
+			shift 2
+			;;
+		"-nprep")
+			NB_PREP=$2
+			shift 2
+			;;
+		"-ngpu")
+			NB_HARD_GPU=$2
+			shift 2
+			;;
+		"--print-compact-spec")
+			set_action 'print_compact_spec'
+			shift 1
+			;;
+		"--print-strange-clusters")
+			set_action 'print_strange_clusters'
+			shift 1
+			;;
+		"--print-clusters-cpu-qty")
+			set_action 'print_clusters_cpu_qty'
+			shift 1
+			;;
+		"--print-prm-spec")
+			set_action 'print_prm_spec'
+			shift 1
+			;;
+		"--copy-on-slave")
+			set_action 'copy_on_slave'
+			COPY_VERSION=$2
+			shift 2
+			;;
+		*)
+			log_echo "Unkown option : $1"
+			usage
+			exit 1
+			;;
+	esac
+done
+
+#we get the best gprime binary we can, based on the available arch.
+PARAM_VERSION=$(get_best_gprime_binary $RAW_PARAM_VERSION)
+echo "Using version, " $PARAM_VERSION
+
+if [[ -n "${M8FITTER_VERSION}" && -z "${PARAM_VERSION}" ]]; then
+	usage
+	exit 1
+fi
+
+if [[ -z "${ACTION}" && -n "$QUEUE_NAME" && -n "$PARAM_VERSION" ]]; then
+	set_action 'start_queue'
+fi
+
+# undefine all functions
+eval "`(egrep -o '^[[:alnum:]_]+' | sort -u | awk '/^[a-zA-Z]/{printf \"%s() { :;}\n\",$1}') <<BLOP
+${CLUSTER_SPEC}
+BLOP`"
+
+eval "${ACTION}"
+
+# vim:list:lcs=tab\:>-:ts=4:sw=4:noexpandtab:tw=0:ff=unix:iskeyword+=-:

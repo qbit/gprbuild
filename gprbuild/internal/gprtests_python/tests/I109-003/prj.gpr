@@ -1,0 +1,6 @@
+with "lib1/lib1.gpr";
+with "lib2/lib2.gpr";
+project Prj is
+   for Main use ("main.adb");
+end Prj;
+

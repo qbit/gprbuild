@@ -1,0 +1,29 @@
+project Prjn is
+
+   type OS_Type is ("UNIX", "Windows_NT", "Darwin");
+   OS : OS_Type := external ("OS", "UNIX");
+
+   for Source_Dirs use ("src", "src2");
+   for Library_Name use "two";
+   for Library_Dir use "libn";
+   for Library_Kind use "relocatable";
+   for Object_Dir use "obj";
+
+   package Naming is
+      case OS is
+           when "UNIX" =>
+      for Specification ("OS_Lib") use "os_lib__unix.ads";
+           when others =>
+      for Specification ("OS_Lib") use "os_lib__all.ads";
+      end case;
+   end Naming;
+
+   package Linker is
+      for Linker_Options use ("-ltoto", "-ltiti");
+   end linker;
+
+   package Install is
+      for Sources_Subdir use "src_src";
+   end Install;
+
+end Prjn;

@@ -1,0 +1,15 @@
+abstract project Shared is
+   for Source_Dirs use ();
+
+   type OS_Type is ("UNIX", "Windows_NT", "Darwin");
+   OS : OS_Type := external ("OS", "UNIX");
+
+   package Naming is
+      case OS is
+           when "UNIX" =>
+             for Body ("pck") use "pck__unix.adb";
+           when others =>
+             for Body ("pck") use "pck__all.adb";
+      end case;
+   end Naming;
+end Shared;

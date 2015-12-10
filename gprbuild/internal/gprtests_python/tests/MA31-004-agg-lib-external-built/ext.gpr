@@ -1,0 +1,6 @@
+library project Ext is
+   for Library_Name use "ext";
+   for Source_Dirs use ("ext_src");
+   for Library_Dir use "ext_lib";
+   for Externally_Built use "true";
+end Ext;

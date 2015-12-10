@@ -1,0 +1,2 @@
+imp1.gpr:2:09: shared library project "imp1" cannot import project "imp2" that is not a shared library project
+gprbuild: "prj.gpr" processing failed

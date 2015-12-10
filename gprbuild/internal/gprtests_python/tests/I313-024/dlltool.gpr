@@ -1,0 +1,17 @@
+project Dlltool is
+   for Languages use ("dlltool");
+
+   package Compiler is
+      for Driver ("dlltool") use "./dlltool";
+      for Leading_Required_Switches ("dlltool") use ();
+      for Trailing_Required_Switches ("dlltool") use ("--def");
+      for Object_File_Suffix ("dlltool") use ".a";
+      for Object_File_Switches ("dlltool") use ("--output-lib", "");
+      for Switches ("ssl.def") use ("--dllname", "libssl32.dll");
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix ("dlltool") use ".def";
+   end Naming;
+end Dlltool;
+

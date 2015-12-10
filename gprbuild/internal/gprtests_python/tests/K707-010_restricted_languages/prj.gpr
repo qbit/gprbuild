@@ -1,0 +1,4 @@
+project Prj is
+   for Languages use ("Ada", "C", "C++");
+   for Main use ("main.adb");
+end Prj;

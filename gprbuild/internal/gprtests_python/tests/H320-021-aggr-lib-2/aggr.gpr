@@ -1,0 +1,7 @@
+with "common";
+aggregate library project Aggr is
+   for Project_Files use ("a1.gpr", "a2.gpr");
+   for Library_Name use "aggr";
+   for Library_Dir use "laggr";
+   for library_kind use Common.Library_Type;
+end Aggr;

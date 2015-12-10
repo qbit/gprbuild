@@ -1,0 +1,9 @@
+project Prj is
+   for Library_Name use "prj";
+   for Library_Dir  use "lib1";
+   for Library_Kind use "relocatable";
+   for Library_Options use
+      ("-Llib2", "-ltoto");
+
+end Prj;
+

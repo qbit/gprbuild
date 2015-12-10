@@ -1,0 +1,6 @@
+gcc -c main.adb
+gcc -c pkg.ads
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+g++ main.o -o main

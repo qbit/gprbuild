@@ -1,0 +1,11 @@
+gcc -c -O2 -g main.adb
+gcc -c toto.c
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+ar cr
+ranlib -c libprj.a
+gcc main.o -o main
+<<<
+Toto
+>>>

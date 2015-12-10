@@ -1,0 +1,29 @@
+Warning: using no switches from package Builder, as there are several mains
+gcc -c main.2.ada
+gcc -c toto.c
+gprbind main.2.bexch
+gnatbind main.2.ali
+gcc -c b__main.2.adb
+gprbind toto.bexch
+gnatbind main.2.ali -n
+gcc -c b__toto.adb
+ar cr libprj.a ...
+ranlib libprj.a
+gcc main.2.o -o main
+gcc toto.o -o toto
+gcc -c -g main.2.ada
+gcc -c toto.c
+gprbind main.2.bexch
+gnatbind main.2.ali
+gcc -c b__main.2.adb
+ar cr libprj.a ...
+ranlib libprj.a
+gcc main.2.o -o main
+gcc -c toto.c
+gcc -c main.2.ada
+gprbind toto.bexch
+gnatbind main.2.ali -n
+gcc -c b__toto.adb
+ar cr libprj.a ...
+ranlib libprj.a
+gcc toto.o -o toto

@@ -1,0 +1,46 @@
+with "dds.gpr";
+with "gnat_default.gpr";
+
+Project com_saabgroup_enterprisebus is
+   for languages use ("C","Ada");
+   for Source_Dirs use (".");
+
+   for Object_Dir use Gnat_Default'Object_Dir;
+   for Exec_Dir use Gnat_Default'Exec_Dir;
+
+   for Library_Kind use "static";
+   for Library_Dir use Project'Object_Dir & "/lib";
+   for Library_name use "com_saabgroup_enterprisebus-ada";
+
+
+   package Binder is
+      for Default_Switches ("ada") use
+        Gnat_Default.Binder'Default_Switches ("ada");
+   end Binder;
+
+   package Compiler is
+      for Default_Switches ("ada") use
+        DDS.Compiler'Default_Switches ("ada") &
+        Gnat_Default.Compiler'Default_Switches ("ada");
+      for Default_Switches ("C") use
+        DDS.Compiler'Default_Switches ("C") &
+        Gnat_Default.Compiler'Default_Switches ("C");
+   end Compiler;
+
+   package Builder is
+      for Default_Switches ("ada") use
+        Gnat_Default.Builder'Default_Switches ("ada");
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("ada") use
+        DDS.Linker'Default_Switches ("ada") &
+        Gnat_Default.Linker'Default_Switches ("ada");
+   end Linker;
+
+   package Gnatstub renames Gnat_Default.Gnatstub;
+   
+   package Pretty_Printer renames Gnat_Default.Pretty_Printer;
+
+
+end com_saabgroup_enterprisebus;

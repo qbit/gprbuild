@@ -1,0 +1,2 @@
+a.gpr:4:20: found variable name, expected project name in full associative array expression
+gprbuild: "a.gpr" processing failed

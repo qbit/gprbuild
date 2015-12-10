@@ -1,0 +1,2 @@
+gcc -c unit1.adb -o unit1~2.o -gnateI2
+gcc -c unit1.adb -o unit1~1.o -gnateI1

@@ -1,0 +1,12 @@
+--with "/home/epla/test_lib/B";
+with "B";
+project A is
+
+  for Source_Dirs use ( "srcA");
+  for Object_Dir use "objA";
+
+   for Library_Dir use "libA";
+   for Library_Name use "A";
+   for Library_Kind use "dynamic";
+
+end A;

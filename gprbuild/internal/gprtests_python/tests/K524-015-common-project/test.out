@@ -1,0 +1,12 @@
+gcc -c p3.adb
+gcc -c p2.adb
+gcc -c p1.adb
+gcc -c pkg4.adb
+pkg4.adb:5:07: "error" is undefined
+
+   compilation of pkg4.adb failed
+
+gprbind p3.bexch
+gnatbind p3.ali
+gcc -c b__p3.adb
+gcc p3.o -o p3

@@ -1,0 +1,6 @@
+with "gpr.gpr";
+project Driver is
+   for Source_Files use ("driver.adb", "util.ads");
+   for Main use ("driver.adb");
+end Driver;
+

@@ -1,0 +1,8 @@
+with "imp1/imp1.gpr";
+with "imp2/imp2.gpr";
+project Prj2 is
+   package Builder is
+      for Switches (others) use ("--no-indirect-imports");
+   end Builder;
+end Prj2;
+

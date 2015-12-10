@@ -1,0 +1,3 @@
+project mms_pct is
+   for Main use ("mms.adb");
+end mms_pct;

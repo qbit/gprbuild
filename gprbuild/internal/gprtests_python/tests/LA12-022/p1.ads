@@ -1,0 +1,4 @@
+with P2;
+
+package P1 is
+end P1;

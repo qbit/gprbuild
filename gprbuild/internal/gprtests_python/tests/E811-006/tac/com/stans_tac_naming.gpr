@@ -1,0 +1,25 @@
+project Stans_Tac_Naming is
+
+   for Source_Files use ();
+   for Source_Dirs use ();
+   for Languages use ("Ada", "C");
+
+   package Ide is
+      for Compiler_Command ("c") use "gnatmake";
+   end Ide;
+
+   package Naming is
+      for Specification ("sockets") use "sockets.ads";
+      for Implementation ("sockets") use "sockets.adb";
+      for Specification ("semaphores") use "semaphores.ads";
+      for Implementation ("semaphores") use "semaphores.adb";
+      for Specification ("message") use "message.ads";
+      for Implementation ("message") use "message.adb";
+      for Specification ("interrupts") use "interrupts.ads";
+      for Specification ("addresses") use "addresses.ads";
+      for Implementation ("addresses") use "addresses.adb";
+      for Implementation ("stans_tactical") use "stans_tactical.adb";
+   end Naming;
+
+end Stans_Tac_Naming;
+

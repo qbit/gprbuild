@@ -1,0 +1,9 @@
+with "lib4";
+project lib3 extends "lib1" is
+   for Object_Dir use "lib3_o";
+   for Library_Dir use "lib3_dir";
+   for Library_Name use "lib3";
+   for Source_Dirs use ("lib3_src");
+   for Library_Kind use "dynamic";
+--   for Library_Options  use ("-llib2");
+end lib3;

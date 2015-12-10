@@ -1,0 +1,4 @@
+with "ext";
+project Ext_Top is
+   for Source_Dirs use ();
+end Ext_Top;

@@ -1,0 +1,17 @@
+gcc -c main.ada
+gcc -c pack.ada
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+gcc main.o -o main
+gcc -c pack.ada
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+gcc main.o -o main
+gcc -c main.ada
+gcc -c pack.ada2
+gprbind main.bexch
+gnatbind main.ali
+gcc -c b__main.adb
+gcc main.o -o main

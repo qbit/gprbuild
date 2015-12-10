@@ -1,0 +1,3 @@
+<pwd>/errors.xml:16:1: Name differ for closing tag (expecting gprconfig, opened line 2)
+Invalid setup of the gprconfig knowledge base
+Report from test driver: No output.gpr file created

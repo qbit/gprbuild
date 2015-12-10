@@ -1,0 +1,4 @@
+project Main is
+   for Main use ("mms.adb", "main.adb");
+end Main;
+

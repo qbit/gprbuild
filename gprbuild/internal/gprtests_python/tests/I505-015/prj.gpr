@@ -1,0 +1,6 @@
+project Prj extends "root.gpr" is
+   for Languages use ("Ada");
+   for Library_Name use "prj";
+   for Library_Dir  use "lib";
+end Prj;
+

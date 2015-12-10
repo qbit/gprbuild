@@ -1,0 +1,15 @@
+==== -u -Plib_test test.adb ff
+gprbuild: "ff" is not a source of any project
+==== -Plib_test ff test.adb
+gprbuild: "ff" is not a source of any project
+==== -Paggr ff
+gprbuild: "ff" is not a source of any project
+==== -u -Paggr ff
+gprbuild: "ff" is not a source of any project
+==== -u -Paggr unit1.adb
+gcc -c test.adb
+gcc -c unit1.adb
+==== -u -Paggr test.adb
+gcc -c test.adb
+gcc -c unit1-child.adb
+gcc -c unit1.adb

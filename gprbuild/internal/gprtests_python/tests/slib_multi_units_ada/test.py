@@ -1,0 +1,21 @@
+from gprbuild_utils import *
+
+gprbuild ("-Ptest -XOS=unix")
+run ("obj/main")
+gprclean ("-r -Ptest -XOS=unix")
+ls ("obj/*")
+ls ("subsystem_obj/*")
+ls ("subsystem_lib/*")
+gprbuild ("-Ptest -XOS=alpha_vms")
+run ("obj/main")
+gprclean ("-r -Ptest -XOS=alpha_vms")
+ls ("obj/*")
+ls ("subsystem_obj/*")
+ls ("subsystem_lib/*")
+gprbuild ("-Ptest -XOS=itanium_vms")
+run ("obj/main")
+gprclean ("-r -Ptest -XOS=itanium_vms")
+ls ("obj/*")
+ls ("subsystem_obj/*")
+ls ("subsystem_lib/*")
+

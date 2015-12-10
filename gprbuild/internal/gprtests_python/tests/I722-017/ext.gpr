@@ -1,0 +1,3 @@
+project Ext extends "orig/orig" is
+   for Main use ("a.adb");
+end Ext;

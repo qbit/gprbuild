@@ -1,0 +1,8 @@
+project Base is
+   for Languages use ("C");
+
+   package Compiler is
+      for Driver ("C") use "";
+   end Compiler;
+end Base;
+

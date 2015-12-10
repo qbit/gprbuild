@@ -1,0 +1,12 @@
+with "../A/a";
+with "../B/b";
+project Prj is
+
+   for Languages use ("C");
+
+   for Main use ("main.c");
+
+   for Exec_Dir use "..";
+
+end Prj;
+

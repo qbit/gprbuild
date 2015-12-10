@@ -1,0 +1,11 @@
+*.ali
+*.o
+*.da
+*.bb
+*.bbg
+*.gcov
+*.dg
+gprime
+*.gdbinit
+gmon.out
+

@@ -1,0 +1,4 @@
+project Prj extends "base.gpr" is
+   for Object_Dir use "obj";
+end Prj;
+

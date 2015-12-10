@@ -1,0 +1,5 @@
+project Make_Sources is
+   for Main use ("make_sources.adb");
+   for Source_Files use ("make_sources.adb");
+end Make_Sources;
+

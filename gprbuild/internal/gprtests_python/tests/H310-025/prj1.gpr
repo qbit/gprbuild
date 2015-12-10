@@ -1,0 +1,8 @@
+project Prj1 is
+   for Main use ("main.adb");
+
+   package Builder is
+      for Default_Switches ("Ada") use ("--create-map-file");
+   end Builder;
+end Prj1;
+

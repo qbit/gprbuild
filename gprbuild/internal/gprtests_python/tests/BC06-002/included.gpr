@@ -1,0 +1,6 @@
+project Included is 
+        for Source_Files use (); 
+        for Source_Dirs use (); 
+        for Languages use ("Ada", "c"); 
+end Included; 
+

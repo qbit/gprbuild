@@ -1,0 +1,8 @@
+<<<
+Doing something in C 
+F executed
+>>>
+<<<
+
+raised SYSTEM.ASSERTIONS.ASSERT_FAILURE : c_lib.ads:4
+>>>

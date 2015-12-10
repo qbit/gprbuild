@@ -1,0 +1,9 @@
+project Imp is
+   for Languages use ("C");
+
+   package Naming is
+      for Implementation_Suffix ("C") use ".ccc";
+   end Naming;
+
+end Imp;
+

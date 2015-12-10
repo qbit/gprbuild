@@ -1,0 +1,9 @@
+with "prj.gpr";
+project Prjb is
+   for Source_Dirs use ("srcb");
+   for Object_Dir  use "objb";
+   for Exec_Dir    use ".";
+
+   for Main use ("mainb.adb");
+end Prjb;
+

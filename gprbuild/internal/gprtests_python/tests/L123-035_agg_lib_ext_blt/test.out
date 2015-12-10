@@ -1,0 +1,2 @@
+lib2.gpr:6:29: cannot aggregate externally built project "lib2"
+gprbuild: "agg.gpr" processing failed

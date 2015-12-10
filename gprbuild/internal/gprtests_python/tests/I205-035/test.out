@@ -1,0 +1,1 @@
+gprbuild: cannot specify -o when there are several mains

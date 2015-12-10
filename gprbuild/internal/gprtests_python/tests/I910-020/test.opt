@@ -1,0 +1,7 @@
+Ada,C,SHARED required
+gnat-5.03a1 DEAD
+gnat-5.04a1 DEAD
+gnat-5.01a1 DEAD
+gnat-5.02a1 DEAD
+tru64,gnat-6.12 DEAD
+arm-linux-gnueabi XFAIL shared libgnat not found (MA15-030)

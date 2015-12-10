@@ -1,0 +1,5 @@
+project Lib_Build extends "lib.gpr" is
+   for Library_dir use "lib";
+   for Object_Dir use "obj";
+end Lib_Build;
+

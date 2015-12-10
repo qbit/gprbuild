@@ -1,0 +1,1156 @@
+From celier@adacore.com  Wed Apr 23 14:28:23 2014
+Message-ID: <53580646.7040108@adacore.com>
+Date: Wed, 23 Apr 2014 11:28:22 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: "<tools@adacore.com>" <tools@adacore.com>
+Subject: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+CC: Pascal Obry <obry@adacore.com>
+
+For aggregate SAL projects, there is a special request to gprlib to NOT 
+copy the ALIs of the interface to the library directory:
+
+------------------------------------------------------------------------
+r177120 | obry | 2011-08-09 01:50:01 -0700 (Tue, 09 Aug 2011) | 9 lines
+
+Add support for No_Copy_ALI section.
+
+This is needed for aggregate libraries as we do not want to copy the
+dependency files into the aggregate library directory. Those files are
+kept with their corresponding projects.
+
+Preparation work for supporting standalone aggregate libraries.
+
+Continuation work for H320-021.
+------------------------------------------------------------------------
+
+I have no idea why this is.
+
+Because there are no ALIs copied in the library dir (or the library ALI 
+dir), gprinstall will copy the ALIs of the interface from the object 
+dirs of the aggregated projects and this may make the installed library 
+project unusable.
+
+I'll file a test to show the problem.
+
+Assigned to obry
+for comment
+
+--  Vincent
+
+From tools@adacore.com Wed Apr 23 14:28:24 2014 -0400
+From: tools@adacore.com
+Date: Wed, 23 Apr 2014 14:28:24 -0400
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+Content-Type: text/plain; charset="us-ascii"
+To: Vincent Celier <celier@adacore.com>
+CC: Pascal Obry <obry@adacore.com>
+In-Reply-To: <53580646.7040108@adacore.com>
+References: <53580646.7040108@adacore.com>
+X-Adacore-Bugnumber: autoreply
+Message-ID: <bugtool.N423-036.69437.20140423182823.2@loire.gnat.com>
+
+[Automatic message from AdaCore support ticket system]
+
+Dear customer,
+
+Your report has been automatically assigned ticket number [N423-036].
+Please be sure to put this number in the subject line of any
+subsequent followup message. Messages from us on this report will
+quote this ticket number.
+
+Thank you for using our technology.
+
+-- The AdaCore support team
+
+From tools@adacore.com  Wed Apr 23 14:28:23 2014
+From: tools@adacore.com
+Date: Wed, 23 Apr 2014 14:28:23 -0400
+Subject: [bugtool:N423-036] gprinstall: cannot install properly aggregate Stand-Alon - assigned to obry
+Content-Type: text/plain; charset="us-ascii"
+To: celier@adacore.com, bugtool <file@gnat.com>, obry <obry@adacore.com>
+Message-ID: <bugtool.N423-036.69437.20140423182823.1@loire.gnat.com>
+
+Changed by: celier@adacore.com
+Reassigned from: celier to: obry
+
+
+View this TN at <https://intranet.adacore.com/crm/tn/N423-036>
+
+From celier@adacore.com  Wed Apr 23 20:11:43 2014
+From: celier@adacore.com (celier)
+To: file-ci@adacore.com.do-not-reply
+Subject: [gnatbugs] rev 23998 checked in trunk/gnatbugs/N4/N423-036/
+X-Act-Checkin: gnatbugs
+Content-Type: text/plain; charset=UTF-8
+Message-ID: <20140424001143.948213FE21@kwai.gnat.com>
+Date: Wed, 23 Apr 2014 20:11:43 -0400 (EDT)
+
+Author:       celier
+Date:         2014-04-23 20:11:43 -0400 (Wed, 23 Apr 2014)
+New revision: 23998
+Repository:   kwai:/reportd/svnroot
+
+Log:
+Files updated in N423-036:
+file test
+
+Modified:
+	trunk/gnatbugs/N4/N423-036/
+	trunk/gnatbugs/N4/N423-036/a.gpr
+	trunk/gnatbugs/N4/N423-036/aggr.gpr
+	trunk/gnatbugs/N4/N423-036/alib/
+	trunk/gnatbugs/N4/N423-036/aobj/
+	trunk/gnatbugs/N4/N423-036/asrc/
+	trunk/gnatbugs/N4/N423-036/asrc/pkg.adb
+	trunk/gnatbugs/N4/N423-036/asrc/pkg.ads
+	trunk/gnatbugs/N4/N423-036/asrc/pkg2.adb
+	trunk/gnatbugs/N4/N423-036/asrc/pkg2.ads
+	trunk/gnatbugs/N4/N423-036/lib/
+	trunk/gnatbugs/N4/N423-036/main.adb
+	trunk/gnatbugs/N4/N423-036/main.gpr
+	trunk/gnatbugs/N4/N423-036/test.sh
+
+Diff:
+Added: trunk/gnatbugs/N4/N423-036/a.gpr
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/a.gpr	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/a.gpr	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,6 @@
++project A is
++   for Source_Dirs use ("asrc");
++   for Object_Dir use "aobj";
++   for Library_Name use "a";
++end A;
++
+
+Added: trunk/gnatbugs/N4/N423-036/aggr.gpr
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/aggr.gpr	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/aggr.gpr	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,7 @@
++aggregate library project Aggr is
++   for Project_Files use ("a.gpr");
++   for Library_Name use "aggr";
++   for Library_Dir  use "lib";
++   for Library_Interface use ("pkg");
++end Aggr;
++
+
+Added: trunk/gnatbugs/N4/N423-036/asrc/pkg.adb
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/asrc/pkg.adb	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/asrc/pkg.adb	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,8 @@
++with Pkg2;
++package body Pkg is
++   procedure Execute is
++   begin
++      Pkg2.Execute;
++   end Execute;
++end Pkg;
++
+
+
+Property changes on: trunk/gnatbugs/N4/N423-036/asrc/pkg.adb
+___________________________________________________________________
+Added: svn:mime-type
+   + text/x-ada
+
+Added: trunk/gnatbugs/N4/N423-036/asrc/pkg.ads
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/asrc/pkg.ads	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/asrc/pkg.ads	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,4 @@
++package Pkg is
++   procedure Execute;
++end Pkg;
++
+
+
+Property changes on: trunk/gnatbugs/N4/N423-036/asrc/pkg.ads
+___________________________________________________________________
+Added: svn:mime-type
+   + text/x-ada
+
+Added: trunk/gnatbugs/N4/N423-036/asrc/pkg2.adb
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/asrc/pkg2.adb	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/asrc/pkg2.adb	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,8 @@
++with Ada.Text_IO; use Ada.Text_IO;
++package body Pkg2 is
++   procedure Execute is
++   begin
++      Put_Line ("Pkg2.Execute");
++   end Execute;
++end Pkg2;
++
+
+
+Property changes on: trunk/gnatbugs/N4/N423-036/asrc/pkg2.adb
+___________________________________________________________________
+Added: svn:mime-type
+   + text/x-ada
+
+Added: trunk/gnatbugs/N4/N423-036/asrc/pkg2.ads
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/asrc/pkg2.ads	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/asrc/pkg2.ads	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,4 @@
++package Pkg2 is
++   procedure Execute;
++end Pkg2;
++
+
+
+Property changes on: trunk/gnatbugs/N4/N423-036/asrc/pkg2.ads
+___________________________________________________________________
+Added: svn:mime-type
+   + text/x-ada
+
+Added: trunk/gnatbugs/N4/N423-036/main.adb
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/main.adb	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/main.adb	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,6 @@
++with Pkg;
++procedure Main is
++begin
++   Pkg.Execute;
++end Main;
++
+
+
+Property changes on: trunk/gnatbugs/N4/N423-036/main.adb
+___________________________________________________________________
+Added: svn:mime-type
+   + text/x-ada
+
+Added: trunk/gnatbugs/N4/N423-036/main.gpr
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/main.gpr	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/main.gpr	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,5 @@
++with "inst/share/gpr/aggr.gpr";
++project Main is
++   for Main use ("main.adb");
++end Main;
++
+
+Added: trunk/gnatbugs/N4/N423-036/test.sh
+===================================================================
+--- trunk/gnatbugs/N4/N423-036/test.sh	                        (rev 0)
++++ trunk/gnatbugs/N4/N423-036/test.sh	2014-04-24 00:11:43 UTC (rev 23998)
+@@ -0,0 +1,3 @@
++gprbuild -q aggr.gpr
++gprinstall -q -p aggr.gpr --prefix=`pwd`/inst
++gprbuild -q main.gpr
+
+
+Property changes on: trunk/gnatbugs/N4/N423-036/test.sh
+___________________________________________________________________
+Added: svn:mime-type
+   + text/x-sh
+
+From celier@adacore.com  Wed Apr 23 20:11:43 2014
+From: celier@adacore.com
+To: file@gnat.com
+Subject: [bugtool:N423-036] gprinstall: cannot install properly aggregate Stand-Alon (files updated)
+Message-ID: <bugtool.N423-036.23240.20140424001143.1@kwai.gnat.com>
+Date: Wed, 23 Apr 2014 20:11:43 -0400 (EDT)
+
+file test
+Add       a.gpr as /reportd/gnatbugs/N4/N423-036/a.gpr
+Add       aggr.gpr as /reportd/gnatbugs/N4/N423-036/aggr.gpr
+Add       alib/
+Add       aobj/
+Add       asrc/
+Add       asrc/pkg.adb as /reportd/gnatbugs/N4/N423-036/asrc/pkg.adb
+Add       asrc/pkg.ads as /reportd/gnatbugs/N4/N423-036/asrc/pkg.ads
+Add       asrc/pkg2.adb as /reportd/gnatbugs/N4/N423-036/asrc/pkg2.adb
+Add       asrc/pkg2.ads as /reportd/gnatbugs/N4/N423-036/asrc/pkg2.ads
+Add       lib/
+Add       main.adb as /reportd/gnatbugs/N4/N423-036/main.adb
+Add       main.gpr as /reportd/gnatbugs/N4/N423-036/main.gpr
+Add       test.sh as /reportd/gnatbugs/N4/N423-036/test.sh
+
+From obry@adacore.com  Fri Apr 25 03:47:55 2014
+Message-ID: <1398412073.12776.24.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>
+Date: Fri, 25 Apr 2014 09:47:53 +0200
+In-Reply-To: <53580646.7040108@adacore.com>
+References: <53580646.7040108@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+
+Vincent,
+
+Aggregate libraries create a library out of sources coming from
+different projects. So it seems more natural to keep the object, ALI
+files all with their respective projects. And IIRC this was needed as
+some other part of the technology is expecting to find the ALI files
+there.
+
+> I have no idea why this is.
+> 
+> Because there are no ALIs copied in the library dir (or the library ALI 
+> dir), gprinstall will copy the ALIs of the interface from the object 
+> dirs of the aggregated projects and this may make the installed library 
+> project unusable.
+> 
+> I'll file a test to show the problem.
+
+Ok, will have a look. We want indeed to copy the ALI from the aggregated
+project lib dir.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From obry@adacore.com  Fri Apr 25 04:10:55 2014
+Message-ID: <1398413453.12776.37.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>
+Date: Fri, 25 Apr 2014 10:10:53 +0200
+In-Reply-To: <53580646.7040108@adacore.com>
+References: <53580646.7040108@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+
+Vincent,
+
+The issue seems to be even before the copying:
+
+$ gprbuild aggr.gpr 
+gprbuild: no sources to compile
+
+An aggregate library with a Library_Interface seems to never been
+compiled. Not sure aggregate SAL have ever been tested/supported.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From obry@adacore.com  Fri Apr 25 07:08:13 2014
+Message-ID: <1398424091.12776.45.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>
+Date: Fri, 25 Apr 2014 13:08:11 +0200
+In-Reply-To: <53580646.7040108@adacore.com>
+References: <53580646.7040108@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+
+Vincent,
+
+I think the issue is even more complex. In fact we cannot (this is
+forbidden) specify a language in an aggregate library project so the
+library_interface cannot possibly work. In fact an aggregate library
+project does not have sources on its own.
+
+I think that we should just say that SAL aggregate libraries are not
+supported and probably flag that library_interface cannot be specified.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From obry@adacore.com  Fri Apr 25 07:09:02 2014
+From: obry@adacore.com
+Date: Fri, 25 Apr 2014 13:09:01 +0200
+Subject: [bugtool:N423-036] SAL aggregate library not supported - descr changed
+Content-Type: text/plain; charset="us-ascii"
+To: bugtool <file@gnat.com>
+Message-ID: <CRM.N423-036.43207.20140425110901.975@jouy.act-europe.fr>
+
+Changed by: obry
+Description changed from: gprinstall: cannot install properly aggregate Stand-Alon
+  to: SAL aggregate library not supported
+
+
+View this TN at <https://intranet.adacore.com/crm/tn/N423-036>
+
+From celier@adacore.com  Fri Apr 25 09:50:38 2014
+Message-ID: <535A682B.5060309@adacore.com>
+Date: Fri, 25 Apr 2014 06:50:35 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: Pascal Obry <obry@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>,  Cyrille Comar <comar@adacore.com>,
+ Vasiliy Fofanov <fofanov@adacore.com>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+In-Reply-To: <1398424091.12776.45.camel@pascal.home.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+
+> I think the issue is even more complex. In fact we cannot (this is
+> forbidden) specify a language in an aggregate library project so the
+> library_interface cannot possibly work. In fact an aggregate library
+> project does not have sources on its own.
+
+I think that your memory is failing ;-)
+
+What do you think of these gprbuild/gprinstall tests that you created 
+yourself?
+
+   H320-021-aggr-standalone-lib
+   MB06-015-gprinstall-agg-lib-standalone
+
+H320-021-aggr-standalone-lib:
+aggr.gpr:
+aggregate library project Aggr is
+
+    for Project_Files use ("a1.gpr", "a2.gpr");
+    for Library_Name use "saggr";
+    for Library_Dir use "laggr";
+    for Library_Kind use "relocatable";
+    for Library_Interface use ("api", "cst");
+end Aggr;
+
+The current problems come from interactions with the enhancement I am 
+currently working on:
+
+K929-003 limit SAL content to transitive closure of the interface
+
+I believe that yes we should copy the ALI files of aggregate libraries 
+to their library [ALI] dir.
+
+Reassigning this ticket to myself.
+
+--  Vincent
+
+From obry@adacore.com  Fri Apr 25 10:05:55 2014
+Message-ID: <1398434754.12776.58.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 16:05:54 +0200
+In-Reply-To: <535A682B.5060309@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+Vincent,
+
+> I believe that yes we should copy the ALI files of aggregate libraries 
+> to their library [ALI] dir.
+> 
+> Reassigning this ticket to myself.
+
+Wait a bit, I'll mailserve in a moment a fix for gprbuild which should
+fix the no-source to build for SAL aggregate libs.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From celier@adacore.com  Fri Apr 25 10:15:21 2014
+Message-ID: <535A6DF7.5060507@adacore.com>
+Date: Fri, 25 Apr 2014 07:15:19 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: obry@adacore.com
+CC: "<tools@adacore.com>" <tools@adacore.com>,  Cyrille Comar <comar@adacore.com>,
+ Vasiliy Fofanov <fofanov@adacore.com>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+References: <53580646.7040108@adacore.com>	 <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com> <1398434754.12776.58.camel@pascal.home.net>
+In-Reply-To: <1398434754.12776.58.camel@pascal.home.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+
+>> I believe that yes we should copy the ALI files of aggregate libraries
+>> >to their library [ALI] dir.
+>> >
+>> >Reassigning this ticket to myself.
+> Wait a bit, I'll mailserve in a moment a fix for gprbuild which should
+> fix the no-source to build for SAL aggregate libs.
+
+There are many interactions that I have already fixed locally. A simple 
+change will not be sufficient.
+
+--  Vincent
+
+From celier@adacore.com  Fri Apr 25 10:15:49 2014
+From: celier@adacore.com
+Date: Fri, 25 Apr 2014 10:15:49 -0400
+Subject: [bugtool:N423-036] SAL aggregate library not supported - assigned to celier
+Content-Type: text/plain; charset="us-ascii"
+To: bugtool <file@gnat.com>, obry@adacore.com
+Message-ID: <bugtool.N423-036.6812.20140425141549.1@kwai.gnat.com>
+
+Changed by: celier
+Reassigned from: obry to: celier
+
+
+View this TN at <https://intranet.adacore.com/crm/tn/N423-036>
+
+From obry@adacore.com  Fri Apr 25 10:22:28 2014
+Message-ID: <1398435747.14789.1.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 16:22:27 +0200
+In-Reply-To: <535A6DF7.5060507@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com> <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+Vincent,
+
+> There are many interactions that I have already fixed locally. A simple 
+> change will not be sufficient.
+
+Don't know what you've done, and you do not know what I have done
+either :) Anyway, I can now build SAL aggregate libraries and I have
+zero regression on gprbuild test. I'm waiting for the mailserver result.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From celier@adacore.com  Fri Apr 25 10:28:48 2014
+Message-ID: <535A711E.70806@adacore.com>
+Date: Fri, 25 Apr 2014 07:28:46 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: obry@adacore.com
+CC: "<tools@adacore.com>" <tools@adacore.com>,  Cyrille Comar <comar@adacore.com>,
+ Vasiliy Fofanov <fofanov@adacore.com>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+References: <53580646.7040108@adacore.com>	 <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com>	 <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>
+ <1398435747.14789.1.camel@pascal.home.net>
+In-Reply-To: <1398435747.14789.1.camel@pascal.home.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+
+> Don't know what you've done, and you do not know what I have done either
+
+This is True. So, could you send me your patch?
+
+--  Vincent
+
+From obry@adacore.com  Fri Apr 25 10:34:38 2014
+From: obry@adacore.com (obry)
+To: file-ci@adacore.com.do-not-reply
+Subject: [gnat] rev 304224 checked in trunk/gnat/[...]
+X-Act-Checkin: gnat
+Content-Type: text/plain; charset=UTF-8
+Message-ID: <20140425143438.3D0213FE21@kwai.gnat.com>
+Date: Fri, 25 Apr 2014 10:34:38 -0400 (EDT)
+
+Author:       obry
+Date:         2014-04-25 10:34:38 -0400 (Fri, 25 Apr 2014)
+New revision: 304224
+Repository:   kwai:/svn/Dev
+
+Log:
+Fix building aggregate SAL.
+
+* makeutl.adb:
+(Insert_Project_Sources): Properly handle sources that are aggregated. We
+want to include sources not only part of libraries but also if part of
+an aggregated project from an aggregate library.
+
+* prj.adb:
+(For_Project_And_Aggregated_Context): Properly check state of root project.
+
+Part of N423-036.
+
+[Ada] Fix supprot for aggregate SAL in gprbuild.
+
+Modified:
+	trunk/gnat/makeutl.adb
+	trunk/gnat/prj.adb
+
+Diff:
+Modified: trunk/gnat/makeutl.adb
+===================================================================
+--- trunk/gnat/makeutl.adb	2014-04-25 13:40:21 UTC (rev 304223)
++++ trunk/gnat/makeutl.adb	2014-04-25 14:34:38 UTC (rev 304224)
+@@ -2910,13 +2910,21 @@
+          All_Projects   : Boolean;
+          Unique_Compile : Boolean)
+       is
+-         procedure Do_Insert (Project : Project_Id; Tree : Project_Tree_Ref);
+ 
++         procedure Do_Insert
++           (Project    : Project_Id;
++            Tree       : Project_Tree_Ref;
++            Context    : Project_Context);
++
+          ---------------
+          -- Do_Insert --
+          ---------------
+ 
+-         procedure Do_Insert (Project : Project_Id; Tree : Project_Tree_Ref) is
++         procedure Do_Insert
++           (Project    : Project_Id;
++            Tree       : Project_Tree_Ref;
++            Context    : Project_Context)
++         is
+             Unit_Based : constant Boolean :=
+                            Unique_Compile
+                              or else not Builder_Data (Tree).Closure_Needed;
+@@ -2970,61 +2978,43 @@
+                      if (Unit_Based
+                           or else Source.Unit = No_Unit_Index
+                           or else Source.Project.Library
+-                          or else Project.Qualifier = Aggregate_Library)
++                          or else Context.In_Aggregate_Lib)
+                        and then not Is_Subunit (Source)
+                      then
+                         OK := True;
+                         Closure := False;
+ 
+-                        declare
+-                           SAL_Project : Project_Id := No_Project;
++                        if Source.Unit /= No_Unit_Index
++                          and then (Source.Project.Library
++                                    or else Context.In_Aggregate_Lib)
++                          and then Source.Project.Standalone_Library /= No
++                        then
++                           --  Check if the unit is in the interface
++                           OK := False;
+ 
+-                        begin
+-                           if Project.Qualifier = Aggregate_Library
+-                             and then Project.Standalone_Library /= No
+-                           then
+-                              if Source.Unit /= No_Unit_Index then
+-                                 SAL_Project := Project;
+-                              end if;
++                           declare
++                              List : String_List_Id :=
++                                Source.Project.Lib_Interface_ALIs;
++                              Element : String_Element;
+ 
+-                           elsif Source.Unit /= No_Unit_Index
+-                             and then Source.Project.Library
+-                             and then Source.Project.Standalone_Library /= No
+-                           then
+-                              SAL_Project := Source.Project;
+-                           end if;
++                           begin
++                              while List /= Nil_String loop
++                                 Element :=
++                                   Project_Tree.Shared.String_Elements.Table
++                                     (List);
+ 
+-                           if SAL_Project /= No_Project then
++                                 if Element.Value = Name_Id (Source.Dep_Name)
++                                 then
++                                    OK := True;
++                                    Closure := True;
++                                    exit;
++                                 end if;
+ 
+-                              --  Check if the unit is in the interface
++                                 List := Element.Next;
++                              end loop;
++                           end;
++                        end if;
+ 
+-                              OK := False;
+-
+-                              declare
+-                                 List    : String_List_Id :=
+-                                             SAL_Project.Lib_Interface_ALIs;
+-                                 Element : String_Element;
+-
+-                              begin
+-                                 while List /= Nil_String loop
+-                                    Element :=
+-                                      Project_Tree.Shared.String_Elements.Table
+-                                        (List);
+-
+-                                    if Element.Value =
+-                                         Name_Id (Source.Dep_Name)
+-                                    then
+-                                       OK := True;
+-                                       Closure := True;
+-                                       exit;
+-                                    end if;
+-
+-                                    List := Element.Next;
+-                                 end loop;
+-                              end;
+-                           end if;
+-                        end;
+-
+                         if OK then
+                            Queue.Insert
+                              (Source => (Format  => Format_Gprbuild,
+@@ -3040,7 +3030,8 @@
+             end loop;
+          end Do_Insert;
+ 
+-         procedure Insert_All is new For_Project_And_Aggregated (Do_Insert);
++         procedure Insert_All is
++           new For_Project_And_Aggregated_Context (Do_Insert);
+ 
+       begin
+          Insert_All (Project, Project_Tree);
+
+Modified: trunk/gnat/prj.adb
+===================================================================
+--- trunk/gnat/prj.adb	2014-04-25 13:40:21 UTC (rev 304223)
++++ trunk/gnat/prj.adb	2014-04-25 14:34:38 UTC (rev 304224)
+@@ -2101,7 +2101,7 @@
+ 
+          if Project.Qualifier in Aggregate_Project then
+             Ctx :=
+-              (In_Aggregate_Lib      => True,
++              (In_Aggregate_Lib      => Project.Qualifier = Aggregate_Library,
+                From_Encapsulated_Lib =>
+                  Context.From_Encapsulated_Lib
+                    or else Project.Standalone_Library = Encapsulated);
+@@ -2118,7 +2118,10 @@
+ 
+    begin
+       Recursive_Process
+-        (Root_Project, Root_Tree, Project_Context'(False, False));
++        (Root_Project, Root_Tree,
++         Project_Context'
++           (Root_Project.Qualifier = Aggregate_Library,
++            Root_Project.Standalone_Library = Encapsulated));
+    end For_Project_And_Aggregated_Context;
+ 
+ --  Package initialization for Prj
+
+From obry@adacore.com  Fri Apr 25 10:37:41 2014
+Message-ID: <1398436659.14789.4.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 16:37:39 +0200
+In-Reply-To: <535A711E.70806@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com> <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+
+Vincent,
+
+> This is True. So, could you send me your patch?
+
+Sorry, I just saw your message and I've committed some minutes ago the
+fix as the mailserver run was clean and there was no regression in
+gprbuild.
+
+Now there is still some missing .ali installed, but that's probably a
+gprinstall issue.
+
+Let me know if you want me to look at the gprinstall part too. I know
+pretty well this part.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From obry@adacore.com  Fri Apr 25 10:42:14 2014
+Message-ID: <1398436933.14789.5.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 16:42:13 +0200
+In-Reply-To: <535A682B.5060309@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+Vincent,
+
+>    H320-021-aggr-standalone-lib
+>    MB06-015-gprinstall-agg-lib-standalone
+
+I see and by change the project to do the compilation was the main.gpr
+and not the aggregate lib itself. This is exactly what I have fixed now.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From celier@adacore.com  Fri Apr 25 11:02:04 2014
+From: celier@adacore.com
+Date: Fri, 25 Apr 2014 11:02:03 -0400
+Subject: [bugtool:N423-036] SAL aggregate library not supported - assigned to obry
+Content-Type: text/plain; charset="us-ascii"
+To: bugtool <file@gnat.com>, obry <obry@adacore.com>
+Message-ID: <bugtool.N423-036.14843.20140425150203.1@kwai.gnat.com>
+
+Changed by: celier
+Reassigned from: celier to: obry
+
+
+View this TN at <https://intranet.adacore.com/crm/tn/N423-036>
+
+From obry@adacore.com  Fri Apr 25 11:42:35 2014
+Message-ID: <1398440553.14789.13.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 17:42:33 +0200
+In-Reply-To: <535A711E.70806@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com> <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+
+Vincent,
+
+You just reassigned this ticket to me silently. I though you had
+something to commit on this ticket? Can you tell me what the status on
+your work on this?
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From celier@adacore.com  Fri Apr 25 11:51:56 2014
+Message-ID: <535A849A.9030704@adacore.com>
+Date: Fri, 25 Apr 2014 08:51:54 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: obry@adacore.com
+CC: "<tools@adacore.com>" <tools@adacore.com>,  Cyrille Comar <comar@adacore.com>,
+ Vasiliy Fofanov <fofanov@adacore.com>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+References: <53580646.7040108@adacore.com>	 <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com>	 <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>	
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com> <1398436659.14789.4.camel@pascal.home.net>
+In-Reply-To: <1398436659.14789.4.camel@pascal.home.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+
+> Sorry, I just saw your message and I've committed some minutes ago the
+> fix as the mailserver run was clean and there was no regression in
+> gprbuild.
+
+I just rebuilt gprbuild/gprinstall locally, and I have a regression in 
+N402-027_foreign_object_in_archive:
+
+ERROR    N402-027_foreign_object_in_archive DIFF:output ^[[m
+ERROR    --- expected
++++ output
+@@ -1,3 +1,7 @@
++main.o: In function `_ada_main':
++main.adb:(.text+0x5): undefined reference to `toto'
++collect2: error: ld returned 1 exit status
++gprbuild: link of main.adb failed
+  <<<
+-Toto
++run: executable main not found
+
+> Now there is still some missing .ali installed, but that's probably a
+> gprinstall issue.
+
+Yes, and the main reason is that gprbuild does not copy the ALIs of 
+aggregate SALs to the library [ALI] directory, combined with the fact 
+that gprinstall copies the ALIs of aggregate SALs from the object 
+directories.
+
+When you install a SAL, if you put in the library directories the ALIs 
+from the object dir, then the installed SAL may not be usable, because 
+the binder will try to access some ALIs that are not there.
+
+--  Vincent
+
+From celier@adacore.com  Fri Apr 25 11:54:36 2014
+Message-ID: <535A853B.2040800@adacore.com>
+Date: Fri, 25 Apr 2014 08:54:35 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: obry@adacore.com
+CC: "<tools@adacore.com>" <tools@adacore.com>,  Cyrille Comar <comar@adacore.com>,
+ Vasiliy Fofanov <fofanov@adacore.com>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+References: <53580646.7040108@adacore.com>	 <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com>	 <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>	
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com> <1398440553.14789.13.camel@pascal.home.net>
+In-Reply-To: <1398440553.14789.13.camel@pascal.home.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+
+> You just reassigned this ticket to me silently. I though you had
+> something to commit on this ticket? Can you tell me what the status on
+> your work on this?
+
+I thought that you had solved the problem from this ticket, but this is 
+not the case.
+
+So, I will reassign it to myself and fix this ticket and the one in 
+N402-027_foreign_object_in_archive.
+
+BTW, your change in makeutl.adb is much better than what I had. So, 
+thank you for this.
+
+--  Vincent
+
+From celier@adacore.com  Fri Apr 25 11:54:44 2014
+From: celier@adacore.com
+Date: Fri, 25 Apr 2014 11:54:44 -0400
+Subject: [bugtool:N423-036] SAL aggregate library not supported - assigned to celier
+Content-Type: text/plain; charset="us-ascii"
+To: bugtool <file@gnat.com>, obry@adacore.com
+Message-ID: <bugtool.N423-036.29545.20140425155444.1@kwai.gnat.com>
+
+Changed by: celier
+Reassigned from: obry to: celier
+
+
+View this TN at <https://intranet.adacore.com/crm/tn/N423-036>
+
+From obry@adacore.com  Fri Apr 25 11:59:58 2014
+Message-ID: <1398441597.14789.24.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 17:59:57 +0200
+In-Reply-To: <535A849A.9030704@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com> <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com> <1398436659.14789.4.camel@pascal.home.net>
+ <535A849A.9030704@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+
+Vincent,
+
+> I just rebuilt gprbuild/gprinstall locally, and I have a regression in 
+> N402-027_foreign_object_in_archive:
+
+??? I don't see this test in gprbuild. Where is it? Is this local on
+your computer?
+
+> Yes, and the main reason is that gprbuild does not copy the ALIs of 
+> aggregate SALs to the library [ALI] directory, 
+
+Sure. I thought you were working on this?
+
+> combined with the fact 
+> that gprinstall copies the ALIs of aggregate SALs from the object 
+> directories.
+
+This should be fixed now. No?
+
+> When you install a SAL, if you put in the library directories the ALIs 
+> from the object dir, then the installed SAL may not be usable, because 
+> the binder will try to access some ALIs that are not there.
+
+I understand. But I think this is fixed. The SAL are working fine on my
+side. There is some missing pieces for aggregate SAL.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From obry@adacore.com  Fri Apr 25 12:02:11 2014
+Message-ID: <1398441730.14789.26.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 18:02:10 +0200
+In-Reply-To: <535A853B.2040800@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com> <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com> <1398440553.14789.13.camel@pascal.home.net>
+ <535A853B.2040800@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+Vincent,
+
+> BTW, your change in makeutl.adb is much better than what I had. So, 
+> thank you for this.
+
+Great to hear! I know also pretty well this part as I've been
+implementing the initial aggregate library support.
+
+So I'll let you know handle the remaining. Do not hesitate to ask for
+help for the gprinstall support if needed.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+
+From celier@adacore.com  Fri Apr 25 12:10:35 2014
+Message-ID: <535A88F9.8050603@adacore.com>
+Date: Fri, 25 Apr 2014 09:10:33 -0700
+From: Vincent Celier <celier@adacore.com>
+MIME-Version: 1.0
+To: obry@adacore.com
+CC: "<tools@adacore.com>" <tools@adacore.com>,  Cyrille Comar <comar@adacore.com>,
+ Vasiliy Fofanov <fofanov@adacore.com>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+References: <53580646.7040108@adacore.com>	 <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com>	 <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>	
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com>	 <1398436659.14789.4.camel@pascal.home.net>
+ <535A849A.9030704@adacore.com> <1398441597.14789.24.camel@pascal.home.net>
+In-Reply-To: <1398441597.14789.24.camel@pascal.home.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+
+>> I just rebuilt gprbuild/gprinstall locally, and I have a regression in
+>> N402-027_foreign_object_in_archive:
+>
+> ??? I don't see this test in gprbuild. Where is it? Is this local on
+> your computer?
+
+Yes, it is. Sorry for the noise.
+
+>> Yes, and the main reason is that gprbuild does not copy the ALIs of
+>> aggregate SALs to the library [ALI] directory,
+>
+> Sure. I thought you were working on this?
+
+Yes, I will work on this.
+
+>> combined with the fact
+>> that gprinstall copies the ALIs of aggregate SALs from the object
+>> directories.
+>
+> This should be fixed now. No?
+
+No, I don't think it is.
+
+Let me work on this.
+
+--  Vincent
+
+From obry@adacore.com  Fri Apr 25 12:46:07 2014
+From: obry@adacore.com (obry)
+To: file-ci@adacore.com.do-not-reply
+Subject: [gnat] rev 304233 checked in trunk/gnat/[...]
+X-Act-Checkin: gnat
+Content-Type: text/plain; charset=UTF-8
+Message-ID: <20140425164607.48CAB3FE21@kwai.gnat.com>
+Date: Fri, 25 Apr 2014 12:46:07 -0400 (EDT)
+
+Author:       obry
+Date:         2014-04-25 12:46:07 -0400 (Fri, 25 Apr 2014)
+New revision: 304233
+Repository:   kwai:/svn/Dev
+
+Log:
+Fix building aggregate SAL.
+
+Rework slightly the previous commit to respect the context semantics.
+
+* makeutl.adb:
+(Insert_Project_Sources): Update to take into account new implementation
+for For_Project_And_Aggregated_Context.
+
+* prj.adb:
+(For_Project_And_Aggregated_Context): Revert part of previous change.
+
+Part of N423-036.
+
+[Ada] Fix supprot for aggregate SAL in gprbuild.
+
+Modified:
+	trunk/gnat/makeutl.adb
+	trunk/gnat/prj.adb
+
+Diff:
+Modified: trunk/gnat/makeutl.adb
+===================================================================
+--- trunk/gnat/makeutl.adb	2014-04-25 15:57:28 UTC (rev 304232)
++++ trunk/gnat/makeutl.adb	2014-04-25 16:46:07 UTC (rev 304233)
+@@ -2978,15 +2978,18 @@
+                      if (Unit_Based
+                           or else Source.Unit = No_Unit_Index
+                           or else Source.Project.Library
+-                          or else Context.In_Aggregate_Lib)
++                          or else Context.In_Aggregate_Lib
++                          or else Project.Qualifier = Aggregate_Library)
+                        and then not Is_Subunit (Source)
+                      then
+                         OK := True;
+                         Closure := False;
+ 
+                         if Source.Unit /= No_Unit_Index
+-                          and then (Source.Project.Library
+-                                    or else Context.In_Aggregate_Lib)
++                          and then
++                            (Source.Project.Library
++                             or else Project.Qualifier = Aggregate_Library
++                             or else Context.In_Aggregate_Lib)
+                           and then Source.Project.Standalone_Library /= No
+                         then
+                            --  Check if the unit is in the interface
+
+Modified: trunk/gnat/prj.adb
+===================================================================
+--- trunk/gnat/prj.adb	2014-04-25 15:57:28 UTC (rev 304232)
++++ trunk/gnat/prj.adb	2014-04-25 16:46:07 UTC (rev 304233)
+@@ -2118,10 +2118,7 @@
+ 
+    begin
+       Recursive_Process
+-        (Root_Project, Root_Tree,
+-         Project_Context'
+-           (Root_Project.Qualifier = Aggregate_Library,
+-            Root_Project.Standalone_Library = Encapsulated));
++        (Root_Project, Root_Tree, Project_Context'(False, False));
+    end For_Project_And_Aggregated_Context;
+ 
+ --  Package initialization for Prj
+
+From obry@adacore.com  Fri Apr 25 12:47:35 2014
+Message-ID: <1398444452.14789.38.camel@pascal.home.net>
+Subject: Re: [N423-036] - #999 gprinstall: cannot install properly aggregate Stand-Alone Library projects
+From: Pascal Obry <obry@adacore.com>
+To: Vincent Celier <celier@adacore.com>
+CC: "<tools@adacore.com>" <tools@adacore.com>, Cyrille Comar <comar@adacore.com>,
+  Vasiliy Fofanov <fofanov@adacore.com>
+Date: Fri, 25 Apr 2014 18:47:32 +0200
+In-Reply-To: <535A88F9.8050603@adacore.com>
+References: <53580646.7040108@adacore.com> <1398424091.12776.45.camel@pascal.home.net>
+ <535A682B.5060309@adacore.com> <1398434754.12776.58.camel@pascal.home.net> <535A6DF7.5060507@adacore.com>
+ <1398435747.14789.1.camel@pascal.home.net> <535A711E.70806@adacore.com> <1398436659.14789.4.camel@pascal.home.net>
+ <535A849A.9030704@adacore.com> <1398441597.14789.24.camel@pascal.home.net> <535A88F9.8050603@adacore.com>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+
+Vincent,
+
+> Let me work on this.
+
+Sure. Just a note that I have slightly updated my previous patch to
+better respect the context semantics.
+
+-- 
+  Pascal Obry
+  gpg --keyserver keys.gnupg.net --recv-key F949BD3B
+

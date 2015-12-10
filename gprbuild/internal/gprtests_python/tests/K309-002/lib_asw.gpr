@@ -1,0 +1,13 @@
+project Lib_Asw is
+   Lib_Type := "asw";
+
+   for Object_Dir use "obj/" & Lib_Type;
+   for Source_Dirs use ("./src/asw/**");
+
+   package Naming is
+      for Spec ("unit1.child") use "unit1.ads" at 2;
+      for Spec ("unit1") use "unit1.ads" at 1;
+      for Body ("unit1") use "unit1.adb" at 2;
+      for Body ("unit1.child") use "unit1.adb" at 1;
+   end Naming;
+end Lib_Asw;

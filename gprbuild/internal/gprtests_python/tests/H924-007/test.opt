@@ -1,0 +1,3 @@
+Ada,x86-linux,AUTOCGPR,!sjlj required
+gcc-sjlj DEAD test passes explicit --RTS=sjlj, couldn't pass an extra --RTS
+C++,!AUTOCGPR OUT test.out_c++

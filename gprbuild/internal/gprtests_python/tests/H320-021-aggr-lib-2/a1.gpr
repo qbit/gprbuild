@@ -1,0 +1,24 @@
+project A1 is
+   type Library_Kind is ("relocatable", "static");
+   Library_Type : Library_Kind := external ("LIBRARY_TYPE", "static");
+
+   type OS_Type is ("UNIX", "Windows_NT");
+   OS : OS_Type := external ("OS", "UNIX");
+
+   for source_Dirs use ("a1_src");
+   for object_dir use "o1lib";
+
+   package Compiler is
+      case Library_Type is
+         when "static" =>
+            for Default_Switches ("Ada") use ("-O1");
+         when "relocatable" =>
+            case OS is
+               when "Windows_NT" =>
+                  for Default_Switches ("Ada") use ("-O2");
+               when "UNIX" =>
+                  for Default_Switches ("Ada") use ("-O2", "-fPIC");
+            end case;
+      end case;
+   end Compiler;
+end A1;

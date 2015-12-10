@@ -1,0 +1,10 @@
+with "toto";
+with "empty";
+project Prj is
+
+   for Main use ("main.adb");
+
+   for Languages use ("Ada", "C");
+
+end Prj;
+

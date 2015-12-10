@@ -1,0 +1,11 @@
+library project Lib2 is
+   for Source_Dirs use ("src2");
+   for Object_Dir use "obj2";
+   for Library_Dir use "lib2";
+   for Library_Name use "Ltwo";
+   for Library_Kind use "static";
+
+   package Install is
+      for Install_Name use "querty";
+   end Install;
+end Lib2;

@@ -1,0 +1,6 @@
+gprbuild -Pc_main
+gprbuild -Pada_main
+./ada_main
+Doing something in C 
+./obj1/c_main
+Done in Ada

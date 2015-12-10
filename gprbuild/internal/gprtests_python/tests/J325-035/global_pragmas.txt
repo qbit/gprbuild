@@ -1,0 +1,2 @@
+pragma Implicit_Packing;
+pragma suppress (Elaboration_Check);

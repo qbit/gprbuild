@@ -1,0 +1,6 @@
+with "lib/lib.gpr";
+project Empty is
+   for Languages use ("C");
+   for Source_Dirs use ("headers");
+end Empty;
+

@@ -1,0 +1,3 @@
+Ada required
+ravenscar-cert XFAIL Ada.Text_IO
+vxworksae XFAIL missing support in run-cross: names of main and exe differ

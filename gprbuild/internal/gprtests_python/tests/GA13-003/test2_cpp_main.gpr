@@ -1,0 +1,22 @@
+project Test2_Cpp_Main is
+
+   for Languages use ("Ada", "C++");
+--   for Object_Dir use "obj";
+   for Main use ("test2_cpp_main.cpp");
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnat05"); --  , "-gnatdZ");
+   end Compiler;
+
+   package Naming is
+--      for Specification_Suffix ("ada") use ".1.ada";
+--      for Implementation_Suffix ("ada") use ".2.ada";
+--      for Separate_Suffix use ".2.ada";
+--      for Casing use "lowercase";
+--      for Dot_Replacement use ".";
+      for Specification_Suffix ("c++") use ".h";
+      for Implementation_Suffix ("c++") use ".cpp";
+   end Naming;
+
+   for Exec_Dir use ".";
+end Test2_Cpp_Main;

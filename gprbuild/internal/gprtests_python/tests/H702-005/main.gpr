@@ -1,0 +1,7 @@
+with "p1";
+project main is
+
+for Source_Files use ("removed_unit.adb");
+
+end main;
+

@@ -1,0 +1,12 @@
+with "lib";
+
+project Hello is
+
+   for Main use ("hello.adb");
+
+   package Builder is
+      for Global_Configuration_Pragmas use "global_pragmas.txt";
+   end Builder;
+
+end Hello;
+

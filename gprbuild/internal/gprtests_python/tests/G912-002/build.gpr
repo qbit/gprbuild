@@ -1,0 +1,10 @@
+project Build extends all "p1/p1.gpr" is
+
+   for Source_Files use ();
+   for Main use ("p1.adb");
+
+   package Builder is
+      for Executable ("p1.adb") use "main";
+   end Builder;
+
+end Build;

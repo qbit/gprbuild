@@ -1,0 +1,21 @@
+Ada,AUTOCGPR required
+zfp DEAD
+windows OUT test_win.out
+kernel  OUT test_kernel.out
+vxworks6,rtp OUT test_kernel.out
+vxworks7,rtp OUT test_kernel.out
+vxworksae    OUT test_kernel.out
+vxworksmils  OUT test_vxw55_mils.out
+vxworks-5.5  OUT test_vxw55_mils.out
+ppc-lynx OUT    test_noranlib_ar_s.out
+!native,!zfp CMD     test_noshared.py
+!native,!zfp OUT     test_noshared.out
+AIX     CMD     test_noshared.py
+AIX     OUT     test_aix.out
+sjlj    CMD     test_noshared.py
+sjlj    OUT     test_noshared.out
+gcc-sjlj CMD    test_noshared.py
+gcc-sjlj OUT    test_noshared.out
+ia64-hpux OUT   test_noranlib.out
+ravenscar-cert XFAIL Ada.Text_IO
+PikeOS XFAIL Integer'Image

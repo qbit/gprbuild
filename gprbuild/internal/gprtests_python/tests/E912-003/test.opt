@@ -1,0 +1,2 @@
+linux,gcc-sjlj  DEAD -static incompatible with gcc-sjlj on linux (O609-004)
+Ada,C,Linux,AUTOCGPR required

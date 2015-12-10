@@ -1,0 +1,9 @@
+project Prj is
+   for Main use ("main.adb");
+
+   package Binder is
+       for Required_Switches     ("Ada") use
+          Binder'Required_Switches ("Ada")  & ("gnatbind_prefix=");
+   end Binder;
+end Prj;
+

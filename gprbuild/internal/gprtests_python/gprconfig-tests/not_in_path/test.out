@@ -1,0 +1,22 @@
+
+configuration project Default is
+   for Target use "i686-pc-linux-gnu";
+
+   package Compiler is
+      from "GNAT" node
+      PREFIX=
+      VERSION=6.1
+      RUNTIME_DIR=<pwd>/install/lib/gcc/i686-pc-linux-gnu/3.4.6/rts-native/
+      from "GNAT" and not "mingw" target
+   end Compiler;
+end Default;
+--------------------------------------------------
+gprconfig has found the following compilers on your PATH.
+Only those matching the target and the selected compilers are displayed.
+*  1. GNAT for Ada in <pwd>/install/bin/ version 6.1 (native runtime)
+Select or unselect the following compiler (or "s" to save): 
+You can regenerate the same config file in batch mode
+ with the following command line:
+gprconfig --batch --target=i686-pc-linux-gnu --config=Ada,6.1,native,<pwd>/install/bin/,GNAT
+
+Creating configuration file: output.gpr

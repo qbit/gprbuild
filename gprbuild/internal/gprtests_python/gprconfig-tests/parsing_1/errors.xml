@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<gprconfig>
+  <compiler_description>
+    <name>GCC</name>
+    <executable prefix="1">(.*(-wrs-|-elf-).*)?gcc</executable>
+    <version>
+      <external>${PREFIX}gcc --version</external>
+      <grep regexp="\(GCC\) (\S+)" group="1"></grep>
+    </version>
+    <languages>C</languages>
+    <target>
+      <external>${PREFIX}gcc -dumpmachine</external>
+      <grep regexp="[^\r\n]+"></grep>
+    </target>
+  </compiler_description>
+</gprconfig2>

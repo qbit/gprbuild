@@ -1,0 +1,10 @@
+project Prj is
+   for Languages use ("C");
+   for Main use ("main.inc");
+
+   package Naming is
+      for Implementation_Exceptions ("C") use ("main.inc");
+   end Naming;
+
+end Prj;
+

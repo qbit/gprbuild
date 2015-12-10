@@ -1,0 +1,7 @@
+library project Win32Ada is
+   for Source_Dirs use ("extlib");
+   for Library_Dir use "extlib/lib";
+   for Library_Kind use "static";
+   for Library_Name use "win32ada";
+   for Externally_Built use "true";
+end win32ada;

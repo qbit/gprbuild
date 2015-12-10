@@ -1,0 +1,4 @@
+project No_C_Cpp is
+   for Languages use ("Ada", "C", "C++");
+end No_C_Cpp;
+

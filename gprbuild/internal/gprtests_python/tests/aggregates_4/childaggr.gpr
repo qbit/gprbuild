@@ -1,0 +1,5 @@
+
+aggregate project ChildAggr is
+   for Project_Files use ("tree1.gpr");
+   for External ("MODE") use "INVALID";
+end ChildAggr;

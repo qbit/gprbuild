@@ -1,0 +1,85 @@
+From kanig@adacore.com  Thu Sep 13 11:21:09 2012
+Message-ID: <5051F9E3.6090507@adacore.com>
+Date: Thu, 13 Sep 2012 17:21:07 +0200
+From: Johannes Kanig <kanig@adacore.com>
+MIME-Version: 1.0
+To: "hi-lite@adacore.com" <hi-lite@adacore.com>
+Subject: [L913-043] - #999 gnatprove: missing recompilation in closure of main
+Content-Type: text/plain; charset=ISO-8859-1
+
+Found this while trying to find the problem of L831-038. But it is an
+independent problem ...
+
+When we have the a project with a main (main.adb), which depends another
+package (p.adb/s), and p.adb is changed, the second step of gnatprove
+does nothing today.
+
+Instead, gnat2why should be called on both main.adb and p.adb.
+
+assigned to kanig, prio 4
+for a reproducer
+
+-- 
+Johannes Kanig <kanig@adacore.com>
+
+From kanig@adacore.com  Thu Sep 13 11:52:05 2012
+Message-ID: <50520124.2040903@adacore.com>
+Date: Thu, 13 Sep 2012 17:52:04 +0200
+From: Johannes Kanig <kanig@adacore.com>
+MIME-Version: 1.0
+To: Internal Report <file@adacore.com>
+Subject: L913-043 file reproducer
+Content-Type: text/plain; charset=ISO-8859-1
+X-Act-Attachment: /reportd/gnatbugs/L9/L913-043/L913-043.tgz (application/x-compressed-tar)
+
+
+-- 
+Johannes Kanig <kanig@adacore.com>
+
+From svn-do-not-reply@adacore.com  Thu Sep 13 11:52:06 2012
+From: svn-do-not-reply@adacore.com (file)
+To: file-ci@adacore.com.do-not-reply
+Subject: [gnatbugs] rev 8991 checked in trunk/gnatbugs/L9/L913-043/
+X-Act-Checkin: gnatbugs
+Content-Type: text/plain; charset=UTF-8
+Message-ID: <20120913155206.448F11C7A87@rock.gnat.com>
+Date: Thu, 13 Sep 2012 11:52:06 -0400 (EDT)
+
+Author:       file
+Date:         2012-09-13 11:52:06 -0400 (Thu, 13 Sep 2012)
+New revision: 8991
+Repository:   rock:/reportd/svnroot
+
+Log:
+L913-043 file reproducer
+<50520124.2040903@adacore.com>
+
+Modified:
+	trunk/gnatbugs/L9/L913-043/
+	trunk/gnatbugs/L9/L913-043/L913-043.tgz
+
+Diff:
+Added: trunk/gnatbugs/L9/L913-043/L913-043.tgz
+===================================================================
+(Binary files differ)
+
+
+Property changes on: trunk/gnatbugs/L9/L913-043/L913-043.tgz
+___________________________________________________________________
+Added: svn:mime-type
+   + application/x-gtar
+
+From kanig@adacore.com  Thu Sep 13 12:01:48 2012
+From: kanig@adacore.com
+Date: Thu, 13 Sep 2012 18:01:46 +0200
+Subject: [bugtool:L913-043] gnatprove: missing recompilation in closure of main - assigned to celier
+Content-Type: text/plain; charset="us-ascii"
+To: celier <celier@adacore.com>, bugtool <file@gnat.com>
+Message-ID: <CRM.L913-043.10432.20120913160146.26@jouy>
+
+Changed by: kanig
+Reassigned from: kanig to: celier
+
+
+View this TN at <https://intranet.adacore.com/crm/#tn=L913-043>
+

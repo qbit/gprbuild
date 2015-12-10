@@ -1,0 +1,7 @@
+project ada is
+
+   for Languages use ("Ada");
+   for Source_Dirs use ("ada/**");
+   for Object_Dir use "obj";
+
+end ada;

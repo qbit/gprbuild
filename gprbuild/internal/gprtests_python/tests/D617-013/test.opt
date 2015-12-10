@@ -1,0 +1,5 @@
+Ada,C required
+ZFP DEAD call to adafinal
+ravenscar-cert XFAIL Ada.Text_IO
+cert XFAIL call to adafinal
+minimal XFAIL call to adafinal

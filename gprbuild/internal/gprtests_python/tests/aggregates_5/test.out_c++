@@ -1,0 +1,12 @@
+aggrko.gpr:7:27: file "tree1.gpr" not found
+gprbuild: "aggrko.gpr" processing failed
+gcc -c -O2 a.adb
+gcc -c -O1 c.adb
+gprbind a.bexch
+gnatbind a.ali
+gcc -c b__a.adb
+g++ a.o -o a
+<<<
+C:Foo
+A1:SUCCESS
+>>>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<specification idlFileName="com_saabgroup_enterprisebus.idl">
+<module name="com">
+<module name="saabgroup">
+<module name="enterprisebus">
+<const value="&quot;2.1.0&quot;" name="IDL_VERSION" type="string"/>
+<typedef name="RADIAN">
+<member pointer="no" enum="no" type="double"/>
+</typedef>
+<typedef name="RADIAN_PER_SECOND">
+<member pointer="no" enum="no" type="double"/>
+</typedef>
+<typedef name="RADIAN_PER_SECOND_SQUARE">
+<member pointer="no" enum="no" type="double"/>
+</typedef>
+<typedef name="METER">
+<member pointer="no" enum="no" type="double"/>
+</typedef>
+<typedef name="METER_PER_SECOND">
+<member pointer="no" enum="no" type="double"/>
+</typedef>
+<typedef name="METER_PER_SECOND_SQUARE">
+<member pointer="no" enum="no" type="double"/>
+</typedef>
+<typedef name="VALID">
+<member pointer="no" enum="no" type="boolean"/>
+</typedef>
+</module>
+</module>
+</module>
+</specification>

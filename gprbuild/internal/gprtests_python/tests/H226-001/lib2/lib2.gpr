@@ -1,0 +1,8 @@
+with "../empty.gpr";
+with "../empty2.gpr";
+project Lib2 is
+   for Library_Name use "titi";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+end Lib2;
+

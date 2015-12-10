@@ -1,0 +1,4 @@
+project Ext is
+   for Externally_Built use "TRUE";
+end Ext;
+

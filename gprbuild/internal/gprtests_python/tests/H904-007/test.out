@@ -1,0 +1,1 @@
+prj.gpr:5:25: warning: Library_GCC is an obsolescent attribute, use Linker'Driver instead

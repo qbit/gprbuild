@@ -1,0 +1,20 @@
+aggregate library project Aggr is
+
+   type OS_Type is ("UNIX", "Windows_NT");
+   OS : OS_Type := external ("OS", "UNIX");
+
+   for Project_Files use ("a1.gpr", "a2.gpr");
+   for Library_Name use "aggr";
+   for Library_Dir use "laggr";
+   for library_kind use "relocatable";
+
+   package Builder is
+      case OS is
+         when "UNIX" =>
+            for Global_Compilation_Switches ("Ada") use ("-fPIC");
+         when others =>
+            null;
+      end case;
+   end Builder;
+
+end Aggr;

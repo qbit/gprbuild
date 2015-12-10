@@ -1,0 +1,7 @@
+aggregate library project Lib is
+   for Project_Files use ("p1/p1.gpr", "p2/p2.gpr");
+   for Library_Name use "l";
+   for Library_Dir use "lib";
+   package Install is
+   end Install;
+end Lib;

@@ -1,0 +1,13 @@
+project GPS_Profile_Bug is
+
+   for Source_Dirs use (".");
+   for Main use ("hello_gpb.adb");
+   -- When this is present, the compiler gets a "-p", otherwise not:
+   for Languages use ("Ada");
+   for Object_Dir use "./obj";
+
+   package Builder is
+      for Default_Switches ("Ada") use ("-p");
+   end Builder;
+
+end GPS_Profile_Bug;

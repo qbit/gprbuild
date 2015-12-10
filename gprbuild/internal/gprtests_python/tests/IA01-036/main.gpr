@@ -1,0 +1,5 @@
+with "lib";
+project main is
+   for Main use ("main.adb");
+   for Source_Files use project'main;
+end main;

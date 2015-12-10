@@ -1,0 +1,4 @@
+project Prj1 extends "runtime.gpr" is
+--   for Target use "toto";
+end Prj1;
+

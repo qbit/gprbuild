@@ -1,0 +1,79 @@
+GPRbuild testsuite
+==================
+
+Run the testsuite
+-----------------
+
+To run the testsuite, you need gnatpython with internal modules (it should be
+in your PATH if you source ~gnatmail/gcc-43/0 or you can retrieve it from
+svn+ssh://svn.us.adacore.com/Dev/trunk/gnatmail/gnatpython and
+svn+ssh://svn.us.adacore.com/Dev/trunk/gnatmail/gnatpython-internal).
+
+To run the gprconfig testsuite, run:
+  ./run-gprconfig-test.py --enable-color --diffs --jobs=6
+
+To run the gprbuild testsuite on sparc64-solaris, run:
+  ./run-gprbuild-test.py --enable-color --diffs --jobs=6 --target=sparc64-solaris
+
+Default configuration is Ada, C in auto configuration mode. (AdaC_Auto).
+
+If you want to run C++ tests, add '--config=AdaCC++_Auto' when running gprbuild
+tests.
+
+Note that the default for --jobs comes from the environment variables
+PROCESSORS, same as used when building gprbuild itself.
+
+See ./run-gprbuild-test.py -h for more help.
+
+Add a new machine for specific configuration
+--------------------------------------------
+
+To add a new machine to the GPRbuild testsuite, you need to
+edit machines.py with the list of configs you want to test.
+Note that all configuration name should be present in configs.py.
+
+You don't need to add a new machine to run AdaC_Auto and AdaCC++_Auto
+configurations.
+
+machines.py is a python dictionary with the following format:
+
+ 'machine_name' : {
+        'target' : {
+                'config_name' : {
+                        discs : 'discriminant list',
+                        gprconfig : 'list of --config ... switches to be
+                                     passed to gprconfig'
+                },
+         },
+  },
+
+If you are adding your own development machine, you should instead create
+a file called local_machines.py in the same directory as machines.py. This
+file contains the same type of information, which is added to the contents
+of machines.py. The intent is that local_machines.py is not checked in.
+
+To create local_machines.py you can just copy local_machines.py-example
+
+Write a new testcase
+--------------------
+
+To write a new gprbuild testcase you need to create a new directory in
+tests/. You need at least to write a 'test.py' python file containing:
+
+'from gprbuild_utils import *'
+To import all gprbuild testsuite utils
+
+Then you can call gprbuild with
+   gprbuild("-Pbasic1 -cargs:c -DXXX")
+
+Run the generated binary with:
+   run("main")
+
+If you want to call external binaries, you can use the Run command.
+'ar rc libtoto.a toto.o' can be converted to
+   Run(['ar', 'rc', 'libtoto.a', 'toto.o'], output=None)
+
+To run unix like commands (cp, ln, touch, chmod,...) see
+   pydoc gnatpython.fileutils
+
+See gprbuild_utils.py for the list of available actions.

@@ -1,0 +1,4 @@
+project Empty2 is
+   for Languages use ("Project file");
+end Empty2;
+

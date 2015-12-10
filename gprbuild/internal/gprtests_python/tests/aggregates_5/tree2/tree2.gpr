@@ -1,0 +1,8 @@
+project Tree2 is
+   --  Does not define Main, so all sources should be built
+
+   package Compiler is
+      for Switches ("Ada") use ("-O1");
+   end Compiler;
+
+end Tree2;

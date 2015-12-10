@@ -1,0 +1,2 @@
+Ada,SHARED,!gnat-3.16a1,!gnat-5.01a1,!gnat-5.02a1,!gnat-5.03a1,!gnat-5.04a1 required
+!AUTOCGPR,C++ OUT test.out_c++

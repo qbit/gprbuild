@@ -1,0 +1,4 @@
+aggregate project Aggr3 is
+   for Project_Files use ("aggr3.gpr");
+end Aggr3;
+

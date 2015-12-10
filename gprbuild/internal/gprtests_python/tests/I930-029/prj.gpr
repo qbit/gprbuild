@@ -1,0 +1,9 @@
+project Prj is
+   for Main use ("main.adb");
+
+   package Builder is
+      for Default_Switches ("ada") use ("-x");
+   end Builder;
+
+end Prj;
+

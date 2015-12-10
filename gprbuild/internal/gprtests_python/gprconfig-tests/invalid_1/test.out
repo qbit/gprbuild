@@ -1,0 +1,14 @@
+
+configuration project Default is
+   for Target use "i686-pc-linux-gnu";
+
+   package Compiler is
+      from "GNAT" node
+      PREFIX=
+      VERSION=6.1
+      RUNTIME_DIR=<pwd>/install2/lib/gcc/i686-pc-linux-gnu/4.2.0/rts-native/
+      from "GCC_Pro" node
+      from "GNAT" and not "mingw" target
+      --  configs are compatible
+   end Compiler;
+end Default;

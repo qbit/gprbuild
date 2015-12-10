@@ -1,0 +1,12 @@
+configuration project Default is
+   for Object_Generated ("toto") use "false";
+   package Compiler is
+      for Driver              ("toto") use "toto";
+      for Dependency_Switches ("toto") use ("-d");
+   end Compiler;
+
+   package Naming is
+      for Body_Suffix ("toto") use ".toto";
+   end Naming;
+
+end Default;

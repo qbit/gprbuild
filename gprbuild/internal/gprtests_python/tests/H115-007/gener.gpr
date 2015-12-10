@@ -1,0 +1,4 @@
+project Gener is
+   for Main use ("gener.adb");
+end Gener;
+

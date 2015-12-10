@@ -1,0 +1,22 @@
+limited with "ext_comp_c";
+
+project Ext_Comp_A extends "component_a.gpr" is
+
+   for Source_Dirs use ("../Build/Source/Part_Imp/Component_A");
+   
+   for Object_Dir use "../Build/Objects/Part_Imp/Ext_Comp_A";
+
+   for Library_Dir use "../Build/Library";
+
+   package Builder renames Component_A.Builder;
+
+   package Compiler renames Component_A.Compiler;
+
+   package Binder renames Component_A.Binder;
+
+--   package Linker renames Component_A.Linker;
+
+   package Pretty_Printer renames Component_A.Pretty_Printer;
+
+end Ext_Comp_A;
+

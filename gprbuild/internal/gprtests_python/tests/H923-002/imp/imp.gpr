@@ -1,0 +1,11 @@
+with "../common.gpr";
+project Imp is
+   for Library_Dir use "lib";
+   for Library_Name use "imp";
+
+   for Object_Dir use "obj";
+   for Exec_Dir   use "exec";
+
+   package Naming renames Common.Naming;
+end Imp;
+

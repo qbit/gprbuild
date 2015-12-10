@@ -1,0 +1,12 @@
+with "sa_lib3.gpr";
+project Main is
+   for Languages    use ("C");
+   for Main         use ("c_main.c");
+   package Builder is
+      for Executable ("c_main.c") use "main";
+   end Builder;
+   package Linker is
+      for Default_Switches ("C") use
+         ("-L" & project'Project_Dir & "/extlib/lib", "-ltoto");
+   end Linker;
+ end Main;

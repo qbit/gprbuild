@@ -1,0 +1,3 @@
+gcc -c maina.adb
+gcc -c mainb.adb
+gcc -c pkg.adb

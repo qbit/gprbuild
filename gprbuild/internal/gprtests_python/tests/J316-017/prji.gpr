@@ -1,0 +1,6 @@
+with "src1/src1i.gpr";
+with "src2/src2i.gpr";
+project Prji is
+   for Main use ("main.adb");
+end Prji;
+

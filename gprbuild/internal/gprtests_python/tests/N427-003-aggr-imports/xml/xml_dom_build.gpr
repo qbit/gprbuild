@@ -1,0 +1,6 @@
+project xml_dom_build is
+   for library_name use "xml_dom";
+   for source_dirs use ("src");
+   for library_dir use "lib";
+   for object_dir use "obj";
+end xml_dom_build;

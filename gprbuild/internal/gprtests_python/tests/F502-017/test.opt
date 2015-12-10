@@ -1,0 +1,6 @@
+No_Float_IO DEAD
+Ada,C Required
+vxworksae XFAIL static link against kernel => C main not supported
+vxworks6cert XFAIL static link against kernel => C main not supported
+vxworksmils XFAIL static link against kernel => C main not supported
+ravenscar-cert XFAIL Ada.Text_IO

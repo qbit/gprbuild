@@ -1,0 +1,9 @@
+with "p4.gpr";
+project P1 is
+  for Source_Dirs use (".");
+  for Source_Files use ("p1.adb");
+
+  for languages use ("Ada");
+  for Main use ("p1.adb");
+
+end P1;

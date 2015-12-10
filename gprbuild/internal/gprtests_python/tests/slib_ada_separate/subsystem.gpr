@@ -1,0 +1,23 @@
+project Subsystem is
+
+   type Build_Type is ("x", "y");
+   Build : Build_Type := External ("BUILD", "x");
+
+   for Languages use ("Ada");
+   for Source_Dirs use ("subsystem_src");
+   for Object_Dir use "subsystem_obj";
+   for Library_Dir use "subsystem_lib";
+   for Library_Kind use "static";
+   for Library_Name use "subsystem";
+
+   package Naming is
+      case Build is
+         when "x" =>
+            for Body ("main.do_it") use "main-do_it-x.adb";
+         when "y" =>
+            for Body ("main.do_it") use "main-do_it-y.adb";
+         when others =>
+            for Body ("main.do_it") use "main-do_it.adb";
+      end case;
+   end Naming;
+end Subsystem;

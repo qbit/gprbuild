@@ -1,0 +1,11 @@
+project A is
+   for Languages use ("c++");
+
+   for Library_Dir use "lib";
+   for Library_Name use "viewer";
+   for Library_Kind use "dynamic";
+   for Library_GCC use "g++";
+
+   for Source_Dirs use (".");
+end A; 
+

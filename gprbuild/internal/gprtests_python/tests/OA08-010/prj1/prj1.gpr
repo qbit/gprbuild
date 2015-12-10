@@ -1,0 +1,9 @@
+project Prj1 is
+   for Library_Name use "prj1";
+   for Library_Dir  use "lib";
+
+   package Clean is
+      for Switches use ("-q");
+   end Clean;
+end Prj1;
+

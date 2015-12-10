@@ -1,0 +1,10 @@
+project Prj is
+
+  for Main use ("main.adb");
+  for Source_Dirs use (".");
+  for Languages use ("Ada", "C");
+
+  package Linker is
+     for Default_Switches ("ada") use ("-static", "-lm");
+  end Linker;
+end Prj;

@@ -1,0 +1,2 @@
+prj.gpr source file "not_found.adb" for unit "main.do_it" not found
+gprbuild: "prj.gpr" processing failed

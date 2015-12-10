@@ -1,0 +1,4 @@
+project Prj is
+   for Languages use ("toto");
+end Prj;
+

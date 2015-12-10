@@ -1,0 +1,334 @@
+From report-internal@adacore.com  Fri Nov  4 10:16:35 2005
+To: nicolai.soelter@space.eads.net
+From: report@adacore.com
+Cc:  Report <report@adacore.com>
+Message-Id: <20051104151634.C15B448CBEE@nile.gnat.com>
+Date: Fri,  4 Nov 2005 10:16:34 -0500 (EST)
+Subject: Re: [EB04-011] gprmake raised exception (ACT#356)
+
+[Automatic message from GNAT report tracking mechanism]
+
+Dear Customer,
+
+Your report has been automatically assigned tracking number [EB04-011].
+Please be sure to put this number in the subject line of any
+subsequent followup message. Messages from us on this report will
+quote this tracking number.
+
+Thank you for using GNAT.
+
+-- The GNAT support team
+
+
+
+
+From dewar@gnat.com  Fri Nov  4 10:54:48 2005
+From: dewar@gnat.com
+To: file@gnat.com
+Message-Id: <20051104155447.C369548CC0D@nile.gnat.com>
+Date: Fri,  4 Nov 2005 10:54:47 -0500 (EST)
+Subject: [bugtool:EB04-011] Moved to dead
+
+
+
+
+
+
+From dewar@gnat.com  Fri Nov  4 10:54:58 2005
+From: dewar@gnat.com
+To: file@gnat.com
+Message-Id: <20051104155457.03CD348CC14@nile.gnat.com>
+Date: Fri,  4 Nov 2005 10:54:57 -0500 (EST)
+Subject: [bugtool:EB04-011] Moved to fixed
+
+
+
+
+
+
+From dewar@adacore.com  Fri Nov  4 10:58:53 2005
+Message-ID: <436B853B.1070004@adacore.com>
+Date: Fri, 04 Nov 2005 10:58:51 -0500
+From: Robert Dewar <dewar@adacore.com>
+MIME-Version: 1.0
+To: Nicolai Soelter <nicolai.soelter@space.eads.net>
+CC: Report <report@adacore.com>
+References: <20051104151533.651B7B84B5@province.act-europe.fr>
+In-Reply-To: <20051104151533.651B7B84B5@province.act-europe.fr>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [EB04-011] - gprmake raised exception (ACT#356)
+
+Nicolai Soelter wrote:
+> Architectures: x86-linux  
+> Products     : gprmake  
+> Branches     : 5.03    
+> Priority     : low  
+> Problem      : tool_problems 
+
+You did not identify the version you are using (there is no
+version 5.03, so this is insufficient, use gnatls -v to
+identify the version you are using).
+
+Actually wait, looking at your output I see:
+
+GPRMAKE Pro 5.04w (20050627-34)
+
+so this is not a 5.03 version at all, but rather a fairly
+old 5.04 wavefront.
+
+I created a dummy ada_test.adb and entered the gpr command
+you listed in your message, and everything processed as
+expected.
+
+I suspect that this is indeed an issue already addressed.
+
+P.S. I assume that in your "real" application you have
+C or C++ files you would like to include in the gprmake
+process (there is obviously no point in using gprmake
+if you have only Ada sources, and indeed if you have
+mostly Ada with just a few foreign files, it is probably
+better advice to use a make file that calls gnatmake
+for the Ada part.
+
+You could try a more recent wavefront ...
+
+
+
+
+
+From Nicolai.Soelter@space.eads.net  Mon Nov  7 03:14:33 2005
+Message-ID: <436F0CE4.1040001@space.eads.net>
+Date: Mon, 07 Nov 2005 09:14:28 +0100
+From: Nicolai Soelter <nicolai.soelter@space.eads.net>
+MIME-Version: 1.0
+To: report@adacore.com
+References: <20051104151533.651B7B84B5@province.act-europe.fr> <436B853B.1070004@adacore.com>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Subject: Re: [EB04-011] - gprmake raised exception (ACT#356)
+
+
+
+> You could try a more recent wavefront ...
+
+
+Ok, but from where can i get this wavefront?
+
+
+DISCLAIMER: This email (including any attachments) may contain confidential and/or privileged information. This email is for the intended addressee only. If you have received it in error, please notify the sender immediately and delete this email and any copies. Any use of this email is prohibited without the senders prior consent.
+This email may not reflect the views of EADS SPACE Transportation (EADS-ST). Nothing in this email shall bind EADS-ST unless endorsed by a duly authorised representative and subject to a formal notification independent of this email either by fax or by post mail.
+EADS-ST and the other companies of the EADS group refuse any and all liabilities if this email transmission was virus corrupted, altered or falsified.
+
+HINWEIS: Diese E-Mail (einschliesslich ihrer eventuellen Anlagen) kann vertrauliche und/oder geschuetzte Informationen beinhalten. Diese E-Mail ist nur fuer den beabsichtigten Adressaten bestimmt. Falls Sie diese E-Mail irrtuemlich erhalten haben, informieren Sie bitte sofort den Absender und loeschen diese E-Mail und jegliche Kopie. Jegliche Nutzung oder Verwendung dieser E-Mail ist ohne vorheriges Einverstaendnis des Absenders untersagt.
+Diese E-Mail entspricht nicht unbedingt der Meinung oder den Positionen von EADS SPACE Transportation (EADS-ST). Der Inhalt dieser E-Mail verpflichtet EADS-ST nur, wenn er durch eine hierzu autorisierte Person bestaetigt ist und ferner vorbehaltlich einer separaten formellen Notifizierung durch Fax oder per Post.
+EADS-ST und die anderen Firmen der EADS Gruppe uebernehmen keinerlei Haftung, falls diese E-Mail mit Viren behaftet ist oder im Wege ihrer Uebertragung geaendert oder verfaelscht wurde.
+=========================================================
+EADS SPACE Transportation GmbH (Amtsgericht Bremen, HRB-Nr. 21713) - Huenefeldstrasse 1-5 - 28199 Bremen - Deutschland/Germany
+================ http://www.eads.net =========================
+
+
+
+
+From Nicolai.Soelter@space.eads.net  Tue Nov  8 08:50:37 2005
+Message-ID: <4370AD26.6080706@space.eads.net>
+Date: Tue, 08 Nov 2005 14:50:30 +0100
+From: Nicolai Soelter <nicolai.soelter@space.eads.net>
+MIME-Version: 1.0
+To: report@adacore.com
+References: <20051104151533.651B7B84B5@province.act-europe.fr> <436B853B.1070004@adacore.com> <436F0C6F.9050803@space.eads.net> <43709294.9030000@adacore.com>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Subject: Re: [EB04-011] - gprmake raised exception (ACT#356)
+
+
+
+
+
+Robert Dewar wrote:
+
+>> Ok, but from where can i get this wavefront?
+>
+>
+> Wavefronts have to be explicitly requested, and then they
+> are made available via GNAT Tracker for your account. Please
+> let us know if you want a wavefront, and if so, for what
+> target(s), since your account supports more than one product.
+>
+I understand. So please provide us a wavefront for linux.
+
+
+
+DISCLAIMER: This email (including any attachments) may contain confidential and/or privileged information. This email is for the intended addressee only. If you have received it in error, please notify the sender immediately and delete this email and any copies. Any use of this email is prohibited without the senders prior consent.
+This email may not reflect the views of EADS SPACE Transportation (EADS-ST). Nothing in this email shall bind EADS-ST unless endorsed by a duly authorised representative and subject to a formal notification independent of this email either by fax or by post mail.
+EADS-ST and the other companies of the EADS group refuse any and all liabilities if this email transmission was virus corrupted, altered or falsified.
+
+HINWEIS: Diese E-Mail (einschliesslich ihrer eventuellen Anlagen) kann vertrauliche und/oder geschuetzte Informationen beinhalten. Diese E-Mail ist nur fuer den beabsichtigten Adressaten bestimmt. Falls Sie diese E-Mail irrtuemlich erhalten haben, informieren Sie bitte sofort den Absender und loeschen diese E-Mail und jegliche Kopie. Jegliche Nutzung oder Verwendung dieser E-Mail ist ohne vorheriges Einverstaendnis des Absenders untersagt.
+Diese E-Mail entspricht nicht unbedingt der Meinung oder den Positionen von EADS SPACE Transportation (EADS-ST). Der Inhalt dieser E-Mail verpflichtet EADS-ST nur, wenn er durch eine hierzu autorisierte Person bestaetigt ist und ferner vorbehaltlich einer separaten formellen Notifizierung durch Fax oder per Post.
+EADS-ST und die anderen Firmen der EADS Gruppe uebernehmen keinerlei Haftung, falls diese E-Mail mit Viren behaftet ist oder im Wege ihrer Uebertragung geaendert oder verfaelscht wurde.
+=========================================================
+EADS SPACE Transportation GmbH (Amtsgericht Bremen, HRB-Nr. 21713) - Huenefeldstrasse 1-5 - 28199 Bremen - Deutschland/Germany
+================ http://www.eads.net =========================
+
+
+
+
+From dewar@adacore.com  Tue Nov  8 10:28:23 2005
+Message-ID: <4370C414.3050704@adacore.com>
+Date: Tue, 08 Nov 2005 10:28:20 -0500
+From: Robert Dewar <dewar@adacore.com>
+MIME-Version: 1.0
+To: Nicolai Soelter <nicolai.soelter@space.eads.net>
+CC:  report@adacore.com
+References: <20051104151533.651B7B84B5@province.act-europe.fr> <436B853B.1070004@adacore.com> <436F0C6F.9050803@space.eads.net> <43709294.9030000@adacore.com> <4370AD26.6080706@space.eads.net>
+In-Reply-To: <4370AD26.6080706@space.eads.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [EB04-011] - gprmake raised exception (ACT#356)
+
+Nicolai Soelter wrote:
+
+> I understand. So please provide us a wavefront for linux.
+RH9 version OK?
+
+
+
+
+From Nicolai.Soelter@space.eads.net  Wed Nov  9 03:18:11 2005
+Message-ID: <4371B0B2.6010805@space.eads.net>
+Date: Wed, 09 Nov 2005 09:17:54 +0100
+From: Nicolai Soelter <nicolai.soelter@space.eads.net>
+MIME-Version: 1.0
+To: report@adacore.com
+References: <20051104151533.651B7B84B5@province.act-europe.fr> <436B853B.1070004@adacore.com> <436F0C6F.9050803@space.eads.net> <43709294.9030000@adacore.com> <4370AD26.6080706@space.eads.net> <4370C414.3050704@adacore.com>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Subject: Re: [EB04-011] - gprmake raised exception (ACT#356)
+
+
+
+
+
+Robert Dewar wrote:
+
+> Nicolai Soelter wrote:
+>
+>> I understand. So please provide us a wavefront for linux.
+>
+> RH9 version OK?
+>
+After a short dicussion we decided to get RH7.
+Is that possible?
+
+
+
+
+
+DISCLAIMER: This email (including any attachments) may contain confidential and/or privileged information. This email is for the intended addressee only. If you have received it in error, please notify the sender immediately and delete this email and any copies. Any use of this email is prohibited without the senders prior consent.
+This email may not reflect the views of EADS SPACE Transportation (EADS-ST). Nothing in this email shall bind EADS-ST unless endorsed by a duly authorised representative and subject to a formal notification independent of this email either by fax or by post mail.
+EADS-ST and the other companies of the EADS group refuse any and all liabilities if this email transmission was virus corrupted, altered or falsified.
+
+HINWEIS: Diese E-Mail (einschliesslich ihrer eventuellen Anlagen) kann vertrauliche und/oder geschuetzte Informationen beinhalten. Diese E-Mail ist nur fuer den beabsichtigten Adressaten bestimmt. Falls Sie diese E-Mail irrtuemlich erhalten haben, informieren Sie bitte sofort den Absender und loeschen diese E-Mail und jegliche Kopie. Jegliche Nutzung oder Verwendung dieser E-Mail ist ohne vorheriges Einverstaendnis des Absenders untersagt.
+Diese E-Mail entspricht nicht unbedingt der Meinung oder den Positionen von EADS SPACE Transportation (EADS-ST). Der Inhalt dieser E-Mail verpflichtet EADS-ST nur, wenn er durch eine hierzu autorisierte Person bestaetigt ist und ferner vorbehaltlich einer separaten formellen Notifizierung durch Fax oder per Post.
+EADS-ST und die anderen Firmen der EADS Gruppe uebernehmen keinerlei Haftung, falls diese E-Mail mit Viren behaftet ist oder im Wege ihrer Uebertragung geaendert oder verfaelscht wurde.
+=========================================================
+EADS SPACE Transportation GmbH (Amtsgericht Bremen, HRB-Nr. 21713) - Huenefeldstrasse 1-5 - 28199 Bremen - Deutschland/Germany
+================ http://www.eads.net =========================
+
+
+
+
+From dewar@gnat.com  Wed Nov  9 08:54:26 2005
+To: blot@adacore.com, mason@adacore.com, rupp@adacore.com,     wavefronts@adacore.com
+Message-Id: <20051109135425.A7D2248CBD5@nile.gnat.com>
+Date: Wed,  9 Nov 2005 08:54:25 -0500 (EST)
+From: dewar@gnat.com (Robert Dewar)
+Subject: wavefronts (1.2597) checked in followup
+
+Nov 09 #356 - hbehrmann- EB04-011 -x86-linux/ada rh (request)
+
+
+
+From dewar@adacore.com  Wed Nov  9 08:55:15 2005
+Message-ID: <4371FFC2.9090606@adacore.com>
+Date: Wed, 09 Nov 2005 08:55:14 -0500
+From: Robert Dewar <dewar@adacore.com>
+MIME-Version: 1.0
+To: Nicolai Soelter <nicolai.soelter@space.eads.net>
+CC:  report@adacore.com
+References: <20051104151533.651B7B84B5@province.act-europe.fr> <436B853B.1070004@adacore.com> <436F0C6F.9050803@space.eads.net> <43709294.9030000@adacore.com> <4370AD26.6080706@space.eads.net> <4370C414.3050704@adacore.com> <4371B0B2.6010805@space.eads.net>
+In-Reply-To: <4371B0B2.6010805@space.eads.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Subject: Re: [EB04-011] - gprmake raised exception (ACT#356)
+
+Nicolai Soelter wrote:
+
+> After a short dicussion we decided to get RH7.
+> Is that possible?
+
+I have registered a wavefront request for you for
+x86-linux/ada rh7 version. You will be notified
+when it is available.
+
+
+
+
+From villoing@adacore.com  Mon Nov 14 05:17:00 2005
+Date: Mon, 14 Nov 2005 05:16:59 -0500
+From: Florian Villoing <villoing@adacore.com>
+To: Nicolai Soelter <nicolai.soelter@space.eads.net>
+Cc: report@adacore.com, banner@adacore.com
+Message-ID: <20051114101659.GA23042@adacore.com>
+References: <20051104151533.651B7B84B5@province.act-europe.fr> <436B853B.1070004@adacore.com> <436F0C6F.9050803@space.eads.net> <43709294.9030000@adacore.com> <4370AD26.6080706@space.eads.net> <4370C414.3050704@adacore.com> <4371B0B2.6010805@space.eads.net>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <4371B0B2.6010805@space.eads.net>
+Subject: [EB04-011] - GNAT wavefront available
+
+Dear Nicolai,
+
+I've copied in your customer area a GNAT Pro 5.04w (20051019) wavefront
+targeted to x86 GNU/Linux (RH7).
+This wavefront should fix the problem you reported under this TN.
+
+To retrieve this wavefront, you can connect to:
+https://www.adacore.com/gnattracker/ (after you are logged on,
+select "Wavefront download" in the left menu)
+
+To install this wavefront, just untar the file named
+  gnat-5.04w-20051019-34-i686-pc-redhat72-gnu-bin.tar.gz
+and follow the instructions in the included README.
+Note that you need to set your PATH environment variable
+so that this directory is before any other Gnat Pro installation
+directory.
+
+Could you confirm that your problem is actually solved ?
+Best regards,
+
+-- 
+Florian
+
+
+
+From villoing@gnat.com  Mon Nov 14 05:18:05 2005
+To: blot@adacore.com, mason@adacore.com, rupp@adacore.com,     wavefronts@adacore.com
+Message-Id: <20051114101805.53F4A48CBE1@nile.gnat.com>
+Date: Mon, 14 Nov 2005 05:18:05 -0500 (EST)
+From: villoing@gnat.com (Florian Villoing)
+Subject: wavefronts (1.2603) checked in followup
+
+Nov 14 #356 - hbehrmann - EB04-011 - GNAT5_34 20051019 x86-linux-rh7
+(done)
+
+
+
+
+From celier@gnat.com  Fri Aug  4 20:10:00 2006
+From: celier@gnat.com
+To: file@gnat.com
+Message-Id: <20060805001000.45C5648CDD0@nile.gnat.com>
+Date: Fri,  4 Aug 2006 20:10:00 -0400 (EDT)
+Subject: [bugtool:EB04-011] Files updated
+
+call gprmake with -q in preparation for new gprmake
+Update    test.cmd
+
+
+
+
+

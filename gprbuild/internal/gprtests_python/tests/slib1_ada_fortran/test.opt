@@ -1,0 +1,3 @@
+Ada,Fortran REQUIRED
+Fortran XFAIL Problems with static SALs
+gnat-5.03a1 XFAIL Wrong results

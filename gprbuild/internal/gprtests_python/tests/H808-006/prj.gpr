@@ -1,0 +1,10 @@
+project Prj is
+   for Languages use ("Ada", "C");
+   for Main use ("main.adb");
+
+   package IDE is
+      for Compiler_Command ("Ada") use external ("WHICH");
+      for Compiler_Command ("C") use "gcc";
+   end IDE;
+end Prj;
+

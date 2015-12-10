@@ -1,0 +1,6 @@
+project Default is
+  for Languages use ("ada", "project file");
+  for Library_Name use "nocompilerpath";
+  for Library_Kind use "static";
+  for Library_Dir use "lib/";
+end Default;

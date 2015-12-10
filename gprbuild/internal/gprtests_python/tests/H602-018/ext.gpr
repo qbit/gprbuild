@@ -1,0 +1,3 @@
+project Ext extends "base/proof.gpr" is
+end Ext;
+

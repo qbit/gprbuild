@@ -1,0 +1,5 @@
+no
+shared.gpr:9:31: wrong value for Library_Standalone when Library_Interface defined
+gprbuild: "shared.gpr" processing failed
+standard
+full

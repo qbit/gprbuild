@@ -1,0 +1,7 @@
+project Prj is
+   for Languages use ("Ada", "C");
+   for Main use ("main.adb");
+
+   for Source_Dirs use ("./**");
+end Prj;
+

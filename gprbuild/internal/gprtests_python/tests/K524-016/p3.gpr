@@ -1,0 +1,13 @@
+
+library project P3 is
+  for Source_Dirs use (".");
+  for Object_Dir use "obj";
+  for Source_Files use ("p3.adb");
+
+  for Library_Name use "p3";
+  for Library_Kind use "static";
+  for Library_Dir use "lib";
+
+  for languages use ("Ada");
+
+end P3;

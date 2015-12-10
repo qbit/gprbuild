@@ -1,0 +1,9 @@
+with "lib2";
+project lib1 is
+   for Object_Dir use "lib1_o";
+   for Library_Dir use "lib1_dir";
+   for Library_Name use "lib1";
+   for Source_Files use ("lib1.ads", "lib1.adb");
+   for Library_Kind use "dynamic";
+--   for Library_Options  use ("-llib2");
+end lib1;

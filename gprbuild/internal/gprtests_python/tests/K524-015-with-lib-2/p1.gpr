@@ -1,0 +1,11 @@
+
+library project P1 is
+  for Source_Dirs use (".");
+  for Source_Files use ("p1.adb");
+
+  for languages use ("Ada");
+  for Library_Kind use "static";
+  for Library_Name use "p1";
+  for Library_Dir use "lib1";
+
+end P1;

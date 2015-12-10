@@ -1,0 +1,22 @@
+with "common";
+with "ext_comp_a";
+with "ext_comp_b";
+with "ext_comp_c";
+with "ext_apps";
+
+project Build is
+
+   for Source_Dirs use ();
+
+   package Builder renames Common.Builder;
+
+   package Compiler renames Common.Compiler;
+
+   package Binder renames Common.Binder;
+
+   package Linker renames Common.Linker;
+
+   package Pretty_Printer renames Common.Pretty_Printer;
+
+end Build;
+

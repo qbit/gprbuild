@@ -1,0 +1,5 @@
+library project A is
+   for Library_Name use "a";
+   for Library_Dir  use "lib";
+end A;
+

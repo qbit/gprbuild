@@ -1,0 +1,23 @@
+-- LUA for ADA.
+
+This is based on Lua 5.2.1.
+The only differences are :
+- in the src/ directory:
+    * an extra lua-ext.c file has been added to the source distribution, and the src/Makefile
+    modified accordingly, to expose some #DEFINE to the ADA world.
+    * the dependency to the curses library has been removed from the src/Makefile
+    * the Makefile builds and installs only the static library, in `gcc -dumpmachine`
+
+- the ada/ directory contains the ada bindings.
+
+To build the linux version:
+        - make linux install
+To build the windows version:
+        - make mingw install
+
+Original content of this file:
+This is Lua 5.2.1, released on 08 Jun 2012.
+
+For installation instructions, license details, and
+further information about Lua, see doc/readme.html.
+

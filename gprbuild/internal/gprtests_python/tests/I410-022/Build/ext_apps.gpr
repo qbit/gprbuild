@@ -1,0 +1,23 @@
+limited with "ext_comp_b";
+limited with "ext_comp_c";
+
+project Ext_Apps extends "apps.gpr" is
+
+   for Source_Dirs use ("../Build/Source/Part_Imp/Apps");
+   
+   for Object_Dir use "../Build/Objects/Part_Imp/Ext_Apps";
+
+   for Library_Dir use "../Build/Library";
+
+   package Builder renames Apps.Builder;
+
+   package Compiler renames Apps.Compiler;
+
+   package Binder renames Apps.Binder;
+
+--   package Linker renames Apps.Linker;
+
+   package Pretty_Printer renames Apps.Pretty_Printer;
+
+end Ext_Apps;
+

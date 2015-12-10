@@ -1,0 +1,4 @@
+Ada REQUIRED
+No_Exception_Propagation DEAD
+SKIP_RUN DEAD
+ravenscar-cert XFAIL Ada.Text_IO

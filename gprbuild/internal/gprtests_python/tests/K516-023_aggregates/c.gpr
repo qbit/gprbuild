@@ -1,0 +1,4 @@
+project C is
+   for Languages use ("C");
+end C;
+

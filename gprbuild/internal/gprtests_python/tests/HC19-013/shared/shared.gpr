@@ -1,0 +1,9 @@
+with "../static/static.gpr";
+with "../nolib/nolib.gpr";
+
+project Shared is
+   for Library_Name use "shared";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+end Shared;
+

@@ -1,0 +1,16 @@
+project Prj is
+   for Languages use ("mine");
+   for Source_Dirs use ("msrc");
+   for Library_Name use "mine";
+   for Object_Dir use "mobj";
+   for Library_Dir use "mlib";
+
+   package Naming is
+      for Body_Suffix("mine") use ".mine";
+   end Naming;
+
+   package Compiler is
+      for Driver("mine") use "gcc";
+      for Required_Switches("mine") use ("-c", "-xc");
+   end compiler;
+end prj;

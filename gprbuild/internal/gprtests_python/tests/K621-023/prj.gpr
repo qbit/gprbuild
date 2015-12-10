@@ -1,0 +1,10 @@
+project Prj is
+   for Languages use ("toto");
+   package Compiler is
+      for Driver ("toto") use "touch";
+   end Compiler;
+   package Naming is
+      for Body_Suffix ("Toto") use ".toto";
+   end Naming;
+end Prj;
+

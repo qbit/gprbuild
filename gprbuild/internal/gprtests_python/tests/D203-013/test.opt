@@ -1,0 +1,8 @@
+Ada,C required
+ZFP DEAD call to adafinal
+vxworksae XFAIL "C main not supported"
+vxworks6cert XFAIL "C main not supported"
+leon-vx6 XFAIL static link against kernel => C main not supported
+ravenscar-cert XFAIL Ada.Text_IO
+cert XFAIL call to adafinal
+minimal XFAIL call to adafinal

@@ -1,0 +1,7 @@
+project Prjlstand is
+   for Source_Dirs use ("src");
+   for Library_Name use "one";
+   for Library_Dir use "lib";
+   for Library_Kind use "relocatable";
+   for Library_Interface use ("api");
+end Prjlstand;

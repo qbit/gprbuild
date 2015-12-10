@@ -1,0 +1,9 @@
+project Shared is
+   type LS_Kind is ("no", "standard", "full");
+   LS : LS_Kind := external ("LS");
+
+   for Library_Name use "shared";
+   for Library_Dir  use "lib";
+   for Library_Kind use "relocatable";
+   for Library_Standalone use LS;
+end Shared;

@@ -1,0 +1,9 @@
+project Proof is
+
+  for Main use ("proof.ada");
+
+  package Naming is
+    for Implementation ("proof") use "proof.ada";
+  end Naming;
+
+end Proof;

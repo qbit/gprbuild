@@ -1,0 +1,7 @@
+C,Ada REQUIRED
+ZFP DEAD
+vxworks DEAD "no stdlib.h"
+vxworks6 DEAD "no stdlib.h"
+vxworksae XFAIL "C main not supported"
+cert XFAIL call to adafinal
+minimal XFAIL call to adafinal

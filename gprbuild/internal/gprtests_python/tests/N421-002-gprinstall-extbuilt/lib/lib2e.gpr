@@ -1,0 +1,6 @@
+library project Lib2e is
+   for Source_Dirs use ();
+   for Library_Dir use "lib2";
+   for Library_Name use "two";
+   for Externally_Built use "true";
+end Lib2e;

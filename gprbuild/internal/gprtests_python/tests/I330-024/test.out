@@ -1,0 +1,5 @@
+<<<
+Main
+>>>
+gprbind: could not locate /toto/gnatbind
+gprbuild: unable to bind main.adb

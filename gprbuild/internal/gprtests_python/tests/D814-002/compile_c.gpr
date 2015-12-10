@@ -1,0 +1,23 @@
+project Compile_C is
+
+   for Source_Files use ("hello.c");
+   for Main use ("hello.c");
+   for Languages use ("C");
+
+   package Compiler is
+      for Default_Switches ("c") use ("-g");
+   end Compiler;
+
+   package Naming is
+      for Specification_Suffix ("c") use ".h";
+      for Implementation_Suffix ("c") use ".c";
+   end Naming;
+
+   package Builder is
+      for Executable ("hello.c") use "hello";
+   end Builder;
+
+   for Main use ("hello.c");
+
+end Compile_C;
+
