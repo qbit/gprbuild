@@ -212,19 +212,38 @@ package body GPR.Dect is
       Qualif : constant Project_Qualifier :=
                  Project_Qualifier_Of (Project, In_Tree);
       Name   : constant Name_Id := Name_Of (Current_Package, In_Tree);
+
+      use GPR.Snames;
    begin
-      if Name /= Snames.Name_Ide
-        and then
-          ((Qualif = Aggregate         and then Name /= Snames.Name_Builder)
-              or else
-           (Qualif = Aggregate_Library and then Name /= Snames.Name_Builder
-                                       and then Name /= Snames.Name_Install))
+      --  Packages Naming, Compiler, Binder and Linker are not allowed in
+      --  aggregate projects and aggregate library projects. Package Install
+      --  is not allowed in aggregate projects, but is allowed in aggregate
+      --  library projects.
+
+      if ((Qualif = Aggregate
+           or else
+           Qualif = Aggregate_Library)
+           and then
+          (Name = Name_Naming or else
+           Name = Name_Compiler or else
+           Name = Name_Binder or else
+           Name = Name_Linker))
+        or else
+         ((Qualif = Aggregate and then Name = Name_Install))
       then
          Error_Msg_Name_1 := Name;
-         Error_Msg
+
+         if Qualif = Aggregate then
+            Error_Msg
+              (Flags,
+               "package %% is forbidden in aggregate projects",
+               Location_Of (Current_Package, In_Tree));
+         else
+            Error_Msg
            (Flags,
-            "package %% is forbidden in aggregate projects",
+            "package %% is forbidden in aggregate library projects",
             Location_Of (Current_Package, In_Tree));
+         end if;
       end if;
    end Check_Package_Allowed;
 
