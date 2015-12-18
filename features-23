@@ -63,6 +63,10 @@ NF-23-O528-047 New tool gprname (2015-07-06)
    A new GPR tool, gprname, is now available. It is the replacement of
    "gnatname -P".
 
+NF-23-O528-046 New tool GPRls (2015-12-02)
+
+   A new GPR tool is added: gprls. It is similar to gnatls for project files.
+
 NF-23-O525-021 Value of Runtime when --RTS= is specified (2015-06-18)
 
    When --RTS= is specified for a language on the command line, the value of
