@@ -8,6 +8,11 @@ This file contains a complete list of new features in version 2.3 of GPRBUILD.
 A full description of all GPRBUILD features can be found in the GPRBUILD
 User's Guide.
 
+NF-23-OB06-018 Add progress indication on the GPRslave (2015-11-08)
+
+   GPRslave will now display (in verbose mode) a progress indicator during
+   the synchronization and the compilation.
+
 NF-23-OA08-029 GPRinstall now uninstall aggregate projects (2015-10-10)
 
    GPRinstall now has support for uninstalling aggregate projects. In this
