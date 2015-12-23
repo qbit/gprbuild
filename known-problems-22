@@ -17,6 +17,15 @@ in this document.
 Known problems fixed in 2.3.1 and above
 ---------------------------------------
 
+KP-22-OB20-022 GPRslave could run into an endless loop
+
+  Problem:    In some rare cases, GPRslave could be stuck in an endless loop
+              after an interrupted build.
+
+  Status:     This was fixed in 2.3 on 2015-11-25
+
+  Workaround: Avoid interrupting distributed builds.
+
 KP-22-OA16-060 Project modified by gprname may be unusable
 
   Problem:    When a project has very long literal strings as indexes of
