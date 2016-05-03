@@ -1,4 +1,4 @@
-AC_INIT(gprbuild,17,report@adacore.com,gprbuild)
+AC_INIT(gprbuild,16.1,report@adacore.com,gprbuild)
 AC_CANONICAL_SYSTEM
 AC_PREFIX_PROGRAM(gnatmake)
 AC_PROG_INSTALL
