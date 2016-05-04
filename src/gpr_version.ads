@@ -2,7 +2,7 @@
 --                                                                          --
 --                              GPR TECHNOLOGY                              --
 --                                                                          --
---                     Copyright (C) 2001-2015, AdaCore                     --
+--                     Copyright (C) 2001-2016, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -22,7 +22,7 @@
 
 package GPR_Version is
 
-   Gpr_Version : constant String := "2.3.1";
+   Gpr_Version : constant String := "2.3.2";
    --  Static string identifying this version
 
    Date : constant String := "20150615";
