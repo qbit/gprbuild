@@ -2,7 +2,7 @@
 --                                                                          --
 --                           GPR PROJECT MANAGER                            --
 --                                                                          --
---          Copyright (C) 2001-2015, Free Software Foundation, Inc.         --
+--          Copyright (C) 2001-2019, Free Software Foundation, Inc.         --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -204,41 +204,6 @@ package body GPR is
          end if;
       end if;
    end Delete_Temporary_File;
-
-   ------------------------------
-   -- Delete_Temp_Config_Files --
-   ------------------------------
-
-   procedure Delete_Temp_Config_Files (Project_Tree : Project_Tree_Ref) is
-      Success : Boolean;
-      pragma Warnings (Off, Success);
-
-      Proj : Project_List;
-
-   begin
-      if not Opt.Keep_Temporary_Files then
-         if Project_Tree /= null then
-            Proj := Project_Tree.Projects;
-            while Proj /= null loop
-               if Proj.Project.Config_File_Temp then
-                  Delete_Temporary_File
-                    (Project_Tree.Shared, Proj.Project.Config_File_Name);
-
-                  --  Make sure that we don't have a config file for this
-                  --  project, in case there are several mains. In this case,
-                  --  we will recreate another config file: we cannot reuse the
-                  --  one that we just deleted.
-
-                  Proj.Project.Config_Checked   := False;
-                  Proj.Project.Config_File_Name := No_Path;
-                  Proj.Project.Config_File_Temp := False;
-               end if;
-
-               Proj := Proj.Next;
-            end loop;
-         end if;
-      end if;
-   end Delete_Temp_Config_Files;
 
    ---------------------------
    -- Delete_All_Temp_Files --

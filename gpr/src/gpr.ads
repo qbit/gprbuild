@@ -2,7 +2,7 @@
 --                                                                          --
 --                           GPR PROJECT MANAGER                            --
 --                                                                          --
---          Copyright (C) 2001-2015, Free Software Foundation, Inc.         --
+--          Copyright (C) 2001-2019, Free Software Foundation, Inc.         --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -2177,11 +2177,6 @@ package GPR is
      (Shared : Shared_Project_Tree_Data_Access);
    --  Delete all recorded temporary files.
    --  Does nothing if Debug.Debug_Flag_N is set
-
-   procedure Delete_Temp_Config_Files (Project_Tree : Project_Tree_Ref);
-   --  Delete all temporary config files. Does nothing if Debug.Debug_Flag_N is
-   --  set or if Project_Tree is null. This initially came from gnatmake
-   --  ??? Should this be combined with Delete_All_Temp_Files above
 
    procedure Delete_Temporary_File
      (Shared : Shared_Project_Tree_Data_Access := null;

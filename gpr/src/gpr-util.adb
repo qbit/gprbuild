@@ -2,7 +2,7 @@
 --                                                                          --
 --                           GPR PROJECT MANAGER                            --
 --                                                                          --
---          Copyright (C) 2001-2015, Free Software Foundation, Inc.         --
+--          Copyright (C) 2001-2019, Free Software Foundation, Inc.         --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -540,12 +540,8 @@ package body GPR.Util is
       S            : String := "")
    is
    begin
-      if not Debug.Debug_Flag_N then
-         Delete_Temp_Config_Files (Project_Tree);
-
-         if Project_Tree /= null then
-            Delete_All_Temp_Files (Project_Tree.Shared);
-         end if;
+      if not Debug.Debug_Flag_N and then Project_Tree /= null then
+         Delete_All_Temp_Files (Project_Tree.Shared);
       end if;
 
       if S'Length > 0 then
