@@ -2,7 +2,7 @@
 --                                                                          --
 --                             GPR TECHNOLOGY                               --
 --                                                                          --
---                     Copyright (C) 2011-2015, AdaCore                     --
+--                     Copyright (C) 2011-2019, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -2844,11 +2844,7 @@ package body Gprbuild.Link is
             else
                Add_Process
                  (Pid,
-                  (Linking,
-                   Pid,
-                   Main_File,
-                   Response_File_Name,
-                   Response_2));
+                  (Linking, Pid, Main_File));
                Display_Processes ("link");
             end if;
          end;
@@ -2884,22 +2880,6 @@ package body Gprbuild.Link is
 
                if not OK then
                   Record_Failure (Data.Main);
-
-               elsif Data.Response_1 /= No_Path
-                 and then not Debug.Debug_Flag_N
-               then
-                  declare
-                     Dont_Care : Boolean;
-                     pragma Warnings (Off, Dont_Care);
-                  begin
-                     Delete_File
-                       (Get_Name_String (Data.Response_1), Dont_Care);
-
-                     if Data.Response_2 /= No_Path then
-                        Delete_File
-                          (Get_Name_String (Data.Response_2), Dont_Care);
-                     end if;
-                  end;
                end if;
 
                Display_Processes ("link");
