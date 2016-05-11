@@ -22,17 +22,17 @@
 
 package GPR_Version is
 
-   Gpr_Version : constant String := "16.1";
+   Gpr_Version : constant String := "2016";
    --  Static string identifying this version
 
-   Date : constant String := "20150615";
+   Date : constant String := "19940713";
 
    Current_Year : constant String := "2016";
 
    type Gnat_Build_Type is (Gnatpro, FSF, GPL);
    --  See Get_Gnat_Build_Type below for the meaning of these values
 
-   Build_Type : constant Gnat_Build_Type := Gnatpro;
+   Build_Type : constant Gnat_Build_Type := GPL;
    --  Kind of GNAT Build:
    --
    --    FSF
