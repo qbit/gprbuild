@@ -2,7 +2,7 @@
 Known problems in GPRBUILD version 2.2
 ======================================
 
-Copyright (C) 2014-2015, AdaCore
+Copyright (C) 2014-2016, AdaCore
 
 The following is a listing of known problems in releases 2.2.1 and 2.2.2.
 Each entry contains a status line stating when the problem was fixed, and on
@@ -16,6 +16,16 @@ in this document.
 
 Known problems fixed in 2.3.1 and above
 ---------------------------------------
+
+KP-22-P425-006 Fix aggregate library on non case-sensitive file system
+
+  Problem:    On non case-sensitive file system like Windows there was
+              cases where building an aggregate library would fail.
+
+  Status:     This was fixed in 2.3 on 2016-05-11
+
+  Workaround: Ensure that the full path-name for the aggregate library
+              is using only lower-case letters.
 
 KP-22-OB20-022 GPRslave could run into an endless loop
 
