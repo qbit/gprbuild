@@ -2,7 +2,7 @@
 --                                                                          --
 --                             GPR TECHNOLOGY                               --
 --                                                                          --
---                     Copyright (C) 2011-2016, AdaCore                     --
+--                     Copyright (C) 2011-2017, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -2810,32 +2810,33 @@ package body Gprbuild.Compile is
 
          procedure Escape_Path (Options : in out String_List) is
          begin
-            if On_Windows then
-               for J in Options'Range loop
-                  declare
-                     Opt : constant String := Options (J).all;
-                     Nopt : String (1 .. Opt'Length * 2);
-                     Last : Natural := 0;
+            for J in Options'Range loop
+               declare
+                  Opt : constant String := Options (J).all;
+                  Nopt : String (1 .. Opt'Length * 2);
+                  Last : Natural := 0;
 
-                  begin
-                     for K in Opt'Range loop
+               begin
+                  for K in Opt'Range loop
+                     if Opt (K) = '\' or else
+                       Opt (K) = ' ' or else
+                       Opt (K) = '"'
+                     then
                         Last := Last + 1;
-                        Nopt (Last) := Opt (K);
-
-                        if Opt (K) = Directory_Separator then
-                           Last := Last + 1;
-                           Nopt (Last) := Directory_Separator;
-                        end if;
-                     end loop;
-
-                     if Last > Opt'Length then
-                        --  Do not free the option, as it has been recorded in
-                        --  All_Options.
-                        Options (J) := new String'(Nopt (1 .. Last));
+                        Nopt (Last) := '\';
                      end if;
-                  end;
-               end loop;
-            end if;
+
+                     Last := Last + 1;
+                     Nopt (Last) := Opt (K);
+                  end loop;
+
+                  if Last > Opt'Length then
+                     --  Do not free the option, as it has been recorded in
+                     --  All_Options.
+                     Options (J) := new String'(Nopt (1 .. Last));
+                  end if;
+               end;
+            end loop;
          end Escape_Path;
 
          ------------------
@@ -2904,9 +2905,8 @@ package body Gprbuild.Compile is
                      Closing_Status : Boolean;
 
                   begin
-                     --  On Windows, directory separators ('\') need to be
-                     --  doubled in response files, otherwise gcc does not
-                     --  take them as directory separators.
+                     --  Escape the following characters in the options:
+                     --  '\', ' ' and '"'.
 
                      Escape_Path
                        (Compilation_Options.Options
