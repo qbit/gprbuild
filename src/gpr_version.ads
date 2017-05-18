@@ -2,7 +2,7 @@
 --                                                                          --
 --                              GPR TECHNOLOGY                              --
 --                                                                          --
---                     Copyright (C) 2001-2016, AdaCore                     --
+--                     Copyright (C) 2001-2017, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -22,12 +22,12 @@
 
 package GPR_Version is
 
-   Gpr_Version : constant String := "17.1";
+   Gpr_Version : constant String := "17.2";
    --  Static string identifying this version
 
    Date : constant String := "19940713";
 
-   Current_Year : constant String := "2016";
+   Current_Year : constant String := "2017";
 
    type Gnat_Build_Type is (Gnatpro, FSF, GPL);
    --  See Get_Gnat_Build_Type below for the meaning of these values
