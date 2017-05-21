@@ -2,7 +2,7 @@
 --                                                                          --
 --                             GPR TECHNOLOGY                               --
 --                                                                          --
---                    Copyright (C) 2015-2016, AdaCore                      --
+--                    Copyright (C) 2015-2017, AdaCore                      --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -303,10 +303,6 @@ procedure Gprls.Main is
                         then
                            Put ("   ");
                            Output_Source (D);
-
-                           if not Verbose_Mode then
-                              New_Line;
-                           end if;
                         end if;
                      end loop;
                   end if;
