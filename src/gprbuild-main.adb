@@ -2,7 +2,7 @@
 --                                                                          --
 --                             GPR TECHNOLOGY                               --
 --                                                                          --
---                     Copyright (C) 2011-2016, AdaCore                     --
+--                     Copyright (C) 2011-2017, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -2573,14 +2573,18 @@ begin
 
    --  Set slave-env
 
-   if Slave_Env = null and then Distributed_Mode then
-      Slave_Env :=
-        new String'(Compute_Slave_Env (Project_Tree, Slave_Env_Auto));
+   if Distributed_Mode then
+      Use_Temp_Dir (Status => False);
 
-      if Slave_Env_Auto and not Opt.Quiet_Output then
-         Put ("slave environment is ");
-         Put (Slave_Env.all);
-         New_Line;
+      if Slave_Env = null then
+         Slave_Env :=
+           new String'(Compute_Slave_Env (Project_Tree, Slave_Env_Auto));
+
+         if Slave_Env_Auto and not Opt.Quiet_Output then
+            Put ("slave environment is ");
+            Put (Slave_Env.all);
+            New_Line;
+         end if;
       end if;
    end if;
 
