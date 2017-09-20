@@ -22,7 +22,7 @@
 
 package GPR_Version is
 
-   Gpr_Version : constant String := "17.2";
+   Gpr_Version : constant String := "17.3";
    --  Static string identifying this version
 
    Date : constant String := "19940713";
