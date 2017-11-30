@@ -2,7 +2,7 @@
 --                                                                          --
 --                             GPR TECHNOLOGY                               --
 --                                                                          --
---                     Copyright (C) 2011-2017, AdaCore                     --
+--                     Copyright (C) 2011-2018, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -3320,10 +3320,11 @@ package body Gprbuild.Compile is
             else
                Print_Compilation_Outputs (Source.Id);
 
-               if Builder_Data (Source.Tree).Closure_Needed
-                 and then
+               if Source.Closure or else
+                 (Builder_Data (Source.Tree).Closure_Needed
+                  and then
                    (Id.Language.Config.Dependency_Kind = ALI_File
-                    or else Id.Language.Config.Dependency_Kind = ALI_Closure)
+                    or else Id.Language.Config.Dependency_Kind = ALI_Closure))
                then
                   Record_ALI_For (Source, The_ALI);
 
