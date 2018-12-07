@@ -2,7 +2,7 @@
 --                                                                          --
 --                           GPR PROJECT MANAGER                            --
 --                                                                          --
---                     Copyright (C) 2001-2015, AdaCore                     --
+--                     Copyright (C) 2001-2018, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -337,7 +337,9 @@ procedure GPRName.Main is
             Path_Last := Path_Name'Last;
          end if;
 
-         File_Path := new String'(Path_Name (1 .. Path_Last));
+         Free (File_Path);
+         File_Path := new String'
+           (Normalize_Pathname (Path_Name (1 .. Path_Last)));
       end;
 
       if Is_Regular_File (File_Path.all) then
