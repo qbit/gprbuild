@@ -31,7 +31,7 @@ Options [defaults in brackets]:
   --with-xmlada=DIR  xmlada source path [$xmlada_src]
 
   --build            build only but do not install
-  --install          install only, skip installation steps
+  --install          install only, skip build steps
 
 Environment variables:
   CC                 specify C compiler [$CC]
