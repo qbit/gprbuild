@@ -1524,28 +1524,40 @@ package body GPR.Util is
       --  First check if there are any valid project or projects
 
       if Project = No_Project or else In_Tree = No_Project_Tree then
+         Err.Error_Msg
+           (Gprbuild_Flags, "Project not found", Token_Ptr,
+            Project => Project);
          Status := Invalid_Project;
          Cleanup;
          return;
       end if;
 
-      if Project.Externally_Built or else Project.Library then
+      if Project.Externally_Built then
+         Err.Error_Msg
+           (Gprbuild_Flags, "No closures for external projects", Token_Ptr,
+            Project => Project);
          Status := Invalid_Project;
          Cleanup;
          return;
       end if;
 
       case Project.Qualifier is
-         when Library | Configuration | Abstract_Project | Aggregate_Library =>
+         when Configuration | Abstract_Project =>
+            Err.Error_Msg
+              (Gprbuild_Flags, "No closures for abstract or configuration",
+               Token_Ptr, Project => Project);
             Status := Invalid_Project;
             Cleanup;
             return;
 
-         when Standard | Unspecified =>
+         when Standard | Library | Unspecified =>
             Add_To_Projects (Project, In_Tree);
 
-         when Aggregate =>
+         when Aggregate | Aggregate_Library =>
             if not All_Projects then
+               Err.Error_Msg
+                 (Gprbuild_Flags, "Aggregate closure must be recursive",
+                  Token_Ptr, Project => Project);
                Status := Invalid_Project;
                Cleanup;
                return;
@@ -1555,6 +1567,9 @@ package body GPR.Util is
       end case;
 
       if Projects_And_Trees.Length = 0 then
+         Err.Error_Msg
+           (Gprbuild_Flags, "No projects to closure", Token_Ptr,
+            Project => Project);
          Status := Invalid_Project;
          Cleanup;
          return;
