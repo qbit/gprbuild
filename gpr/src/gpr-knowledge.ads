@@ -70,6 +70,9 @@ package GPR.Knowledge is
    --  If Validate is True, the contents of the knowledge base is first
    --  validated with an XSD schema.
 
+   procedure Free_Knowledge_Base (Base : in out Knowledge_Base);
+   --  Deallocate all resources occupied by the knowledge base.
+
    Invalid_Knowledge_Base : exception;
    --  To be raised when an error occurred while parsing the knowledge base
 

@@ -343,6 +343,11 @@ package body GPR.Knowledge is
    --      Str="A\." Remove_Quoted=False  => output is "A."
    --      Str="A\." Remove_Quoted=False  => output is "A"
 
+   procedure Free (Descr   : in out Compiler_Description);
+   procedure Free (Config  : in out Configuration);
+   procedure Free (TSD     : in out Target_Set_Description);
+   procedure Free (Ext_Val : in out External_Value_Node);
+
    -------------------
    -- Get_Attribute --
    -------------------
@@ -1342,6 +1347,11 @@ package body GPR.Knowledge is
                       & Shortname.all);
          end if;
 
+         declare
+            Doc : Document := Get_Tree (Reader);
+         begin
+            Free (Doc);
+         end;
          Free (Reader);
          GNAT.Strings.Free (Shortname);
 
@@ -1375,6 +1385,35 @@ package body GPR.Knowledge is
             & Exception_Information (E));
          raise Invalid_Knowledge_Base;
    end Parse_Knowledge_Base;
+
+   -------------------------
+   -- Free_Knowledge_Base --
+   -------------------------
+
+   procedure Free_Knowledge_Base (Base : in out Knowledge_Base) is
+   begin
+      for El of Base.Compilers loop
+         Free (El);
+      end loop;
+      Base.Compilers.Clear;
+
+      Base.No_Compilers.Clear;
+
+      for El of Base.Configurations loop
+         Free (El);
+      end loop;
+      Base.Configurations.Clear;
+
+      for El of Base.Targets_Sets loop
+         Free (El);
+      end loop;
+      Base.Targets_Sets.Clear;
+
+      for El of Base.Fallback_Targets_Sets loop
+         El.Clear;
+      end loop;
+      Base.Fallback_Targets_Sets.Clear;
+   end Free_Knowledge_Base;
 
    ------------------------
    -- Get_Variable_Value --
@@ -4832,5 +4871,84 @@ package body GPR.Knowledge is
          return Comp.Runtime_Dir;
       end if;
    end Runtime_Dir_Of;
+
+   ----------
+   -- Free --
+   ----------
+
+   procedure Free (Descr : in out Compiler_Description) is
+      procedure Free (List : in out External_Value);
+      procedure Free (List : in out External_Value) is
+      begin
+         for El of List loop
+            Free (El);
+         end loop;
+         List.Clear;
+      end Free;
+   begin
+      Unchecked_Free (Descr.Executable_Re);
+      Free (Descr.Target);
+      Free (Descr.Version);
+      Free (Descr.Variables);
+      Free (Descr.Languages);
+      Free (Descr.Runtimes);
+      Descr.Default_Runtimes.Clear;
+   end Free;
+
+   ----------
+   -- Free --
+   ----------
+
+   procedure Free (Config : in out Configuration) is
+
+      procedure Free (Filter : in out Compiler_Filter_Lists.List);
+      procedure Free (Filter : in out Compiler_Filter_Lists.List) is
+      begin
+         for El of Filter loop
+            Unchecked_Free (El.Name_Re);
+            Unchecked_Free (El.Version_Re);
+            Unchecked_Free (El.Runtime_Re);
+         end loop;
+         Filter.Clear;
+      end Free;
+
+   begin
+      for El of Config.Compilers_Filters loop
+         Free (El.Compiler);
+      end loop;
+      Config.Compilers_Filters.Clear;
+
+      Config.Targets_Filters.Clear;
+   end Free;
+
+   ----------
+   -- Free --
+   ----------
+
+   procedure Free (TSD : in out Target_Set_Description) is
+   begin
+      for El of TSD.Patterns loop
+         Unchecked_Free (El);
+      end loop;
+      TSD.Patterns.Clear;
+   end Free;
+
+   ----------
+   -- Free --
+   ----------
+
+   procedure Free (Ext_Val : in out External_Value_Node) is
+   begin
+      case Ext_Val.Typ is
+         when Value_Directory  =>
+            Unchecked_Free (Ext_Val.Contents);
+         when Value_Grep       =>
+            Unchecked_Free (Ext_Val.Regexp_Re);
+         when Value_Nogrep     =>
+            Unchecked_Free (Ext_Val.Regexp_No);
+         when others =>
+            null;
+      end case;
+   end Free;
 
 end GPR.Knowledge;
