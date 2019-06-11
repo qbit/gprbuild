@@ -889,7 +889,25 @@ package body GPR.Conf is
          Gprconfig_Path : String_Access;
 
       begin
-         Gprconfig_Path := Locate_Exec_On_Path (Gprconfig_Name);
+
+         --  First look for gprconfig at current exec prefix
+
+         declare
+            Prefix : constant String := Executable_Prefix_Path;
+         begin
+            if Prefix /= "" then
+               Gprconfig_Path := Locate_Exec_On_Path
+                 (Prefix & "bin" & Directory_Separator & Gprconfig_Name);
+            end if;
+         end;
+
+         --  If not found, search on PATH
+
+         if Gprconfig_Path = null then
+            Gprconfig_Path := Locate_Exec_On_Path (Gprconfig_Name);
+         end if;
+
+         --  If still not found, abort
 
          if Gprconfig_Path = null then
             Raise_Invalid_Config
@@ -1116,6 +1134,8 @@ package body GPR.Conf is
             Free (Config_Switches);
 
             Free (Comm_Line_Opt);
+
+            Free (Gprconfig_Path);
 
             Config_File_Path := Locate_Config_File (Args (3).all);
 
