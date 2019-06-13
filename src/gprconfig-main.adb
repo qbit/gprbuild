@@ -2,7 +2,7 @@
 --                                                                          --
 --                             GPR TECHNOLOGY                               --
 --                                                                          --
---                     Copyright (C) 2006-2018, AdaCore                     --
+--                     Copyright (C) 2006-2019, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -411,6 +411,8 @@ begin
       --  Fallback targets do not make sense in context of --target=all.
       Native_Target := False;
    end if;
+
+   Pedantic_KB := True;
 
    if Load_Standard_Base then
       Parse_Knowledge_Base

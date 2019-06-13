@@ -1156,14 +1156,16 @@ package body GPR.Knowledge is
            Get_Attribute (Description, "canonical", "");
       begin
          if Canon = "" then
-            Put_Line
-              ("No canonical target specified for target-set in "
-               & Node_Name (N) & " in "
-               & File);
-            raise Invalid_Knowledge_Base;
+            if Pedantic_KB then
+               Put_Line
+                 ("No canonical target specified for target-set in "
+                  & Node_Name (N) & " in "
+                  & File);
+               raise Invalid_Knowledge_Base;
+            end if;
+         else
+            Name := Get_String (Canon);
          end if;
-
-         Name := Get_String (Canon);
 
          while N /= null loop
             if Node_Type (N) /= Element_Node then
@@ -1175,6 +1177,13 @@ package body GPR.Knowledge is
                begin
                   Pattern := new Pattern_Matcher'(Compile ("^" & Val & "$"));
                   Target_Lists.Append (Set, Pattern);
+
+                  if Name = No_Name then
+                     --  When not in pedantic mode and working with
+                     --  an old KB the first target in the target set
+                     --  is taken as canonical target.
+                     Name := Get_String (Val);
+                  end if;
 
                exception
                   when Expression_Error =>

@@ -79,6 +79,12 @@ package GPR.Knowledge is
    Knowledge_Base_Validation_Error : exception;
    --  Some files in the knowledge base are invalid.
 
+   Pedantic_KB : Boolean := False;
+   --  Expect strict accordance between the expected knowledge base scheme
+   --  and actual files parsed. When parsing an older knowledge base some
+   --  attributes may be missing (i.e. canonical target) and that would lead
+   --  to Invalid_Knowledge_Base raised.
+
    -----------------
    -- Target sets --
    -----------------
