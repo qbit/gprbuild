@@ -2,7 +2,7 @@
 --                                                                          --
 --                           GPR PROJECT MANAGER                            --
 --                                                                          --
---          Copyright (C) 2001-2018, Free Software Foundation, Inc.         --
+--          Copyright (C) 2001-2019, Free Software Foundation, Inc.         --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -638,8 +638,8 @@ package body GPR is
             Iter.Project := Iter.Project.Next;
          end loop;
 
-      else
-         while not Iter.Encapsulated_Libs
+      elsif not Encapsulated_Libs then
+         while Iter.Project /= null
            and then Iter.Project.From_Encapsulated_Lib
          loop
             Iter.Project := Iter.Project.Next;
