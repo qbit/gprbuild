@@ -2,7 +2,7 @@
 --                                                                          --
 --                             GPR TECHNOLOGY                               --
 --                                                                          --
---                     Copyright (C) 2012-2018, AdaCore                     --
+--                     Copyright (C) 2012-2019, AdaCore                     --
 --                                                                          --
 -- This is  free  software;  you can redistribute it and/or modify it under --
 -- terms of the  GNU  General Public License as published by the Free Soft- --
@@ -2198,7 +2198,9 @@ package body Gprinstall.Install is
          begin
             case Var.Kind is
                when Single =>
-                  return """" & Get_Name_String (Var.Value) & """;";
+                  return '"' & Get_Name_String (Var.Value) & '"'
+                    & (if Var.Index = 0 then "" else " at" & Var.Index'Img)
+                    & ';';
 
                when List =>
                   declare
