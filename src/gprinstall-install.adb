@@ -2216,9 +2216,14 @@ package body Gprinstall.Install is
                         else
                            First := False;
                         end if;
-                        Append (V, """");
-                        Append (V, Get_Name_String (Strs (L).Value));
-                        Append (V, """");
+
+                        Append
+                          (V, '"' & Get_Name_String (Strs (L).Value) & '"');
+
+                        if Strs (L).Index > 0 then
+                           Append (V, " at" & Strs (L).Index'Img);
+                        end if;
+
                         L := Strs (L).Next;
                      end loop;
                      Append (V, ");");
