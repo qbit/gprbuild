@@ -1750,9 +1750,12 @@ package body Gprbuild.Post_Compile is
             Write_Name_List (Exchange_File, Run_Path_Option, List);
             Put_Line (Exchange_File,
                       Library_Label (Gprexch.Run_Path_Origin));
-            Put_Line (Exchange_File,
-                      Get_Name_String (For_Project.Config.Run_Path_Origin));
-
+            
+            if For_Project.Config.Run_Path_Origin /= No_Name then
+               Put_Line (Exchange_File,
+                         Get_Name_String (For_Project.Config.Run_Path_Origin));
+            end if;
+               
             if For_Project.Config.Separate_Run_Path_Options then
                Put_Line
                  (Exchange_File,
