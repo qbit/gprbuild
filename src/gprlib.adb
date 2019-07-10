@@ -356,7 +356,8 @@ procedure Gprlib is
       Relative : constant String :=
                    Relative_RPath (Path,
                                    Library_Directory.all,
-                                   Rpath_Origin.all);
+                                   (if Rpath_Origin = null then ""
+                                      else Rpath_Origin.all));
 
    begin
       if Path'Length = 0 then
