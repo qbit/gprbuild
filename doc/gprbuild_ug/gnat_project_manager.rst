@@ -451,6 +451,10 @@ described below (see :ref:`Organizing_Projects_into_Subsystems`), allowing each
 separate object directory to be associated with a corresponding subsystem
 of the application.
 
+Incidentally, the directory designated by the ``Object_Dir`` attribute may
+be used by project aware tools other than the compilation toolchain to store
+reports or intermediate files.
+
 .. index:: Exec_Dir attribute
 
 When the *linker* is called, it usually creates an executable. By
@@ -2678,7 +2682,7 @@ attributes and packages are forbidden in an aggregate project. Here is a
 * ``Languages``
 * ``Source_Files``, ``Source_List_File`` and other attributes dealing with
   list of sources.
-* ``Source_Dirs``, ``Exec_Dir`` and ``Object_Dir``
+* ``Source_Dirs`` and ``Exec_Dir``
 * ``Library_Dir``, ``Library_Name`` and other library-related attributes
 * ``Main``
 * ``Roots``
@@ -2689,6 +2693,12 @@ attributes and packages are forbidden in an aggregate project. Here is a
 * ``Excluded_Source_Files``
 * ``Excluded_Source_List_File``
 * ``Interfaces``
+
+The ``Object_Dir`` attribute is allowed and used by some analysis tools such
+as `gnatcheck` to store intermediate files and aggregated results. The
+attribute value is just ignored by the compilation toolchain, for which every
+artifact of interest is best associated with the leaf non aggregate projects
+and stored in the corresponding ``Object_Dir``.
 
 The only package that is allowed (and optional) is
 ``Builder``. Other packages (in particular ``Compiler``, ``Binder`` and ``Linker``)
@@ -3117,7 +3127,7 @@ project. Here is a (non-exhaustive) list:
 * ``Languages``
 * ``Source_Files``, ``Source_List_File`` and other attributes dealing with
   a list of sources.
-* ``Source_Dirs``, ``Exec_Dir`` and ``Object_Dir``
+* ``Source_Dirs`` and ``Exec_Dir``
 * ``Main``
 * ``Roots``
 * ``Externally_Built``
@@ -3135,6 +3145,8 @@ included into the aggregate library. The environment variables
 :envvar:`ADA_PROJECT_PATH`, :envvar:`GPR_PROJECT_PATH` and
 :envvar:`GPR_PROJECT_PATH_FILE` are not used to find the project files.
 
+As for regular (not library) aggregate projects, the ``Object_Dir`` attribute
+is allowed and used by some analysis tools in the same fashion.
 
 .. _Project_File_Reference:
 
