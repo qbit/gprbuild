@@ -2752,7 +2752,10 @@ The following three attributes can be used only in an aggregate project:
        for Project_Files use ("a.gpr", "subdir/b.gpr");
        --  two specific projects relative to the directory of agg.gpr
 
-       for Project_Files use ("/.gpr");
+       for Project_Files use ("**/*.gpr");
+       --  all projects recursively, except in the current directory
+
+       for Project_Files use ("**/*.gpr", "*.gpr");
        --  all projects recursively
 
 
