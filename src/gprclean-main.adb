@@ -483,6 +483,16 @@ procedure Gprclean.Main is
                   end if;
                end;
 
+            elsif Switch'Length > Implicit_With_Option'Length
+              and then
+                Switch (Implicit_With_Option'Range) = Implicit_With_Option
+            then
+               Implicit_With.Append
+                 (Normalize_Pathname
+                    (Switch (Implicit_With_Option'Last + 1 .. Switch'Last),
+                     Resolve_Links  => False,
+                     Case_Sensitive => True));
+
             elsif Switch'Length > Subdirs_Option'Length
               and then
                 Switch (1 .. Subdirs_Option'Length) = Subdirs_Option

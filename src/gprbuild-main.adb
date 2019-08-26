@@ -1089,6 +1089,16 @@ procedure Gprbuild.Main is
                end if;
             end;
 
+         elsif Arg'Length > Implicit_With_Option'Length
+           and then Arg (Implicit_With_Option'Range) = Implicit_With_Option
+         then
+            Forbidden_In_Package_Builder;
+            Implicit_With.Append
+              (Normalize_Pathname
+                 (Arg (Implicit_With_Option'Last + 1 .. Arg'Last),
+                  Resolve_Links  => False,
+                  Case_Sensitive => True));
+
          elsif Arg'Length > Subdirs_Option'Length
            and then Arg (1 .. Subdirs_Option'Length) = Subdirs_Option
          then
@@ -2011,6 +2021,12 @@ procedure Gprbuild.Main is
          --  Line for --db-
 
          Put ("  --db-    Do not load the standard knowledge base");
+         New_Line;
+
+         Put ("  --implicit-with=filename");
+         New_Line;
+         Put ("           Add the given projects as a dependency on all loaded"
+              & " projects");
          New_Line;
 
          --  Line for --relocate-build-tree=

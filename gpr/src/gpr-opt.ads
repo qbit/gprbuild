@@ -2,7 +2,7 @@
 --                                                                          --
 --                           GPR PROJECT MANAGER                            --
 --                                                                          --
---          Copyright (C) 2001-2018, Free Software Foundation, Inc.         --
+--          Copyright (C) 2001-2019, Free Software Foundation, Inc.         --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -21,6 +21,8 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 --                                                                          --
 ------------------------------------------------------------------------------
+
+with GPR.Util;
 
 pragma Warnings (Off);
 with System.WCh_Con; use System.WCh_Con;
@@ -136,6 +138,9 @@ package GPR.Opt is
    Ignore_Duplicate_Files : Boolean := False;
    --  Ignore filenames with the same basename and only keep the first one.
    --  Set by switch --ignore-duplicate-files.
+
+   Implicit_With : Util.String_Vectors.Vector;
+   --  Add the given projects as a dependency on all loaded projects.
 
    Keep_Going : Boolean := False;
    --  When True signals to ignore compilation errors and keep processing

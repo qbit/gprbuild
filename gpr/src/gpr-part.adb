@@ -2,7 +2,7 @@
 --                                                                          --
 --                           GPR PROJECT MANAGER                            --
 --                                                                          --
---          Copyright (C) 2001-2017, Free Software Foundation, Inc.         --
+--          Copyright (C) 2001-2019, Free Software Foundation, Inc.         --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -238,6 +238,7 @@ package body GPR.Part is
      (In_Tree        : Project_Node_Tree_Ref;
       Context_Clause : out With_Id;
       Is_Config_File : Boolean;
+      Implicit       : Boolean;
       Flags          : Processing_Flags);
    --  Parse the context clause of a project. Store the paths and locations of
    --  the imported projects in table Withs. Does nothing if there is no
@@ -245,6 +246,8 @@ package body GPR.Part is
    --  by "with").
    --  Is_Config_File should be set to True if the project represents a config
    --  file (.cgpr) since some specific checks apply.
+   --  Implicit is True when the project is from Implicit_With list. This is
+   --  needed to avoid adding implicit withs into implicitly withed projects.
 
    procedure Post_Parse_Context_Clause
      (Context_Clause    : With_Id;
@@ -759,12 +762,35 @@ package body GPR.Part is
      (In_Tree        : Project_Node_Tree_Ref;
       Context_Clause : out With_Id;
       Is_Config_File : Boolean;
+      Implicit       : Boolean;
       Flags          : Processing_Flags)
    is
       Current_With_Clause : With_Id := No_With;
       Limited_With        : Boolean := False;
       Current_With        : With_Record;
       Current_With_Node   : Project_Node_Id := Empty_Project_Node;
+
+      procedure Append_Current_With;
+      --  Append Current_With to Withs
+
+      -------------------------
+      -- Append_Current_With --
+      -------------------------
+
+      procedure Append_Current_With is
+      begin
+         Withs.Increment_Last;
+         Withs.Table (Withs.Last) := Current_With;
+
+         if Current_With_Clause = No_With then
+            Context_Clause := Withs.Last;
+
+         else
+            Withs.Table (Current_With_Clause).Next := Withs.Last;
+         end if;
+
+         Current_With_Clause := Withs.Last;
+      end Append_Current_With;
 
    begin
       --  Assume no context clause
@@ -813,17 +839,7 @@ package body GPR.Part is
                Node         => Current_With_Node,
                Next         => No_With);
 
-            Withs.Increment_Last;
-            Withs.Table (Withs.Last) := Current_With;
-
-            if Current_With_Clause = No_With then
-               Context_Clause := Withs.Last;
-
-            else
-               Withs.Table (Current_With_Clause).Next := Withs.Last;
-            end if;
-
-            Current_With_Clause := Withs.Last;
+            Append_Current_With;
 
             Scan (In_Tree);
 
@@ -849,6 +865,25 @@ package body GPR.Part is
                 (Of_Kind => N_With_Clause, In_Tree => In_Tree);
          end loop Comma_Loop;
       end loop With_Loop;
+
+      if not Implicit then
+         for W of Implicit_With loop
+            Current_With_Node :=
+              Default_Project_Node (In_Tree, Of_Kind => N_With_Clause);
+
+            Name_Len := 0;
+            Add_Str_To_Name_Buffer (W);
+
+            Current_With :=
+              (Path         => Name_Find,
+               Location     => No_Location,
+               Limited_With => False,
+               Node         => Current_With_Node,
+               Next         => No_With);
+
+            Append_Current_With;
+         end loop;
+      end if;
    end Pre_Parse_Context_Clause;
 
    -------------------------------
@@ -1297,6 +1332,13 @@ package body GPR.Part is
       Project_Scan_State  : Saved_Project_Scan_State;
       Source_Index        : Source_File_Index;
 
+      Normed_Path : constant String :=
+                      Normalize_Pathname
+                        (Path_Name,
+                         Directory      => Current_Dir,
+                         Resolve_Links  => False,
+                         Case_Sensitive => True);
+
       Extending : Boolean := False;
 
       Extended_Project : Project_Node_Id := Empty_Project_Node;
@@ -1324,11 +1366,6 @@ package body GPR.Part is
       Extends_All := False;
 
       declare
-         Normed_Path    : constant String := Normalize_Pathname
-                            (Path_Name,
-                             Directory      => Current_Dir,
-                             Resolve_Links  => False,
-                             Case_Sensitive => True);
          Canonical_Path : constant String := Normalize_Pathname
                             (Normed_Path,
                              Directory      => Current_Dir,
@@ -1540,6 +1577,7 @@ package body GPR.Part is
         (In_Tree        => In_Tree,
          Is_Config_File => Is_Config_File,
          Context_Clause => First_With,
+         Implicit       => Implicit_With.Contains (Normed_Path),
          Flags          => Env.Flags);
 
       Project := Default_Project_Node
