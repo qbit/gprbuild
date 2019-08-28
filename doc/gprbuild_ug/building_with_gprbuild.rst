@@ -296,6 +296,13 @@ package Builder of the main project:
   Note: only one of :samp:`--config`, :samp:`--autoconf` or :samp:`--target=`
   can be specified.
 
+* :samp:`--implicit-with={project file name}`
+
+  Adds a given project as an implicit dependency to every project in the
+  build tree by creating an implicit "with" clause at the start of each
+  project. This switch can be repeated multiple times to add multiple
+  implicit dependencies.
+
 * :samp:`--subdirs={subdir}`
 
   This indicates that the object, library and executable directories specified
