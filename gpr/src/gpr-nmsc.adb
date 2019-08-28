@@ -8938,8 +8938,8 @@ package body GPR.Nmsc is
             Id.Index    := Src.Index;
 
             Id.Path :=
-              (Path_Name_Type (Src.Display_Path_Name),
-               Path_Name_Type (Src.Path_Name));
+              (Display_Name => Path_Name_Type (Src.Display_Path_Name),
+               Name         => Path_Name_Type (Src.Path_Name));
 
             Name_Len := 0;
             Add_Str_To_Name_Buffer
