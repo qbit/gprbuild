@@ -2141,6 +2141,13 @@ procedure Gprbuild.Main is
          New_Line;
 
          Put ("  ");
+         Put (Source_Info_Option & "<filename>");
+         New_Line;
+         Put
+           ("           Specify/create the project sources cache file");
+         New_Line;
+
+         Put ("  ");
          Put (Keep_Temp_Files_Option);
          New_Line;
          Put ("           Do not delete temporary files");
