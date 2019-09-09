@@ -265,4 +265,7 @@ package GPR.Opt is
    --  Set True if the value in Wide_Character_Encoding_Method was set as
    --  a result of an explicit -gnatW? or -W? switch. False otherwise.
 
+   procedure Implicit_With_Append (Project : String);
+   --  Append value to Implicit_With list with .gpr suffix if absent
+
 end GPR.Opt;

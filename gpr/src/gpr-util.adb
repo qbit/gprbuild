@@ -3445,6 +3445,21 @@ package body GPR.Util is
       end if;
    end Ensure_Directory;
 
+   -------------------
+   -- Ensure_Suffix --
+   -------------------
+
+   function Ensure_Suffix (Item : String; Suffix : String) return String is
+   begin
+      if Item'Length >= Suffix'Length
+        and then Item (Item'Last - Suffix'Length + 1 .. Item'Last) = Suffix
+      then
+         return Item;
+      else
+         return Item & Suffix;
+      end if;
+   end Ensure_Suffix;
+
 --     ---------------
 --     -- Error_Msg --
 --     ---------------
