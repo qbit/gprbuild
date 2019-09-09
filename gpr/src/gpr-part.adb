@@ -238,7 +238,7 @@ package body GPR.Part is
      (In_Tree        : Project_Node_Tree_Ref;
       Context_Clause : out With_Id;
       Is_Config_File : Boolean;
-      Project_Name   : Name_Id;
+      Implicit       : Boolean;
       Flags          : Processing_Flags);
    --  Parse the context clause of a project. Store the paths and locations of
    --  the imported projects in table Withs. Does nothing if there is no
@@ -246,8 +246,8 @@ package body GPR.Part is
    --  by "with").
    --  Is_Config_File should be set to True if the project represents a config
    --  file (.cgpr) since some specific checks apply.
-   --  Project_Name need to avoid implicit with into implicitly withed
-   --  projects.
+   --  Implicit is True when the project is from Implicit_With list. This is
+   --  needed to avoid adding implicit withs into implicitly withed projects.
 
    procedure Post_Parse_Context_Clause
      (Context_Clause    : With_Id;
@@ -762,14 +762,13 @@ package body GPR.Part is
      (In_Tree        : Project_Node_Tree_Ref;
       Context_Clause : out With_Id;
       Is_Config_File : Boolean;
-      Project_Name   : Name_Id;
+      Implicit       : Boolean;
       Flags          : Processing_Flags)
    is
       Current_With_Clause : With_Id := No_With;
       Limited_With        : Boolean := False;
       Current_With        : With_Record;
       Current_With_Node   : Project_Node_Id := Empty_Project_Node;
-      Keep_Last           : Withs.Table_Last_Type;
 
       procedure Append_Current_With;
       --  Append Current_With to Withs
@@ -867,19 +866,8 @@ package body GPR.Part is
          end loop Comma_Loop;
       end loop With_Loop;
 
-      if not Is_Config_File and then Project_Name /= No_Name then
-         Keep_Last := Withs.Last;
-
+      if not Implicit then
          for W of Implicit_With loop
-            if Project_Name_From (W, False) = Project_Name then
-               --  It means that the parsing project is in the Implicit_With
-               --  list and we can't add implicit with into implicitly withed.
-
-               Withs.Set_Last (Keep_Last);
-               Withs.Table (Keep_Last).Next := No_With;
-               exit;
-            end if;
-
             Current_With_Node :=
               Default_Project_Node (In_Tree, Of_Kind => N_With_Clause);
 
@@ -889,7 +877,7 @@ package body GPR.Part is
             Current_With :=
               (Path         => Name_Find,
                Location     => No_Location,
-               Limited_With => True,
+               Limited_With => False,
                Node         => Current_With_Node,
                Next         => No_With);
 
@@ -1589,7 +1577,7 @@ package body GPR.Part is
         (In_Tree        => In_Tree,
          Is_Config_File => Is_Config_File,
          Context_Clause => First_With,
-         Project_Name   => Name_From_Path,
+         Implicit       => Implicit_With.Contains (Normed_Path),
          Flags          => Env.Flags);
 
       Project := Default_Project_Node
