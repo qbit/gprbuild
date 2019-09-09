@@ -1093,11 +1093,18 @@ procedure Gprbuild.Main is
            and then Arg (Implicit_With_Option'Range) = Implicit_With_Option
          then
             Forbidden_In_Package_Builder;
-            Implicit_With.Append
-              (Normalize_Pathname
+
+            if Implicit_With /= null then
+               Fail_Program
+                 (Project_Tree,
+                  "several " & Implicit_With_Option
+                  & " options cannot be specified");
+            end if;
+
+            Implicit_With := new String'
+              (Ensure_Suffix
                  (Arg (Implicit_With_Option'Last + 1 .. Arg'Last),
-                  Resolve_Links  => False,
-                  Case_Sensitive => True));
+                  Project_File_Extension));
 
          elsif Arg'Length > Subdirs_Option'Length
            and then Arg (1 .. Subdirs_Option'Length) = Subdirs_Option

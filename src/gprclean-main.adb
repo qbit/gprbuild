@@ -487,11 +487,17 @@ procedure Gprclean.Main is
               and then
                 Switch (Implicit_With_Option'Range) = Implicit_With_Option
             then
-               Implicit_With.Append
-                 (Normalize_Pathname
+               if Implicit_With /= null then
+                  Fail_Program
+                    (Project_Tree,
+                     "several " & Implicit_With_Option
+                     & " options cannot be specified");
+               end if;
+
+               Implicit_With := new String'
+                 (Ensure_Suffix
                     (Switch (Implicit_With_Option'Last + 1 .. Switch'Last),
-                     Resolve_Links  => False,
-                     Case_Sensitive => True));
+                     Project_File_Extension));
 
             elsif Switch'Length > Subdirs_Option'Length
               and then

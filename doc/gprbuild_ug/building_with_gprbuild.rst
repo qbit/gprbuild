@@ -299,9 +299,8 @@ package Builder of the main project:
 * :samp:`--implicit-with={project file name}`
 
   Adds a given project as an implicit dependency to every project in the
-  build tree by creating an implicit "with" clause at the start of each
-  project. This switch can be repeated multiple times to add multiple
-  implicit dependencies.
+  build tree by creating an implicit "limited with" clause at the start of
+  each project. This switch can only appear once on the command line.
 
 * :samp:`--subdirs={subdir}`
 

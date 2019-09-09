@@ -755,6 +755,9 @@ package GPR.Util is
    --  Maximum number of bytes to put in an invocation of the
    --  Archive_Builder.
 
+   function Ensure_Suffix (Item : String; Suffix : String) return String;
+   --  Returns Item if it ends with Suffix otherwise returns Item & Suffix
+
    function Ensure_Directory (Path : String) return String;
    --  Returns Path with an ending directory separator
 

@@ -235,19 +235,18 @@ package body GPR.Part is
    --  always done with the default False value for Implicit_Project.
 
    procedure Pre_Parse_Context_Clause
-     (In_Tree        : Project_Node_Tree_Ref;
-      Context_Clause : out With_Id;
-      Is_Config_File : Boolean;
-      Implicit       : Boolean;
-      Flags          : Processing_Flags);
+     (In_Tree           : Project_Node_Tree_Ref;
+      Context_Clause    : out With_Id;
+      Is_Config_File    : Boolean;
+      Add_Implicit_With : Boolean;
+      Flags             : Processing_Flags);
    --  Parse the context clause of a project. Store the paths and locations of
    --  the imported projects in table Withs. Does nothing if there is no
    --  context clause (if the current token is not "with" or "limited" followed
    --  by "with").
    --  Is_Config_File should be set to True if the project represents a config
    --  file (.cgpr) since some specific checks apply.
-   --  Implicit is True when the project is from Implicit_With list. This is
-   --  needed to avoid adding implicit withs into implicitly withed projects.
+   --  When Add_Implicit_With is True, add the --implicit-with dependency.
 
    procedure Post_Parse_Context_Clause
      (Context_Clause    : With_Id;
@@ -759,11 +758,11 @@ package body GPR.Part is
    ------------------------------
 
    procedure Pre_Parse_Context_Clause
-     (In_Tree        : Project_Node_Tree_Ref;
-      Context_Clause : out With_Id;
-      Is_Config_File : Boolean;
-      Implicit       : Boolean;
-      Flags          : Processing_Flags)
+     (In_Tree           : Project_Node_Tree_Ref;
+      Context_Clause    : out With_Id;
+      Is_Config_File    : Boolean;
+      Add_Implicit_With : Boolean;
+      Flags             : Processing_Flags)
    is
       Current_With_Clause : With_Id := No_With;
       Limited_With        : Boolean := False;
@@ -866,23 +865,21 @@ package body GPR.Part is
          end loop Comma_Loop;
       end loop With_Loop;
 
-      if not Implicit then
-         for W of Implicit_With loop
-            Current_With_Node :=
-              Default_Project_Node (In_Tree, Of_Kind => N_With_Clause);
+      if Add_Implicit_With then
+         Current_With_Node :=
+           Default_Project_Node (In_Tree, Of_Kind => N_With_Clause);
 
-            Name_Len := 0;
-            Add_Str_To_Name_Buffer (W);
+         Name_Len := 0;
+         Add_Str_To_Name_Buffer (Implicit_With.all);
 
-            Current_With :=
-              (Path         => Name_Find,
-               Location     => No_Location,
-               Limited_With => False,
-               Node         => Current_With_Node,
-               Next         => No_With);
+         Current_With :=
+           (Path         => Name_Find,
+            Location     => No_Location,
+            Limited_With => True,
+            Node         => Current_With_Node,
+            Next         => No_With);
 
-            Append_Current_With;
-         end loop;
+         Append_Current_With;
       end if;
    end Pre_Parse_Context_Clause;
 
@@ -1574,11 +1571,16 @@ package body GPR.Part is
       --  Is there any imported project?
 
       Pre_Parse_Context_Clause
-        (In_Tree        => In_Tree,
-         Is_Config_File => Is_Config_File,
-         Context_Clause => First_With,
-         Implicit       => Implicit_With.Contains (Normed_Path),
-         Flags          => Env.Flags);
+        (In_Tree           => In_Tree,
+         Is_Config_File    => Is_Config_File,
+         Context_Clause    => First_With,
+         Flags             => Env.Flags,
+         Add_Implicit_With => Implicit_With /= null
+                                and then not Is_Config_File
+                                and then Name_From_Path /= No_Name
+                                and then Project_Name_From
+                                            (Implicit_With.all, False)
+                                         /= Name_From_Path);
 
       Project := Default_Project_Node
                    (Of_Kind => N_Project, In_Tree => In_Tree);

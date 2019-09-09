@@ -22,8 +22,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with GPR.Util;
-
 pragma Warnings (Off);
 with System.WCh_Con; use System.WCh_Con;
 pragma Warnings (On);
@@ -139,8 +137,8 @@ package GPR.Opt is
    --  Ignore filenames with the same basename and only keep the first one.
    --  Set by switch --ignore-duplicate-files.
 
-   Implicit_With : Util.String_Vectors.Vector;
-   --  Add the given projects as a dependency on all loaded projects.
+   Implicit_With : String_Access;
+   --  Add the given project as a dependency on all loaded projects
 
    Keep_Going : Boolean := False;
    --  When True signals to ignore compilation errors and keep processing
