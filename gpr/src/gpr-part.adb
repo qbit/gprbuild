@@ -768,6 +768,7 @@ package body GPR.Part is
       Limited_With        : Boolean := False;
       Current_With        : With_Record;
       Current_With_Node   : Project_Node_Id := Empty_Project_Node;
+      Start_Token         : constant Source_Ptr := Token_Ptr;
 
       procedure Append_Current_With;
       --  Append Current_With to Withs
@@ -874,7 +875,7 @@ package body GPR.Part is
 
          Current_With :=
            (Path         => Name_Find,
-            Location     => No_Location,
+            Location     => Start_Token,
             Limited_With => True,
             Node         => Current_With_Node,
             Next         => No_With);
