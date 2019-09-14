@@ -780,7 +780,26 @@ package body Gprinstall.Install is
          end if;
 
          if Value = Nil_Variable_Value then
-            return Base_Name (Get_Name_String (Source)) & Get_Exec_Suffix;
+            declare
+               Simple_Name : constant String :=
+                               Get_Name_String (Source);
+               Last        : Positive := Simple_Name'First;
+            begin
+               --  Cut executable name at the first . (extension). Note that
+               --  this is not necessary the first base-name as we may have
+               --  multiple dots in the source when using non standard naming.
+               --  For example, having "main.2.ada" whe want to get on "main".
+
+               while Last < Simple_Name'Last
+                 and then Simple_Name (Last + 1) /= '.'
+               loop
+                  Last := Last + 1;
+               end loop;
+
+               return Simple_Name (Simple_Name'First .. Last)
+                 & Get_Exec_Suffix;
+            end;
+
          else
             return Get_Name_String (Value.Value) & Get_Exec_Suffix;
          end if;
