@@ -758,7 +758,7 @@ package body Gprinstall.Install is
 
             if Value = Nil_Variable_Value then
 
-               --  If not found and name has an extension,
+               --  If not found and name has an extension
 
                declare
                   Name : constant String := Get_Name_String (Source);
