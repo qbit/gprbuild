@@ -223,7 +223,7 @@ private
       Key        => Name_Id,
       Hash       => GPR.Hash,
       Equal      => "=");
-   --  A hash table to get the compilation option table from the language name
+   --  A hash table to get the binder option table from the language name
 
    Command_Line_Linker_Options : String_Vectors.Vector;
    --  Table to store the linking options
