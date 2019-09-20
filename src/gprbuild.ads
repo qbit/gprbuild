@@ -35,10 +35,6 @@ private with GPR.Util;
 
 package Gprbuild is
 
-   pragma Warnings (Off); -- Used by children
-   use Stamps;
-   pragma Warnings (On);
-
    --  Everyting private so only accessible to child packages
 
 private
@@ -49,6 +45,7 @@ private
    use GPR.Util;
 
    pragma Warnings (Off); -- Used by children
+   use Stamps;
    use type ALI.ALI_Id, Opt.Verbosity_Level_Type, Opt.Warning_Mode_Type;
    pragma Warnings (On);
 
@@ -58,7 +55,7 @@ private
    Object_Suffix : constant String := Get_Target_Object_Suffix.all;
    --  The suffix of object files on this platform
 
-   Dash_L    : Name_Id;
+   Dash_L : Name_Id;
    --  "-L", initialized in procedure Initialize
 
    Main_Project_Dir : String_Access;
@@ -380,15 +377,15 @@ private
    --  True when one bind process failed and switch -k was not used
 
    procedure Record_Failure (Main : Main_Info);
-   --  Add Main to table Bad_Binds and set Stop_Binding to True if switch -k is
-   --  not used.
+   --  Add Main to table Bad_Processes and set Stop_Binding to True if switch
+   --  -k is not used.
 
    type Process_Kind is (None, Binding, Linking);
 
    type Process_Data is record
       Kind     : Process_Kind := None;
-      Process  : Process_Id     := Invalid_Pid;
-      Main     : Main_Info      := No_Main_Info;
+      Process  : Process_Id   := Invalid_Pid;
+      Main     : Main_Info    := No_Main_Info;
    end record;
 
    No_Process_Data : constant Process_Data :=
