@@ -15,6 +15,7 @@ CC=${CC:-cc}
 GNATMAKE=${GNATMAKE:-gnatmake}
 CFLAGS=${CFLAGS:-$CFLAGS}
 GNATMAKEFLAGS=${GNATMAKEFLAGS:--j0}
+INSTALLFLAGS="-t"
 
 usage() {
     cat >&2 <<EOF
@@ -44,7 +45,7 @@ exit 0
 }
 
 error() {
-    printf -- "%s: $1" "$progname" "${@:2}" >&2
+    printf -- "%s: $1" "$progname" "${@}" >&2
     exit 1
 }
 
@@ -68,6 +69,10 @@ while :; do
     esac
     shift
 done
+
+case "$(uname)" in
+	*BSD) INSTALLFLAGS= ;;
+esac
 
 set -e
 
@@ -101,9 +106,9 @@ then
 	mkdir -p "$DESTDIR$prefix$datarootdir"/gprconfig
 	mkdir -p "$DESTDIR$prefix$datarootdir"/gpr
 
-	install -m0755 $bin_progs -t "$DESTDIR$prefix$bindir"
-	install -m0755 $lib_progs -t "$DESTDIR$prefix$libexecdir"/gprbuild
-	install -m0644 "$srcdir"/share/gprconfig/*.xml -t "$DESTDIR$prefix$datarootdir"/gprconfig
-	install -m0644 "$srcdir"/share/gprconfig/*.ent -t "$DESTDIR$prefix$datarootdir"/gprconfig
+	install -m0755 $bin_progs ${INSTALLFLAGS} "$DESTDIR$prefix$bindir"
+	install -m0755 $lib_progs ${INSTALLFLAGS} "$DESTDIR$prefix$libexecdir"/gprbuild
+	install -m0644 "$srcdir"/share/gprconfig/*.xml ${INSTALLFLAGS} "$DESTDIR$prefix$datarootdir"/gprconfig
+	install -m0644 "$srcdir"/share/gprconfig/*.ent ${INSTALLFLAGS} "$DESTDIR$prefix$datarootdir"/gprconfig
 	install -m0644 "$srcdir"/share/_default.gpr "$DESTDIR$prefix$datarootdir"/gpr/_default.gpr
 fi
